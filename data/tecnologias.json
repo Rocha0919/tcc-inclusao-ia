@@ -1,0 +1,78 @@
+{
+  "Física": [
+    "Cadeiras de rodas motorizadas com acesso escolar",
+    "Comunicadores alternativos e acionadores.",
+    "Mouses adaptados (joystick, trackball, cabeça)",
+    "Pranchas de comunicação com acionadores",
+    "Software de voz e controle por olhar.",
+    "Softwares de controle por voz ou olhar",
+    "Teclados alternativos e com proteção física",
+    "Teclados e mouses adaptados."
+  ],
+  "TEA": [
+    "Aplicativos de comunicação com pictogramas (CAA)",
+    "Apps de rotina visual e timers.",
+    "Apps para ensino de habilidades sociais",
+    "Calendários visuais com lembretes sonoros",
+    "Comunicadores alternativos (CAA).",
+    "Jogos estruturados e robôs sociais.",
+    "Rotinas visuais digitais (apps com passo a passo)",
+    "Tecnologias de modelagem 3D para desenvolvimento cognitivo"
+  ],
+  "Altas Habilidades": [
+    "Ambientes virtuais de aprendizagem personalizados",
+    "Apps de desafios lógicos e matemáticos",
+    "Ferramentas de criação multimídia.",
+    "Ferramentas para edição de vídeo, áudio e animações",
+    "MOOCs, simuladores e ambientes avançados.",
+    "Plataformas colaborativas e clubes virtuais.",
+    "Plataformas de produção colaborativa de conteúdo",
+    "Softwares de programação e robótica educacional"
+  ],
+  "TDAH": [
+    "Apps de organização e lembretes.",
+    "Apps de pomodoro e foco controlado.",
+    "Softwares que bloqueiam distrações."
+  ],
+  "Visual": [
+    "Ampliadores de tela e OCR.",
+    "Apps de orientação e assistentes virtuais.",
+    "Etiquetas em braille para organização de objetos",
+    "Impressoras braille para materiais adaptados",
+    "Leitores de tela (ex: NVDA, VoiceOver)",
+    "Leitores de tela e linhas Braille.",
+    "Lupas eletrônicas e softwares de ampliação",
+    "Máquinas de braille e linhas braille",
+    "Softwares de leitura com voz natural"
+  ],
+  "Múltipla": [
+    "Apps personalizados e painéis interativos.",
+    "Cadeiras com controle ambiental embutido",
+    "Combinação de leitores, Braille e voz.",
+    "Dispositivos integrados com múltiplos modos de acesso",
+    "Sistemas de escaneamento com leitura por varredura",
+    "Tablets com apps personalizados por perfil",
+    "Tecnologias combinadas: voz + toque + visão",
+    "Tecnologias sensoriais e de comunicação."
+  ],
+  "Intelectual": [
+    "Aplicativos com sequência de passos para tarefas",
+    "Apps de rotina e lembretes visuais.",
+    "Jogos digitais que trabalham atenção e memória",
+    "Leitores de texto com voz e apoio visual.",
+    "Relógios com alarme para organização da rotina",
+    "Softwares educativos adaptativos.",
+    "Softwares educativos com reforço visual e auditivo",
+    "Teclados adaptados com cores e letras ampliadas"
+  ],
+  "Auditiva": [
+    "Aplicativos de transcrição em tempo real",
+    "Apps de transcrição em tempo real.",
+    "Dispositivos de alerta visual (luz intermitente)",
+    "FM, loops magnéticos e amplificadores auditivos.",
+    "Pranchas e apps de comunicação alternativa (CAA)",
+    "Sistemas FM e amplificadores de som pessoal",
+    "Softwares com legenda automática e Libras.",
+    "Tradutores automáticos de voz para texto"
+  ]
+}

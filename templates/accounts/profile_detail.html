@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-top: 20px;">
+    
+    <aside>
+        <div class="card">
+            <h3 style="color: var(--primary); margin-bottom: 15px;">Mapeamento Atual</h3>
+            
+            {% if profile %}
+                <p><strong>Usuário:</strong> {{ user.username }}</p>
+                <p><strong>Necessidade:</strong> <span class="badge">{{ profile.primary_disability_category }}</span></p>
+                <hr>
+                <a href="{% url 'generate_plan' %}" class="btn btn-primary btn-gerar" style="width: 100%; text-align: center; padding: 15px;">
+                    ✨ Gerar Novo Plano com IA
+                </a>
+                <a href="{% url 'feedback_history' %}" class="btn btn-outline" style="width: 100%; text-align: center; display: block; border-color: var(--primary); color: var(--primary);">
+                    📋 Ver Minhas Avaliações
+                </a>
+            {% else %}
+                <p style="color: #666;">Você ainda não configurou seu perfil biopsicossocial.</p>
+                <a href="{% url 'profile_create' %}" class="btn btn-primary" style="width: 100%; text-align: center;">Configurar Perfil Agora</a>
+            {% endif %}
+        </div>
+    </aside>
+
+    <section>
+        <h3 style="margin-bottom: 20px;">Meus Planos de Acessibilidade</h3>
+        {% if sessoes %}
+            {% for sessao in sessoes %}
+                <div class="card hover-card" style="margin-bottom: 15px; border-left: 5px solid var(--primary); cursor: pointer; transition: transform 0.2s;" onclick="window.location='{% url 'plan_detail' sessao.id %}'">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0; color: var(--primary);">Plano Gerado</h4>
+                            <small style="color: #888;">{{ sessao.created_at|date:"d/m/Y às H:i" }}</small>
+                        </div>
+                        <span class="btn btn-outline" style="color: var(--primary); border-color: var(--primary); padding: 5px 15px; font-size: 0.9rem;">Abrir Detalhes &rarr;</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="card" style="text-align: center; padding: 40px; background: #fafafa;">
+                <p style="color: #666; font-size: 1.1rem;">Nenhum plano foi gerado ainda.</p>
+                <p style="font-size: 0.9rem;">Clique no botão lateral para iniciar o motor de recomendação.</p>
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

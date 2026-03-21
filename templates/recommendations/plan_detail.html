@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<section style="margin-top: 10px;">
+    <a href="{% url 'profile_detail' %}" style="color: var(--secondary); text-decoration: none; font-weight: bold;">
+        &larr; Voltar para o Painel
+    </a>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+        <h2 class="text-brand">Plano Recomendado</h2>
+        <span class="badge" style="font-size: 1rem;">Data: {{ session.created_at|date:"d/m/Y" }}</span>
+    </div>
+    
+    <div class="card" style="margin: 20px 0; border-left: 5px solid var(--primary); background: #fdfdfd;">
+        <h3 style="margin-bottom: 10px;">Análise da Inteligência Artificial</h3>
+        <p style="color: #444; font-size: 1.05rem; line-height: 1.7;">{{ session.ai_rationale }}</p>
+    </div>
+
+    <h3 style="margin-top: 30px; margin-bottom: 15px;">Recursos Selecionados:</h3>
+    <div class="recommendation-grid">
+        {% for rec_item in session.recommended_items.all %}
+            <div class="card" style="border-top: 4px solid var(--primary);">
+             <span class="badge">{{ rec_item.resource.get_category_display }}</span>
+             <h4 style="margin: 10px 0;">{{ rec_item.resource.name }}</h4>
+        
+             <div style="background: #f4f7f9; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed var(--primary);">
+                <strong style="color: var(--primary);">🧠 Por que a IA recomendou:</strong>
+                <p style="font-size: 0.9rem; margin-top: 5px;">{{ rec_item.ai_justification }}</p>
+             </div>
+
+              <p style="font-size: 0.95rem; color: #555;">{{ rec_item.resource.description }}</p>
+             <a href="{% url 'feedback_create' session.id rec_item.resource.id %}" class="btn btn-outline" style="color: var(--primary); border-color: var(--primary); margin-top: 15px; text-align: center;">Avaliar</a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

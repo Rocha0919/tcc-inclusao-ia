@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<section style="margin-top: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 class="text-brand">Meus Feedbacks</h2>
+        <a href="{% url 'profile_detail' %}" class="btn btn-outline" style="color: var(--primary); border-color: var(--primary);">Voltar ao Painel</a>
+    </div>
+    <hr>
+
+    {% if feedbacks %}
+        <div class="recommendation-grid">
+            {% for fb in feedbacks %}
+            <div class="card">
+                <h4 style="color: var(--primary);">{{ fb.resource.name }}</h4>
+                <p><strong>Nota dada:</strong> {{ fb.score }} / 5</p>
+                <p><strong>Comentário:</strong> {{ fb.user_comment|default:"Sem comentário." }}</p>
+                <small style="color: #888;">Avaliado em: {{ fb.created_at|date:"d/m/Y" }}</small>
+                
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <a href="{% url 'feedback_edit' fb.id %}" class="btn btn-primary" style="flex: 1; text-align: center;">Editar</a>
+                    <form action="{% url 'feedback_delete' fb.id %}" method="POST" style="flex: 1; display: flex;" onsubmit="return confirm('Tem certeza que deseja excluir?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn" style="background: #dc3545; color: white; width: 100%;">Excluir</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="text-align: center; color: #666; margin-top: 40px;">Você ainda não avaliou nenhuma recomendação.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex; justify-content: center; padding: 30px 15px;">
+    <div class="card" style="width: 100%; max-width: 800px; padding: 40px;">
+        <div style="border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 30px;">
+            <h2 style="color: var(--primary); margin: 0;">Mapeamento Biopsicossocial</h2>
+            <p style="color: #666; margin-top: 10px; font-size: 0.95rem;">
+                Estes dados formarão o seu perfil de aprendizagem. Quanto mais detalhes você fornecer, mais precisas serão as tecnologias e materiais recomendados pela nossa Inteligência Artificial.
+            </p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <h3 style="color: var(--secondary); margin-bottom: 15px; font-size: 1.2rem;">1. Condição e Necessidades</h3>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Categoria de Deficiência Principal <span style="color: red;">*</span></label>
+                <select name="primary_disability_category" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;" required>
+                    <option value="">Selecione...</option>
+                    {% for sigla, nome in categorias %}
+                        <option value="{{ sigla }}">{{ nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Possui limitações motoras ou sensoriais específicas?</label>
+                <input type="text" name="limitacoes_especificas" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;" placeholder="Ex: Dificuldade motora fina nas mãos, baixa visão severa, fotofobia...">
+                <small style="color: #888;">Deixe em branco se não houver.</small>
+            </div>
+
+            <h3 style="color: var(--secondary); margin-bottom: 15px; font-size: 1.2rem;">2. Objetivos e Autonomia</h3>
+
+<div class="form-group" style="margin-bottom: 20px;">
+    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Qual o seu foco principal no momento? <span style="color: red;">*</span></label>
+    <select name="objetivo_principal" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;" required>
+        <option value="">Selecione...</option>
+        <option value="estudo">Estudo (Escola, Faculdade, Concursos)</option>
+        <option value="trabalho">Trabalho (Produtividade, adaptação de home office)</option>
+        <option value="vida_diaria">Vida Diária (Autonomia em casa, comunicação, lazer)</option>
+        <option value="reabilitacao">Reabilitação / Treinamento</option>
+    </select>
+</div>
+
+<div class="form-group" style="margin-bottom: 30px;">
+    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Descreva as maiores barreiras no seu dia a dia <span style="color: red;">*</span></label>
+    <textarea name="barreiras" rows="4" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem; resize: vertical;" 
+              placeholder="Ex: Tenho dificuldade para usar o mouse comum, não consigo ouvir vídeos sem legenda, preciso de ajuda para organizar minhas tarefas diárias..." required></textarea>
+</div>
+
+            <h3 style="color: var(--secondary); margin-bottom: 15px; font-size: 1.2rem;">3. Contexto Tecnológico</h3>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Qual sua familiaridade com tecnologias assistivas? <span style="color: red;">*</span></label>
+                <select name="nivel_tecnologico" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;" required>
+                    <option value="">Selecione...</option>
+                    <option value="iniciante">Iniciante (Preciso de ferramentas muito simples)</option>
+                    <option value="intermediario">Intermediário (Consigo instalar e configurar algumas coisas)</option>
+                    <option value="avancado">Avançado (Tenho facilidade com softwares complexos)</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 35px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Já utiliza alguma ferramenta que funciona bem para você?</label>
+                <input type="text" name="ferramentas_previas" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;" placeholder="Ex: Leitor de telas NVDA, Mouse adaptado, Fontes grandes...">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem;">Salvar Mapeamento e Ir para o Painel</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

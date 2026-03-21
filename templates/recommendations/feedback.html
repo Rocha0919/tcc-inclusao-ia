@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 text-center">
+                <h4 class="text-brand mb-3">Avaliar Recurso</h4>
+                <p class="lead">{{ item.name }}</p>
+                <hr>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold d-block">Nota (1 a 5)</label>
+                        <input type="range" class="form-range" name="score" min="1" max="5" step="1" id="scoreRange" oninput="document.getElementById('scoreOutput').innerText = this.value">
+                        <div class="display-6 text-brand mt-2" id="scoreOutput">3</div>
+                        <div class="d-flex justify-content-between small text-muted">
+                            <span>1 - Ruim</span>
+                            <span>5 - Excelente</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 text-start">
+                        <label class="form-label fw-bold">Comentário Opcional</label>
+                        <textarea name="user_comment" class="form-control" rows="3" placeholder="Por que você deu essa nota?"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-brand w-100">Enviar Feedback para IA</button>
+                    <a href="{% url 'plan_detail' session.id %}" class="btn btn-link w-100 mt-2 text-muted">Voltar ao Plano</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

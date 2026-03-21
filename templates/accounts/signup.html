@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; padding-top: 40px;">
+    <div class="card" style="width: 100%; max-width: 450px;">
+        <h2 style="margin-bottom: 20px; color: var(--primary); text-align: center;">Criar Conta</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small style="display: block; color: #777; margin-top: 5px;">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p style="color: red; font-size: 0.8rem;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Cadastrar e Continuar</button>
+        </form>
+        <p style="margin-top: 20px; text-align: center; font-size: 0.9rem;">
+            Já tem uma conta? <a href="#" style="color: var(--primary);">Faça login</a>
+        </p>
+    </div>
+</div>
+
+<style>
+    /* Estilizando os inputs que o Django gera automaticamente no form */
+    input[type="text"], input[type="password"], input[type="email"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+    }
+</style>
+{% endblock %}

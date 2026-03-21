@@ -1,0 +1,80 @@
+{
+  "Física": [
+    "Atividades adaptadas com suportes ou gabaritos fixos",
+    "Folhas com gramatura maior para facilitar o manuseio",
+    "Folhas firmes, encadernações adaptadas.",
+    "Livros digitais com navegação por teclado ou voz",
+    "Materiais digitais acessíveis e táteis.",
+    "Painéis com peças magnéticas e velcro.",
+    "Quadros magnéticos ou painéis com velcro para colagens",
+    "Recursos com encadernação adaptada (espiral larga)"
+  ],
+  "TEA": [
+    "Atividades com estrutura previsível e repetitiva",
+    "Cartazes com rotina diária em figuras ou ícones",
+    "Fichas com comandos objetivos e únicos",
+    "Guias passo a passo com imagens.",
+    "Histórias sociais ilustradas para antecipar situações",
+    "Histórias sociais visuais.",
+    "Materiais com contornos e cores bem definidos",
+    "Materiais sensoriais e rotina estruturada.",
+    "Materiais sensoriais para autorregulação"
+  ],
+  "Altas Habilidades": [
+    "Desafios lógicos e enigmas matemáticos",
+    "Kits de experimentação (robótica, física, química)",
+    "Materiais de aprofundamento por interesse (ex: revistas científicas infantis)",
+    "Problemas desafiadores e kits de projeto.",
+    "Projetos interativos e colaborativos (maquetes, mapas mentais)",
+    "Recursos para produção criativa e autoral.",
+    "Recursos para produção de conteúdo autoral (livros, podcasts, vídeos)",
+    "Textos de aprofundamento e livros extras."
+  ],
+  "TDAH": [
+    "Checklists e organizadores gráficos.",
+    "Materiais divididos e visualmente limpos.",
+    "Textos com destaque e ilustrações."
+  ],
+  "Visual": [
+    "Descrição verbal de conteúdos visuais.",
+    "Diagramas em relevo (ex: mapas táteis, gráficos táteis)",
+    "Diagramas em relevo e materiais táteis.",
+    "Etiquetas em braille para organização dos materiais",
+    "Livros em Braille, texto ampliado e audiolivros.",
+    "Livros em braille e audiolivros",
+    "Materiais com alto contraste (papel preto e letras brancas)",
+    "Tablets configurados com leitor de tela",
+    "Textos ampliados (fonte 18pt ou superior)"
+  ],
+  "Múltipla": [
+    "Cadernos com folhas plastificadas reutilizáveis",
+    "Combinação de suportes auditivos, visuais e táteis.",
+    "Conteúdo em vários formatos simultâneos (visual, sonoro, tátil)",
+    "Histórias sociais em formato acessível.",
+    "Livros digitais multimodais (áudio, imagem, toque)",
+    "Materiais manipuláveis com feedback tátil e sonoro",
+    "Materiais multissensoriais personalizados.",
+    "Painéis interativos com diferentes formas de acesso"
+  ],
+  "Intelectual": [
+    "Cartazes e histórias ilustradas com linguagem simples.",
+    "Cartazes ilustrados com linguagem simples",
+    "Histórias sociais com apoio visual",
+    "Jogos educativos com foco em habilidades adaptativas",
+    "Materiais concretos e jogos educativos.",
+    "Material concreto (contas, blocos, figuras geométricas)",
+    "Sequências de atividades passo a passo com figuras",
+    "Textos com leitura fácil e apoio visual.",
+    "Textos com pictogramas ou linguagem acessível"
+  ],
+  "Auditiva": [
+    "Cadernos de sinais de Libras por área do conhecimento",
+    "Histórias em quadrinhos educativas com foco em contexto visual",
+    "Materiais visuais e legendados.",
+    "Material impresso com destaque em imagens e setas explicativas",
+    "Textos com apoio de imagens e escrita clara.",
+    "Textos com apoio visual e linguagem direta",
+    "Vídeos com Libras e glossários visuais.",
+    "Vídeos com legenda e interpretação em Libras"
+  ]
+}
