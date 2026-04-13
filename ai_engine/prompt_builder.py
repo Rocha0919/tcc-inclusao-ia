@@ -1,167 +1,98 @@
-from apps.catalog.models import ResourceItem
+import json
+import os
+from django.conf import settings
 from apps.recommendations.models import Feedback
 
 class PromptBuilder:
+
+    @staticmethod
+    def get_filtered_technologies(category):
+        path = os.path.join(settings.BASE_DIR, 'data', 'tecnologias.json')
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                full_data = json.load(f)
+                return full_data.get(category, [])
+        except Exception as e:
+            print("Erro ao ler JSON:", e)
+            return []
+
     @staticmethod
     def get_user_context(profile):
-        """
-        Transforma os dados biopsicossociais e o histórico de feedbacks em texto otimizado para a IA.
-        """
-        deficiencia = profile.primary_disability_category
         dados = profile.dynamic_data or {}
-        
-        # 1. Extraindo os dados do novo modelo Biopsicossocial
-        biologico = dados.get('biologico', {})
         perfil = dados.get('perfil_uso', {})
-        tec = dados.get('tecnologico', {})
-        
-        objetivo = perfil.get('objetivo_principal', 'Não especificado')
-        barreiras = perfil.get('barreiras_dia_a_dia', 'Não detalhado')
-        limitacoes = biologico.get('limitacoes_especificas', 'Não detalhado')
-        nivel_tec = tec.get('nivel_tecnologico', 'Não detalhado')
-        
-        # 2. Processando Feedbacks (O "Cérebro" do Aprendizado)
-        # Buscamos todos os feedbacks deste usuário
-        feedbacks = Feedback.objects.filter(session__profile=profile).select_related('resource')
-        
-        feedbacks_negativos = [f for f in feedbacks if f.score <= 2] # Notas 1 e 2
-        feedbacks_positivos = [f for f in feedbacks if f.score >= 4] # Notas 4 e 5
-        
-        # 2.1 Mapeando rejeições e os motivos (comentários)
-        itens_rejeitados = [f.resource.name for f in feedbacks_negativos]
-        comentarios_rejeicao = [f"- Sobre {f.resource.name}: {f.user_comment}" for f in feedbacks_negativos if f.user_comment]
-        
-        # 2.2 Mapeando acertos
-        itens_aprovados = [f.resource.name for f in feedbacks_positivos]
+        biologico = dados.get('biologico', {})
 
-        # 3. Construindo o texto para a IA
-        contexto = f"Deficiência Principal: {deficiencia}.\n"
-        contexto += f"Objetivo Principal do Usuário: {objetivo.upper()}.\n"
-        contexto += f"Limitações Físicas/Sensoriais: {limitacoes}.\n"
-        contexto += f"Barreiras enfrentadas no dia a dia: {barreiras}.\n"
-        contexto += f"Nível de Familiaridade com Tecnologia: {nivel_tec}.\n"
-        
-        # Adicionando instruções de Feedbacks Positivos
-        if feedbacks_positivos:
-            contexto += f"\n[HISTÓRICO DE ACERTOS]\n"
-            contexto += f"O usuário JÁ AVALIOU POSITIVAMENTE os seguintes itens no passado: {', '.join(itens_aprovados)}.\n"
-            contexto += "Se esses itens estiverem disponíveis na lista, RECOMENDE-OS NOVAMENTE, ou priorize itens com funcionamento muito semelhante.\n"
-            
-        # Adicionando instruções de Feedbacks Negativos e Comentários
-        if feedbacks_negativos:
-            contexto += f"\n[HISTÓRICO DE ERROS - REGRAS RÍGIDAS]\n"
-            contexto += f"NÃO RECOMENDE os seguintes itens (o usuário já testou e não gostou): {', '.join(itens_rejeitados)}.\n"
-            
-            if comentarios_rejeicao:
-                contexto += "ALÉM DISSO, o usuário deixou os seguintes comentários sobre o que não funcionou para ele:\n"
-                contexto += "\n".join(comentarios_rejeicao) + "\n"
-                contexto += "=> REGRA: Analise esses comentários e NÃO recomende nenhum outro recurso que possua a mesma característica que incomodou o usuário.\n"
-        
-        # Retornamos o contexto e o objetivo separadamente para usar no prompt
-        return contexto, objetivo
+        feedbacks = Feedback.objects.filter(session__profile=profile)
 
-    @staticmethod
-    def get_catalog_options(profile):
-        tag = profile.primary_disability_category
-        itens_filtrados = ResourceItem.objects.filter(metadata_tags__contains=[tag])
+        negativos = [
+            f"{f.resource.name}: {f.user_comment}"
+            for f in feedbacks
+            if f.score <= 2 and f.resource
+        ]
+
+        positivos = [
+            f"{f.resource.name}: {f.user_comment}"
+            for f in feedbacks
+            if f.score >= 3 and f.resource
+        ]
+
+        contexto = f"Objetivo: {perfil.get('objetivo_principal', 'Não informado')}.\n"
+        contexto += f"Barreiras: {perfil.get('barreiras_dia_a_dia', 'Não informado')}.\n"
+        contexto += f"Limitações: {biologico.get('limitacoes_especificas', 'Não informado')}.\n"
+
+        if negativos:
+            contexto += f"O usuário NÃO gostou de: {', '.join(negativos)}. Evite características similares.\n"
         
-        opcoes = {"TA": [], "MDA": []}
-        LIMITE_POR_CATEGORIA = 15 
-        
-        for item in itens_filtrados:
-            if item.category in opcoes and len(opcoes[item.category]) < LIMITE_POR_CATEGORIA:
-                descricao = item.description if item.description.strip() else "Sem descrição"
-                texto_item = f"- ID {item.id}: {item.name} ({descricao})"
-                opcoes[item.category].append(texto_item)
-                
-        return opcoes
+        if positivos:
+            contexto += f"O usuário GOSTOU de: {', '.join(positivos)}. Recomende novamente e procure por itens similares.\n"
+
+        return contexto
 
     @classmethod
     def build_final_prompt(cls, profile):
-        contexto_usuario, objetivo = cls.get_user_context(profile)
-        opcoes_catalogo = cls.get_catalog_options(profile)
-        
+        categoria = profile.primary_disability_category
+        opcoes = cls.get_filtered_technologies(categoria)
+        contexto = cls.get_user_context(profile)
+
         prompt = f"""
-    Você é um consultor especialista em Acessibilidade, Inclusão e Tecnologias Assistivas.
+Você é um Motor de Recomendação Especializado em Tecnologia Assistiva.
 
-    Sua tarefa é selecionar EXATAMENTE 6 recursos (3 TA + 3 MDA) com base no perfil do usuário.
+### DIRETRIZES DE COMPORTAMENTO:
+1. PERSONA: Atue como um analista técnico imparcial.
+2. VOZ: Use estritamente a TERCEIRA PESSOA. Proibido usar "eu", "meu", "acredito" ou "sugiro".
+3. FOCO: Analise as necessidades do perfil fornecido e correlacione com as opções disponíveis.
+4. OBJETIVIDADE: Evite adjetivos vagos. Seja específico sobre a funcionalidade técnica.
 
-    ---
+### DADOS DE ENTRADA:
+- CATEGORIA ANALISADA: {categoria.upper()}
+- OPÇÕES DISPONÍVEIS: {json.dumps(opcoes, ensure_ascii=False)}
+- PERFIL DO USUÁRIO (CONTEXTO): {contexto}
 
-    ### CONTEXTO DO USUÁRIO
-    {contexto_usuario}
+### TAREFA:
+Selecione as 3 tecnologias mais aderentes ao contexto do usuário. Para cada uma, gere:
+1. Definição técnica (O que é).
+2. Aplicabilidade prática (Para que serve).
+3. Nexo Causal: Justificativa técnica de como o recurso resolve uma barreira específica identificada no contexto do usuário.
+4. Query de busca otimizada para YouTube.
 
-    ---
+### REQUISITOS DO OUTPUT (JSON):
+- Retorne APENAS o objeto JSON, sem textos introdutórios ou conclusivos.
+- O campo "justificativa_geral" deve resumir o quadro clínico/funcional do usuário sob a ótica da tecnologia assistiva.
+- Certifique-se de que todas as strings estejam devidamente escapadas.
 
-    ### OPÇÕES DISPONÍVEIS
-
-    [Tecnologias Assistivas - TA]
-    {chr(10).join(opcoes_catalogo['TA']) or "Nenhuma disponível."}
-
-    [Materiais Didáticos Adaptados - MDA]
-    {chr(10).join(opcoes_catalogo['MDA']) or "Nenhuma disponível."}
-
-    ---
-
-    ### REGRAS OBRIGATÓRIAS (NÃO PODE VIOLAR)
-
-    - Você DEVE selecionar:
-    ✔ 3 itens da categoria TA
-    ✔ 3 itens da categoria MDA
-    - Total obrigatório: **6 itens**
-    - NÃO é permitido retornar menos ou mais que 6 itens
-    - NÃO repita itens
-    - NÃO invente IDs
-    - NÃO ignore categorias
-
-    ---
-
-    ### CRITÉRIOS DE ESCOLHA
-
-    - Priorize resolver as barreiras principais
-    - Respeite o nível tecnológico (iniciante → soluções simples)
-    - Respeite histórico de feedbacks (NÃO recomendar rejeitados)
-    - Priorize autonomia
-
-    ---
-
-    ### JUSTIFICATIVAS (OBRIGATÓRIO)
-
-    Cada justificativa deve seguir:
-
-    [Problema do usuário] + [Como o recurso resolve] + [Benefício prático]
-
-    Máximo: 2 linhas
-
-    ---
-
-    ### FORMATO DE SAÍDA (OBRIGATÓRIO)
-
-    Retorne APENAS JSON válido.
-
-    {{
-        "justificativa_geral": "Resumo focado no objetivo {objetivo.upper()}",
-        "itens_selecionados": [
-            {{"id": X, "categoria": "TA", "justificativa": "..."}},
-            {{"id": X, "categoria": "TA", "justificativa": "..."}},
-            {{"id": X, "categoria": "TA", "justificativa": "..."}},
-            {{"id": X, "categoria": "MDA", "justificativa": "..."}},
-            {{"id": X, "categoria": "MDA", "justificativa": "..."}},
-            {{"id": X, "categoria": "MDA", "justificativa": "..."}}
-        ]
-    }}
-
-    ---
-
-    ### VALIDAÇÃO FINAL (CRÍTICO)
-
-    Antes de responder, verifique:
-
-    - Existem exatamente 6 itens?
-    - Existem exatamente 3 "TA" e 3 "MDA"?
-    - Todos os IDs existem na lista?
-    - Nenhum item foi rejeitado anteriormente?
-
-    Se NÃO estiver correto, corrija antes de responder.
-    """
+### ESTRUTURA DO JSON:
+{{
+    "justificativa_geral": "Análise técnica do perfil do usuário em terceira pessoa...",
+    "tecnologias": [
+        {{
+            "nome": "Nome exato conforme a lista fornecida",
+            "o_que_e": "Definição concisa",
+            "para_que_serve": "Utilidade principal",
+            "justificativa_usuario": "Explicação de como esta ferramenta mitiga as limitações descritas no contexto (em terceira pessoa).",
+            "termo_youtube": "Busca recomendada"
+        }}
+    ]
+}}
+"""
+        print("Tamanho do prompt:", len(prompt))
         return prompt

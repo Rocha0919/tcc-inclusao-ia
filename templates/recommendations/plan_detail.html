@@ -1,36 +1,94 @@
 {% extends 'base.html' %}
 {% block content %}
 <section style="margin-top: 10px;">
+    
     <a href="{% url 'profile_detail' %}" style="color: var(--secondary); text-decoration: none; font-weight: bold;">
         &larr; Voltar para o Painel
     </a>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
         <h2 class="text-brand">Plano Recomendado</h2>
-        <span class="badge" style="font-size: 1rem;">Data: {{ session.created_at|date:"d/m/Y" }}</span>
+        <span class="badge" style="font-size: 1rem;">
+            Data: {{ session.created_at|date:"d/m/Y" }}
+        </span>
     </div>
     
+    <!-- 🧠 JUSTIFICATIVA GERAL -->
     <div class="card" style="margin: 20px 0; border-left: 5px solid var(--primary); background: #fdfdfd;">
         <h3 style="margin-bottom: 10px;">Análise da Inteligência Artificial</h3>
-        <p style="color: #444; font-size: 1.05rem; line-height: 1.7;">{{ session.ai_rationale }}</p>
+        <p style="color: #444; font-size: 1.05rem; line-height: 1.7;">
+            {{ session.justificativa_geral }}
+        </p>
     </div>
 
-    <h3 style="margin-top: 30px; margin-bottom: 15px;">Recursos Selecionados:</h3>
-    <div class="recommendation-grid">
-        {% for rec_item in session.recommended_items.all %}
-            <div class="card" style="border-top: 4px solid var(--primary);">
-             <span class="badge">{{ rec_item.resource.get_category_display }}</span>
-             <h4 style="margin: 10px 0;">{{ rec_item.resource.name }}</h4>
-        
-             <div style="background: #f4f7f9; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed var(--primary);">
-                <strong style="color: var(--primary);">🧠 Por que a IA recomendou:</strong>
-                <p style="font-size: 0.9rem; margin-top: 5px;">{{ rec_item.ai_justification }}</p>
-             </div>
+    <!-- TECNOLOGIAS -->
+    <h3 style="margin-top: 30px; margin-bottom: 15px;">Tecnologias Recomendadas:</h3>
 
-              <p style="font-size: 0.95rem; color: #555;">{{ rec_item.resource.description }}</p>
-             <a href="{% url 'feedback_create' session.id rec_item.resource.id %}" class="btn btn-outline" style="color: var(--primary); border-color: var(--primary); margin-top: 15px; text-align: center;">Avaliar</a>
+    <div class="recommendation-grid">
+        {% for tech in session.technologies.all %}
+        
+        <div class="card" style="border-top: 4px solid var(--primary);">
+
+            <h4 style="margin: 10px 0;">{{ tech.name }}</h4>
+            <!-- JUSTIFICATIVA -->
+            <div style="background: #f4f7f9; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed var(--primary);">
+                <strong style="color: var(--primary);">🧠 Por que a IA recomendou:</strong>
+                <p style="font-size: 0.9rem; margin-top: 5px;">
+                    {{ tech.justification }}
+                </p>
             </div>
+
+            <!-- BOTÕES -->
+            <a href="{% url 'feedback_create' session.id tech.id %}" 
+               class="btn btn-outline" 
+               style="color: var(--primary); border-color: var(--primary); margin-top: 10px; text-align: center;">
+               Avaliar
+            </a>
+
+            <a href="{% url 'technology_detail' tech.id %}" 
+               class="btn btn-outline" 
+               style="color: var(--primary); border-color: var(--primary); margin-top: 10px; text-align: center;">
+               Ver detalhes e tutorial →
+            </a>
+
+        </div>
+
+        {% empty %}
+            <p>Nenhuma tecnologia foi gerada pela IA.</p>
         {% endfor %}
     </div>
+
+    <hr>
+
+    <!-- PROMPT -->
+    <h3>🧠 Prompt enviado para IA</h3>
+
+    {% if prompt %}
+        <button onclick="togglePrompt()">Mostrar / Ocultar</button>
+
+        <div id="promptBox" style="display:none;">
+            <pre style="
+                background:#111;
+                color:#0f0;
+                padding:15px;
+                border-radius:8px;
+                max-height:400px;
+                overflow:auto;
+                white-space: pre-wrap;
+            ">
+{{ prompt }}
+            </pre>
+        </div>
+    {% else %}
+        <p>Prompt não disponível.</p>
+    {% endif %}
+
+    <script>
+    function togglePrompt() {
+        const box = document.getElementById("promptBox");
+        box.style.display = box.style.display === "none" ? "block" : "none";
+    }
+    </script>
+
 </section>
 {% endblock %}

@@ -38,7 +38,6 @@ INSTALLED_APPS = [
 
     # Apps do projeto
     'apps.accounts',
-    'apps.catalog',
     'apps.recommendations',
 ]
 

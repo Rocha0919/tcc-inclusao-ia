@@ -61,7 +61,7 @@ def profile_detail(request):
     if not profile:
         return redirect('profile_create')
         
-    sessoes_passadas = profile.recommendation_sessions.all().order_by('-created_at')
+    sessoes_passadas = profile.recommendationsession_set.all().order_by('-created_at')
     return render(request, 'accounts/profile_detail.html', {
         'profile': profile,
         'sessoes': sessoes_passadas
