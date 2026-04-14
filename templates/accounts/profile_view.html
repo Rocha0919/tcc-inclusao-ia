@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    /* CSS Manual focado em leitura e acessibilidade */
+    .profile-card {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 40px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        font-family: sans-serif;
+    }
+    .profile-header {
+        text-align: center;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    .profile-header h1 {
+        color: #333;
+        margin: 0;
+        font-size: 2rem;
+    }
+    .profile-header p {
+        color: #666;
+        margin-top: 10px;
+    }
+    .section-title {
+        color: #0056b3;
+        font-size: 1.3rem;
+        margin-top: 35px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        background-color: #f9fbfd;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #0056b3;
+    }
+    .info-item {
+        margin-bottom: 5px;
+    }
+    .info-label {
+        display: block;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #777;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+    .info-value {
+        font-size: 1.1rem;
+        color: #222;
+        margin: 0;
+        line-height: 1.5;
+    }
+    .action-bar {
+        margin-top: 40px;
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    .btn-edit {
+        display: inline-block;
+        background-color: #0056b3;
+        color: #ffffff;
+        padding: 14px 30px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+    .btn-edit:hover {
+        background-color: #004494;
+    }
+</style>
+
+<div class="profile-card">
+    <div class="profile-header">
+        <h1>Meu Perfil Assistivo</h1>
+        <p>Olá, {{ usuario.username|title }}! Estas são as informações usadas pela IA para recomendar suas tecnologias.</p>
+    </div>
+
+    <h2 class="section-title">👤 Informações Principais</h2>
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="info-label">Categoria da Deficiência</span>
+            <p class="info-value">{{ categoria_atual|default:"Não informado" }}</p>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Limitações Específicas</span>
+            <p class="info-value">{{ biologico.limitacoes_especificas|default:"Nenhuma limitação específica detalhada." }}</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">🎯 Objetivos e Barreiras</h2>
+    <div class="info-grid" style="border-left-color: #28a745;">
+        <div class="info-item">
+            <span class="info-label">Foco Principal Atual</span>
+            <p class="info-value" style="text-transform: capitalize;">{{ perfil_uso.objetivo_principal|default:"Não informado" }}</p>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Barreiras no Dia a Dia</span>
+            <p class="info-value">{{ perfil_uso.barreiras_dia_a_dia|default:"Não informado" }}</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">💻 Perfil Tecnológico</h2>
+    <div class="info-grid" style="border-left-color: #17a2b8;">
+        <div class="info-item">
+            <span class="info-label">Nível de Afinidade com Tecnologia</span>
+            <p class="info-value">{{ tecnologico.nivel_tecnologico|default:"Não informado" }}</p>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <a href="{% url 'profile_edit' %}" class="btn-edit">✏️ Editar Minhas Informações</a>
+    </div>
+</div>
+
+{% endblock %}
