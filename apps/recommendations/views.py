@@ -29,12 +29,17 @@ def generate_plan(request):
 @login_required
 def plan_detail(request, session_id):
     session = get_object_or_404(RecommendationSession, id=session_id, profile__user=request.user)
-    
     prompt = request.session.get('last_prompt')
+    
+    # Separa as tecnologias geradas por modelo
+    llama_techs = session.technologies.filter(ai_model='llama3')
+    mistral_techs = session.technologies.filter(ai_model='mistral')
     
     return render(request, 'recommendations/plan_detail.html', {
         'session': session,
-        'prompt': prompt
+        'prompt': prompt,
+        'llama_techs': llama_techs,
+        'mistral_techs': mistral_techs
     })
 
 def technology_detail(request, tech_id):

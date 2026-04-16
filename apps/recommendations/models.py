@@ -17,6 +17,7 @@ class GeneratedTechnology(models.Model):
     purpose = models.TextField()
     justification = models.TextField() # Personalizada para o usuário
     video_search_term = models.CharField(max_length=255)
+    ai_model = models.CharField(max_length=50, default='llama3')
     
     # Removi score e user_comment daqui para evitar duplicidade com a tabela Feedback
 

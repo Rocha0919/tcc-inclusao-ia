@@ -19,32 +19,31 @@ class PromptBuilder:
     @staticmethod
     def get_user_context(profile):
         dados = profile.dynamic_data or {}
-        perfil = dados.get('perfil_uso', {})
         biologico = dados.get('biologico', {})
+        psicologico = dados.get('psicologico', {})
+        social = dados.get('social', {})
+        tecnologico = dados.get('tecnologico', {})
 
         feedbacks = Feedback.objects.filter(session__profile=profile)
 
-        negativos = [
-            f"{f.resource.name}: {f.user_comment}"
-            for f in feedbacks
-            if f.score <= 2 and f.resource
-        ]
+        negativos = [f"{f.resource.name}: {f.user_comment}" for f in feedbacks if f.score <= 2 and f.resource]
+        positivos = [f"{f.resource.name}: {f.user_comment}" for f in feedbacks if f.score >= 3 and f.resource]
 
-        positivos = [
-            f"{f.resource.name}: {f.user_comment}"
-            for f in feedbacks
-            if f.score >= 3 and f.resource
-        ]
-
-        contexto = f"Objetivo: {perfil.get('objetivo_principal', 'Não informado')}.\n"
-        contexto += f"Barreiras: {perfil.get('barreiras_dia_a_dia', 'Não informado')}.\n"
-        contexto += f"Limitações: {biologico.get('limitacoes_especificas', 'Não informado')}.\n"
+        # Montando o contexto detalhado para a IA
+        contexto = "--- PERFIL BIOPSICOSSOCIAL DO USUÁRIO ---\n"
+        contexto += f"[Condição Biológica]\n- Limitações Físicas: {biologico.get('limitacoes_especificas', 'Não informado')}\n- Severidade: {biologico.get('grau_severidade', 'Não informado')}\n\n"
+        
+        contexto += f"[Perfil Psicológico/Cognitivo]\n- Estilo de Aprendizado: {psicologico.get('estilo_aprendizado', 'Não informado')}\n- Desafios Cognitivos: {psicologico.get('barreiras_cognitivas', 'Não informado')}\n\n"
+        
+        contexto += f"[Contexto Social e Objetivos]\n- Objetivo Atual: {social.get('objetivo_principal', 'Não informado')}\n- Barreiras no Dia a Dia: {social.get('barreiras_dia_a_dia', 'Não informado')}\n- Capacidade Financeira: {social.get('orcamento', 'Não informado')} (priorizar tecnologias que respeitem este orçamento)\n\n"
+        
+        contexto += f"[Ambiente Tecnológico]\n- Nível de Proficiência: {tecnologico.get('nivel_tecnologico', 'Não informado')} (recomendar interfaces compatíveis com esta curva de aprendizado)\n- Dispositivos Utilizados: {tecnologico.get('dispositivos_disponiveis', 'Não informado')}\n- Ferramentas Prévias: {tecnologico.get('ferramentas_previas', 'Nenhuma')}\n\n"
 
         if negativos:
-            contexto += f"O usuário NÃO gostou de: {', '.join(negativos)}. Evite características similares.\n"
+            contexto += f"⚠️ ATENÇÃO - Histórico Negativo (Evitar similares): {', '.join(negativos)}.\n"
         
         if positivos:
-            contexto += f"O usuário GOSTOU de: {', '.join(positivos)}. Recomende novamente e procure por itens similares.\n"
+            contexto += f"✅ Histórico Positivo (Priorizar similares): {', '.join(positivos)}.\n"
 
         return contexto
 

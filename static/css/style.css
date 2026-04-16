@@ -1,137 +1,257 @@
-/* Configurações Globais e Variáveis */
+/* static/css/style.css
+   Padrão WCAG 2.1 - Nível AA 
+*/
+
 :root {
-    --primary: #003D6C;
-    --primary-dark: #002542;
-    --secondary: #6c757d;
-    --accent: #f39c12;
-    --success: #28a745;
-    --bg: #f4f7f9;
-    --white: #ffffff;
-    --text-dark: #333333;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    /* Paleta de Cores com Contraste Acessível (Mínimo 4.5:1) */
+    --primary: #1a56db;       /* Azul Principal */
+    --primary-hover: #1e40af;
+    --success: #057a55;       /* Verde Acessível */
+    --text-main: #1a202c;     /* Quase preto para leitura */
+    --text-muted: #4a5568;
+    --bg-light: #ffffff;
+    --bg-alt: #f7fafc;
+    --border-color: #e2e8f0;
+    
+    /* Sistema de Espaçamento e Bordas */
     --border-radius: 8px;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    
+    /* Tipografia Acessível */
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Reset de Acessibilidade */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    /* Permite que o usuário aumente a fonte sem quebrar o layout */
+    font-size: 100%; 
+}
 
 body {
-    font-family: 'Inter', system-ui, sans-serif;
-    line-height: 1.6;
-    background-color: var(--bg);
-    color: var(--text-dark);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    font-family: var(--font-main);
+    line-height: 1.6; /* WCAG recomenda entre 1.5 e 2.0 */
+    color: var(--text-main);
+    background-color: var(--bg-light);
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Layout Principal */
+/* --- FOCO ACESSÍVEL (CRÍTICO PARA WCAG) --- */
+:focus {
+    outline: 3px solid #fbbf24; /* Foco amarelo de alto contraste */
+    outline-offset: 2px;
+}
+
+/* Esconder conteúdo apenas visualmente (para leitores de tela) */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* --- LAYOUT --- */
 .container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 1.5rem;
 }
 
-/* Header & Nav */
+.py-4 { padding-top: 2rem; padding-bottom: 2rem; }
+
+/* --- HEADER / TOPBAR --- */
 .topbar {
-    background: var(--primary);
-    color: var(--white);
+    background: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
     padding: 1rem 0;
-    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-.topbar .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.logo-text-main {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-decoration: none;
 }
 
-.logo { font-size: 1.5rem; font-weight: bold; text-decoration: none; color: var(--white); }
-
-.nav-links { display: flex; gap: 15px; }
-
-/* Botões Customizados */
+/* --- BOTÕES --- */
 .btn {
-    display: inline-block;
-    padding: 10px 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
     border-radius: var(--border-radius);
     text-decoration: none;
-    font-weight: 600;
+    transition: all 0.2s;
     cursor: pointer;
-    border: none;
-    transition: all 0.2s ease;
-}
-
-.btn-primary { background: var(--primary); color: var(--white); }
-.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
-
-.btn-outline { border: 2px solid var(--white); color: var(--white); }
-
-/* Grid de Cards (Recomendações) */
-.recommendation-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 30px;
-}
-
-.card {
-    background: var(--white);
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.badge {
-    display: inline-block;
-    padding: 4px 8px;
-    background: #e1e8ed;
-    color: var(--primary);
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-/* Formulários */
-.form-group { margin-bottom: 20px; }
-.form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
-.form-control {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: var(--border-radius);
+    border: 2px solid transparent;
     font-size: 1rem;
 }
 
-/* Footer */
-footer {
-    background: #222;
-    color: var(--white);
-    text-align: center;
-    padding: 2rem 0;
-    margin-top: auto;
+.btn-primary {
+    background-color: var(--primary);
+    color: #ffffff !important;
 }
 
-/* Estilo extra para inputs gerados pelo Django no signup */
-input {
-    display: block;
-    width: 100%;
-    margin-top: 5px;
+.btn-primary:hover {
+    background-color: var(--primary-hover);
 }
 
+.btn-outline {
+    background-color: transparent;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline:hover {
+    background-color: #eff6ff;
+}
+
+/* --- ALERTAS (MENSAGENS DJANGO) --- */
 .alert {
-    padding: 15px;
-    margin-bottom: 20px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
     border-radius: var(--border-radius);
+    border-left: 5px solid;
     font-weight: 500;
 }
 
-.alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-.alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-.alert-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+.alert-success { background: #def7ec; border-color: var(--success); color: #03543f; }
+.alert-error, .alert-danger { background: #fde8e8; border-color: #9b1c1c; color: #9b1c1c; }
+.alert-info { background: #e1effe; border-color: var(--primary); color: #1e429f; }
 
-/* HR simples */
-hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+/* --- FORMS ACESSÍVEIS --- */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+/* --- FOOTER --- */
+footer {
+    background: var(--bg-alt);
+    padding: 3rem 0;
+    margin-top: 4rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    .hero-wrapper { grid-template-columns: 1fr; text-align: center; }
+}
+
+/* Estilos baseados na imagem de referência */
+    .page-container {
+        max-width: 800px;
+        margin: 40px auto; /* Centraliza a coluna, mas o texto fica à esquerda */
+        padding: 0 20px;
+        font-family: sans-serif;
+        color: #1f2937;
+    }
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+        color: #1f2937;
+    }
+    .breadcrumb {
+        color: #4b5563;
+        margin-bottom: 40px;
+        font-size: 1rem;
+    }
+    .breadcrumb strong {
+        color: #1f2937;
+    }
+    .form-group {
+        margin-bottom: 25px;
+    }
+    .form-label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 1rem;
+        color: #1f2937;
+    }
+    /* Estiliza os inputs gerados pelo Django automaticamente */
+    .form-group input[type="text"],
+    .form-group input[type="password"],
+    .form-group input[type="email"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #1f2937; /* Borda escura igual à imagem */
+        border-radius: 4px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        background-color: #fff;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        outline: 2px solid #2563eb;
+        border-color: transparent;
+    }
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 30px;
+        font-size: 0.95rem;
+    }
+    .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #2563eb; /* Deixa o check azul */
+    }
+    .checkbox-group a {
+        color: #2563eb; /* Azul dos links */
+        text-decoration: underline;
+        font-weight: 600;
+    }
+    .btn-primary {
+        background-color: #2563eb; /* Azul do botão */
+        color: #ffffff;
+        border: none;
+        padding: 14px 40px;
+        font-size: 1rem;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .btn-primary:hover {
+        background-color: #1d4ed8;
+    }

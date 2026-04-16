@@ -26,17 +26,25 @@ def profile_create(request):
     if request.method == 'POST':
         categoria_principal = request.POST.get('primary_disability_category')
         
+        # Estruturando o Mapeamento Biopsicossocial Completo
         mapeamento_json = {
             "biologico": {
-                "limitacoes_especificas": request.POST.get('limitacoes_especificas', 'Nenhuma declarada')
+                "limitacoes_especificas": request.POST.get('limitacoes_especificas', 'Nenhuma declarada'),
+                "grau_severidade": request.POST.get('grau_severidade', 'Não informado')
             },
-            "perfil_uso": {
+            "psicologico": {
+                "estilo_aprendizado": request.POST.get('estilo_aprendizado', 'Não informado'),
+                "barreiras_cognitivas": request.POST.get('barreiras_cognitivas', 'Nenhuma declarada')
+            },
+            "social": {
                 "objetivo_principal": request.POST.get('objetivo_principal'),
-                "barreiras_dia_a_dia": request.POST.get('barreiras')
+                "barreiras_dia_a_dia": request.POST.get('barreiras'),
+                "orcamento": request.POST.get('orcamento', 'gratuito')
             },
             "tecnologico": {
+                "dispositivos_disponiveis": request.POST.get('dispositivos', 'Não informado'),
                 "nivel_tecnologico": request.POST.get('nivel_tecnologico'),
-                "ferramentas_previas": request.POST.get('ferramentas_previas')
+                "ferramentas_previas": request.POST.get('ferramentas_previas', 'Nenhuma')
             }
         }
 
@@ -51,8 +59,7 @@ def profile_create(request):
         messages.success(request, 'Seu perfil biopsicossocial foi mapeado com sucesso!')
         return redirect('profile_detail')
 
-    categorias = BiopsychosocialProfile.DISABILITY_CHOICES 
-    
+    categorias = BiopsychosocialProfile.DISABILITY_CHOICES
     return render(request, 'accounts/profile_create.html', {'categorias': categorias})
 
 @login_required

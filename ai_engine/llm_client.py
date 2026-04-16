@@ -6,12 +6,12 @@ logger = logging.getLogger(__name__)
 
 class LLMClient:
     OLLAMA_URL = "http://host.docker.internal:11434/api/generate"
-    MODEL_NAME = "llama3"
+    # Removemos a constante MODEL_NAME fixa para passar dinamicamente
 
     @classmethod
-    def gerar_recomendacao(cls, prompt_text):
+    def gerar_recomendacao(cls, prompt_text, model_name="llama3"):
         payload = {
-            "model": cls.MODEL_NAME,
+            "model": model_name, # Agora recebe o modelo por parâmetro
             "prompt": prompt_text,
             "stream": False,
             "options": {
@@ -20,7 +20,7 @@ class LLMClient:
         }
 
         try:
-            print("🔵 Enviando requisição para IA...")
+            print(f"🔵 Enviando requisição para IA ({model_name})...")
 
             resposta = requests.post(
                 cls.OLLAMA_URL,
@@ -28,32 +28,26 @@ class LLMClient:
                 timeout=300
             )
 
-            print("🟢 Status:", resposta.status_code)
-
+            print(f"🟢 Status ({model_name}):", resposta.status_code)
             resposta.raise_for_status()
 
             dados = resposta.json()
             resposta_texto = dados.get("response")
 
-            print("🟡 Resposta bruta da IA:")
-            print(resposta_texto)
-
             if not resposta_texto:
-                logger.error("Resposta vazia da IA.")
+                logger.error(f"Resposta vazia da IA ({model_name}).")
                 return None
 
-            # Tentativa direta
             try:
                 return json.loads(resposta_texto)
             except json.JSONDecodeError:
-                print("⚠️ JSON direto falhou, tentando extrair...")
+                print(f"⚠️ JSON direto falhou no {model_name}, tentando extrair...")
 
-            # Extrair JSON do meio do texto
             inicio = resposta_texto.find("{")
             fim = resposta_texto.rfind("}") + 1
 
             if inicio == -1 or fim == -1:
-                logger.error(f"Nenhum JSON encontrado.\nTexto: {resposta_texto}")
+                logger.error(f"Nenhum JSON encontrado ({model_name}).\nTexto: {resposta_texto}")
                 return None
 
             json_texto = resposta_texto[inicio:fim]
@@ -62,16 +56,12 @@ class LLMClient:
                 resultado_json = json.loads(json_texto)
                 return resultado_json
             except Exception as e:
-                print("❌ Erro ao parsear JSON:", e)
-                print("❌ Conteúdo recebido:", json_texto)
+                print(f"❌ Erro ao parsear JSON ({model_name}):", e)
                 return None
 
         except requests.exceptions.RequestException as e:
-            logger.error(
-                f"Erro de conexão com o Ollama: {e}"
-            )
+            logger.error(f"Erro de conexão com o Ollama: {e}")
             return None
-
         except Exception as e:
             logger.error(f"Erro inesperado: {e}")
             return None

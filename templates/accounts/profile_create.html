@@ -1,73 +1,277 @@
 {% extends 'base.html' %}
 {% block content %}
-<div style="display: flex; justify-content: center; padding: 30px 15px;">
-    <div class="card" style="width: 100%; max-width: 800px; padding: 40px;">
-        <div style="border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 30px;">
-            <h2 style="color: var(--primary); margin: 0;">Mapeamento Biopsicossocial</h2>
-            <p style="color: #666; margin-top: 10px; font-size: 0.95rem;">
-                Estes dados formarão o seu perfil de aprendizagem. Quanto mais detalhes você fornecer, mais precisas serão as tecnologias e materiais recomendados pela nossa Inteligência Artificial.
-            </p>
+<style>
+
+    /* Estilos baseados na imagem de referência */
+
+    .page-container {
+
+        max-width: 800px;
+
+        margin: 40px auto; /* Centraliza a coluna, mas o texto fica à esquerda */
+
+        padding: 0 20px;
+
+        font-family: sans-serif;
+
+        color: #1f2937;
+
+    }
+
+    .page-title {
+
+        font-size: 2.2rem;
+
+        font-weight: 800;
+
+        margin-bottom: 8px;
+
+        color: #1f2937;
+
+    }
+
+    .breadcrumb {
+
+        color: #4b5563;
+
+        margin-bottom: 40px;
+
+        font-size: 1rem;
+
+    }
+
+    .breadcrumb strong {
+
+        color: #1f2937;
+
+    }
+
+    .form-group {
+
+        margin-bottom: 25px;
+
+    }
+
+    .form-label {
+
+        display: block;
+
+        font-weight: 700;
+
+        margin-bottom: 8px;
+
+        font-size: 1rem;
+
+        color: #1f2937;
+
+    }
+
+    /* Estiliza os inputs gerados pelo Django automaticamente */
+
+    .form-group input[type="text"],
+
+    .form-group input[type="password"],
+
+    .form-group input[type="email"],
+
+    .form-group input[type="number"],
+
+    .form-group select,
+
+    .form-group textarea {
+
+        width: 100%;
+
+        padding: 14px;
+
+        border: 1px solid #1f2937; /* Borda escura igual à imagem */
+
+        border-radius: 4px;
+
+        font-size: 1rem;
+
+        box-sizing: border-box;
+
+        background-color: #fff;
+
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+
+        outline: 2px solid #2563eb;
+
+        border-color: transparent;
+
+    }
+
+    .checkbox-group {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        margin-bottom: 30px;
+
+        font-size: 0.95rem;
+
+    }
+
+    .checkbox-group input[type="checkbox"] {
+
+        width: 18px;
+
+        height: 18px;
+
+        accent-color: #2563eb; /* Deixa o check azul */
+
+    }
+
+    .checkbox-group a {
+
+        color: #2563eb; /* Azul dos links */
+
+        text-decoration: underline;
+
+        font-weight: 600;
+
+    }
+
+    .btn-primary {
+
+        background-color: #2563eb; /* Azul do botão */
+
+        color: #ffffff;
+
+        border: none;
+
+        padding: 14px 40px;
+
+        font-size: 1rem;
+
+        font-weight: 700;
+
+        border-radius: 6px;
+
+        cursor: pointer;
+
+        transition: background-color 0.2s;
+
+    }
+
+    .btn-primary:hover {
+
+        background-color: #1d4ed8;
+
+    }
+
+</style>
+<div class="page-container">
+    <h1 class="page-title">Mapeamento Biopsicossocial</h1>
+    <p style="color: #4b5563; margin-bottom: 40px; font-size: 1rem; line-height: 1.5;">
+        Estes dados formarão o seu perfil de aprendizagem. Quanto mais detalhes você fornecer, mais precisas serão as tecnologias e materiais recomendados pela nossa Inteligência Artificial.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <h3 style="font-size: 1.3rem; margin-bottom: 20px; color: #1f2937;">1. Condição Física e Biológica</h3>
+        
+        <div class="form-group">
+            <label class="form-label">Categoria de Deficiência Principal (Obrigatório)</label>
+            <select name="primary_disability_category" required>
+                <option value="">Selecione...</option>
+                {% for sigla, nome in categorias %}
+                    <option value="{{ sigla }}">{{ nome }}</option>
+                {% endfor %}
+            </select>
         </div>
 
-        <form method="POST">
-            {% csrf_token %}
-            
-            <h3 style="color: var(--secondary); margin-bottom: 15px; font-size: 1.2rem;">1. Condição e Necessidades</h3>
-            
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Categoria de Deficiência Principal <span style="color: red;">*</span></label>
-                <select name="primary_disability_category" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;" required>
-                    <option value="">Selecione...</option>
-                    {% for sigla, nome in categorias %}
-                        <option value="{{ sigla }}">{{ nome }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Grau de Severidade/Impacto no Dia a Dia</label>
+            <select name="grau_severidade">
+                <option value="">Selecione...</option>
+                <option value="leve">Leve (Impacta, mas tenho muita autonomia)</option>
+                <option value="moderado">Moderado (Preciso de apoio constante em algumas áreas)</option>
+                <option value="severo">Severo (Dependência significativa de adaptações/terceiros)</option>
+            </select>
+        </div>
 
-            <div class="form-group" style="margin-bottom: 30px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Possui limitações motoras ou sensoriais específicas?</label>
-                <input type="text" name="limitacoes_especificas" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;" placeholder="Ex: Dificuldade motora fina nas mãos, baixa visão severa, fotofobia...">
-                <small style="color: #888;">Deixe em branco se não houver.</small>
-            </div>
+        <div class="form-group" style="margin-bottom: 40px;">
+            <label class="form-label">Possui limitações motoras ou sensoriais específicas?</label>
+            <input type="text" name="limitacoes_especificas" placeholder="Ex: Fadiga rápida, tremores nas mãos, baixa visão severa...">
+            <small style="color: #6b7280; display: block; margin-top: 5px;">Detalhes físicos ajudam a IA a evitar ferramentas inadequadas.</small>
+        </div>
 
-            <h3 style="color: var(--secondary); margin-bottom: 15px; font-size: 1.2rem;">2. Objetivos e Autonomia</h3>
+        <h3 style="font-size: 1.3rem; margin-bottom: 20px; color: #1f2937;">2. Aspectos Cognitivos e Comportamentais</h3>
 
-<div class="form-group" style="margin-bottom: 20px;">
-    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Qual o seu foco principal no momento? <span style="color: red;">*</span></label>
-    <select name="objetivo_principal" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;" required>
-        <option value="">Selecione...</option>
-        <option value="estudo">Estudo (Escola, Faculdade, Concursos)</option>
-        <option value="trabalho">Trabalho (Produtividade, adaptação de home office)</option>
-        <option value="vida_diaria">Vida Diária (Autonomia em casa, comunicação, lazer)</option>
-        <option value="reabilitacao">Reabilitação / Treinamento</option>
-    </select>
-</div>
+        <div class="form-group">
+            <label class="form-label">Como você prefere absorver informações?</label>
+            <select name="estilo_aprendizado">
+                <option value="">Selecione...</option>
+                <option value="visual">Visual (Imagens, vídeos, gráficos)</option>
+                <option value="auditivo">Auditivo (Áudios, leitores de tela, podcasts)</option>
+                <option value="cinestesico">Prático (Tocando, testando, interação física)</option>
+            </select>
+        </div>
 
-<div class="form-group" style="margin-bottom: 30px;">
-    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Descreva as maiores barreiras no seu dia a dia <span style="color: red;">*</span></label>
-    <textarea name="barreiras" rows="4" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem; resize: vertical;" 
-              placeholder="Ex: Tenho dificuldade para usar o mouse comum, não consigo ouvir vídeos sem legenda, preciso de ajuda para organizar minhas tarefas diárias..." required></textarea>
-</div>
+        <div class="form-group" style="margin-bottom: 40px;">
+            <label class="form-label">Existe alguma barreira cognitiva ou emocional? (Opcional)</label>
+            <input type="text" name="barreiras_cognitivas" placeholder="Ex: Dificuldade de concentração, sensibilidade a ruídos, dislexia...">
+        </div>
 
-            <h3 style="color: var(--secondary); margin-bottom: 15px; font-size: 1.2rem;">3. Contexto Tecnológico</h3>
+        <h3 style="font-size: 1.3rem; margin-bottom: 20px; color: #1f2937;">3. Objetivos e Contexto Social</h3>
 
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Qual sua familiaridade com tecnologias assistivas? <span style="color: red;">*</span></label>
-                <select name="nivel_tecnologico" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;" required>
-                    <option value="">Selecione...</option>
-                    <option value="iniciante">Iniciante (Preciso de ferramentas muito simples)</option>
-                    <option value="intermediario">Intermediário (Consigo instalar e configurar algumas coisas)</option>
-                    <option value="avancado">Avançado (Tenho facilidade com softwares complexos)</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Qual o seu foco principal no momento? (Obrigatório)</label>
+            <select name="objetivo_principal" required>
+                <option value="">Selecione...</option>
+                <option value="estudo">Estudo (Escola, Faculdade, Concursos)</option>
+                <option value="trabalho">Trabalho (Produtividade, adaptação de home office)</option>
+                <option value="vida_diaria">Vida Diária (Autonomia em casa, comunicação, lazer)</option>
+                <option value="reabilitacao">Reabilitação / Treinamento</option>
+            </select>
+        </div>
 
-            <div class="form-group" style="margin-bottom: 35px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Já utiliza alguma ferramenta que funciona bem para você?</label>
-                <input type="text" name="ferramentas_previas" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;" placeholder="Ex: Leitor de telas NVDA, Mouse adaptado, Fontes grandes...">
-            </div>
+        <div class="form-group" style="margin-bottom: 40px;">
+            <label class="form-label">Descreva as maiores barreiras no seu dia a dia (Obrigatório)</label>
+            <textarea name="barreiras" rows="3" placeholder="Ex: Tenho dificuldade para ler textos longos no computador do trabalho..." required></textarea>
+        </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem;">Salvar Mapeamento e Ir para o Painel</button>
-        </form>
-    </div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 20px; color: #1f2937;">4. Ambiente Tecnológico</h3>
+
+        <div class="form-group">
+            <label class="form-label">Dispositivos disponíveis para uso diário</label>
+            <input type="text" name="dispositivos" placeholder="Ex: Smartphone Android, Notebook Windows, iPad...">
+            <small style="color: #6b7280; display: block; margin-top: 5px;">Fundamental para não recomendarmos um software de iOS para quem usa Android.</small>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Qual sua familiaridade com tecnologias assistivas? (Obrigatório)</label>
+            <select name="nivel_tecnologico" required>
+                <option value="">Selecione...</option>
+                <option value="iniciante">Iniciante (Preciso de ferramentas muito simples)</option>
+                <option value="intermediario">Intermediário (Consigo instalar e configurar algumas coisas)</option>
+                <option value="avancado">Avançado (Tenho facilidade com softwares complexos)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Disponibilidade financeira para aquisição</label>
+            <select name="orcamento">
+                <option value="gratuito">Busco apenas opções gratuitas ou de código aberto</option>
+                <option value="baixo_custo">Posso pagar por opções de baixo custo (assinaturas baratas)</option>
+                <option value="sem_restricao">Sem restrições / Minha empresa ou plano de saúde cobrem</option>
+            </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 40px;">
+            <label class="form-label">Já utiliza alguma ferramenta que funciona bem para você?</label>
+            <input type="text" name="ferramentas_previas" placeholder="Ex: Leitor de telas NVDA, Mouse adaptado...">
+        </div>
+
+        <button type="submit" class="btn-primary">Salvar e Ir para o Painel</button>
+    </form>
 </div>
 {% endblock %}

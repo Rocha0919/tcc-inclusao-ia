@@ -1,23 +1,110 @@
 {% extends 'base.html' %}
 {% block content %}
-<div style="display: flex; justify-content: center; align-items: center; padding-top: 40px;">
-    <div class="card" style="width: 100%; max-width: 400px; padding: 30px;">
-        <h2 style="margin-bottom: 20px; color: var(--primary); text-align: center;">Acessar Conta</h2>
+<style>
+    /* Estilos baseados na imagem de referência */
+    .page-container {
+        max-width: 800px;
+        margin: 40px auto; /* Centraliza a coluna, mas o texto fica à esquerda */
+        padding: 0 20px;
+        font-family: sans-serif;
+        color: #1f2937;
+    }
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+        color: #1f2937;
+    }
+    .breadcrumb {
+        color: #4b5563;
+        margin-bottom: 40px;
+        font-size: 1rem;
+    }
+    .breadcrumb strong {
+        color: #1f2937;
+    }
+    .form-group {
+        margin-bottom: 25px;
+    }
+    .form-label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 1rem;
+        color: #1f2937;
+    }
+    /* Estiliza os inputs gerados pelo Django automaticamente */
+    .form-group input[type="text"],
+    .form-group input[type="password"],
+    .form-group input[type="email"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #1f2937; /* Borda escura igual à imagem */
+        border-radius: 4px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        background-color: #fff;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        outline: 2px solid #2563eb;
+        border-color: transparent;
+    }
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 30px;
+        font-size: 0.95rem;
+    }
+    .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #2563eb; /* Deixa o check azul */
+    }
+    .checkbox-group a {
+        color: #2563eb; /* Azul dos links */
+        text-decoration: underline;
+        font-weight: 600;
+    }
+    .btn-primary {
+        background-color: #2563eb; /* Azul do botão */
+        color: #ffffff;
+        border: none;
+        padding: 14px 40px;
+        font-size: 1rem;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .btn-primary:hover {
+        background-color: #1d4ed8;
+    }
+</style>
+<div class="page-container">
+    <h1 class="page-title">Fazer Login</h1>
+    <div class="breadcrumb">Cadastro > <strong>Login</strong></div>
+    
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                    <p style="color: #dc2626; font-size: 0.85rem; margin-top: 5px; font-weight: bold;">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
         
-        <form method="POST">
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">{{ field.label }}</label>
-                    {{ field }}
-                </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px;">Entrar</button>
-        </form>
-        
-        <p style="margin-top: 20px; text-align: center; font-size: 0.95rem;">
-            Ainda não tem conta? <a href="{% url 'signup' %}" style="color: var(--primary); font-weight: bold;">Cadastre-se aqui</a>
-        </p>
-    </div>
+        <button type="submit" class="btn-primary">Entrar</button>
+    </form>
+    
+    <p style="margin-top: 30px; font-size: 0.95rem; color: #4b5563;">
+        Ainda não tem conta? <a href="{% url 'signup' %}" style="color: #2563eb; font-weight: 700; text-decoration: underline;">Cadastre-se aqui</a>
+    </p>
 </div>
 {% endblock %}
