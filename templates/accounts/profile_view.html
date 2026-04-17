@@ -38,12 +38,17 @@
     }
     .info-grid {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr; /* Dividido em duas colunas para telas maiores */
         gap: 20px;
         background-color: #f9fbfd;
         padding: 20px;
         border-radius: 8px;
         border-left: 4px solid #0056b3;
+    }
+    @media (max-width: 600px) {
+        .info-grid {
+            grid-template-columns: 1fr; /* Volta para uma coluna no celular */
+        }
     }
     .info-item {
         margin-bottom: 5px;
@@ -91,35 +96,68 @@
         <p>Olá, {{ usuario.username|title }}! Estas são as informações usadas pela IA para recomendar suas tecnologias.</p>
     </div>
 
-    <h2 class="section-title">👤 Informações Principais</h2>
-    <div class="info-grid">
+    <h2 class="section-title" style="color: #0056b3;">🧬 Condição Física e Biológica</h2>
+    <div class="info-grid" style="border-left-color: #0056b3;">
         <div class="info-item">
             <span class="info-label">Categoria da Deficiência</span>
             <p class="info-value">{{ categoria_atual|default:"Não informado" }}</p>
         </div>
         <div class="info-item">
+            <span class="info-label">Grau de Severidade</span>
+            <p class="info-value" style="text-transform: capitalize;">{{ biologico.grau_severidade|default:"Não informado" }}</p>
+        </div>
+        <div class="info-item" style="grid-column: 1 / -1;">
             <span class="info-label">Limitações Específicas</span>
-            <p class="info-value">{{ biologico.limitacoes_especificas|default:"Nenhuma limitação específica detalhada." }}</p>
+            <p class="info-value">{{ biologico.limitacoes_especificas|default:"Nenhuma declarada." }}</p>
         </div>
     </div>
 
-    <h2 class="section-title">🎯 Objetivos e Barreiras</h2>
+    <h2 class="section-title" style="color: #6f42c1;">🧠 Perfil Cognitivo e Comportamental</h2>
+    <div class="info-grid" style="border-left-color: #6f42c1;">
+        <div class="info-item">
+            <span class="info-label">Estilo de Aprendizado</span>
+            <p class="info-value" style="text-transform: capitalize;">{{ psicologico.estilo_aprendizado|default:"Não informado" }}</p>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Barreiras Cognitivas</span>
+            <p class="info-value">{{ psicologico.barreiras_cognitivas|default:"Nenhuma declarada." }}</p>
+        </div>
+    </div>
+
+    <h2 class="section-title" style="color: #28a745;">🎯 Objetivos e Contexto Social</h2>
     <div class="info-grid" style="border-left-color: #28a745;">
         <div class="info-item">
             <span class="info-label">Foco Principal Atual</span>
-            <p class="info-value" style="text-transform: capitalize;">{{ perfil_uso.objetivo_principal|default:"Não informado" }}</p>
+            <p class="info-value" style="text-transform: capitalize;">{{ social.objetivo_principal|default:"Não informado" }}</p>
         </div>
         <div class="info-item">
+            <span class="info-label">Disponibilidade Financeira</span>
+            <p class="info-value">
+                {% if social.orcamento == 'gratuito' %}Opções Gratuitas
+                {% elif social.orcamento == 'baixo_custo' %}Baixo Custo
+                {% elif social.orcamento == 'sem_restricao' %}Sem Restrições
+                {% else %}Não informado{% endif %}
+            </p>
+        </div>
+        <div class="info-item" style="grid-column: 1 / -1;">
             <span class="info-label">Barreiras no Dia a Dia</span>
-            <p class="info-value">{{ perfil_uso.barreiras_dia_a_dia|default:"Não informado" }}</p>
+            <p class="info-value">{{ social.barreiras_dia_a_dia|default:"Não informado" }}</p>
         </div>
     </div>
 
-    <h2 class="section-title">💻 Perfil Tecnológico</h2>
+    <h2 class="section-title" style="color: #17a2b8;">💻 Ambiente Tecnológico</h2>
     <div class="info-grid" style="border-left-color: #17a2b8;">
         <div class="info-item">
-            <span class="info-label">Nível de Afinidade com Tecnologia</span>
-            <p class="info-value">{{ tecnologico.nivel_tecnologico|default:"Não informado" }}</p>
+            <span class="info-label">Nível de Afinidade</span>
+            <p class="info-value" style="text-transform: capitalize;">{{ tecnologico.nivel_tecnologico|default:"Não informado" }}</p>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Dispositivos Disponíveis</span>
+            <p class="info-value">{{ tecnologico.dispositivos_disponiveis|default:"Não informado" }}</p>
+        </div>
+        <div class="info-item" style="grid-column: 1 / -1;">
+            <span class="info-label">Ferramentas Prévias</span>
+            <p class="info-value">{{ tecnologico.ferramentas_previas|default:"Nenhuma declarada." }}</p>
         </div>
     </div>
 

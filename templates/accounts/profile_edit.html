@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 <style>
-    /* Estilos baseados na imagem de referência */
+    /* Estilos baseados na imagem de referência - Mantidos como no seu original */
     .page-container {
         max-width: 800px;
-        margin: 40px auto; /* Centraliza a coluna, mas o texto fica à esquerda */
+        margin: 40px auto;
         padding: 0 20px;
         font-family: sans-serif;
         color: #1f2937;
@@ -33,7 +33,6 @@
         font-size: 1rem;
         color: #1f2937;
     }
-    /* Estiliza os inputs gerados pelo Django automaticamente */
     .form-group input[type="text"],
     .form-group input[type="password"],
     .form-group input[type="email"],
@@ -42,7 +41,7 @@
     .form-group textarea {
         width: 100%;
         padding: 14px;
-        border: 1px solid #1f2937; /* Borda escura igual à imagem */
+        border: 1px solid #1f2937;
         border-radius: 4px;
         font-size: 1rem;
         box-sizing: border-box;
@@ -52,25 +51,8 @@
         outline: 2px solid #2563eb;
         border-color: transparent;
     }
-    .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 30px;
-        font-size: 0.95rem;
-    }
-    .checkbox-group input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        accent-color: #2563eb; /* Deixa o check azul */
-    }
-    .checkbox-group a {
-        color: #2563eb; /* Azul dos links */
-        text-decoration: underline;
-        font-weight: 600;
-    }
     .btn-primary {
-        background-color: #2563eb; /* Azul do botão */
+        background-color: #2563eb;
         color: #ffffff;
         border: none;
         padding: 14px 40px;
@@ -79,11 +61,13 @@
         border-radius: 6px;
         cursor: pointer;
         transition: background-color 0.2s;
+        margin-bottom: 40px;
     }
     .btn-primary:hover {
         background-color: #1d4ed8;
     }
 </style>
+
 <div class="page-container">
     <h1 class="page-title">Atualizar Meu Perfil</h1>
     <div class="breadcrumb">Painel > <strong>Configurações</strong></div>
@@ -91,10 +75,10 @@
     <form method="POST">
         {% csrf_token %}
         
-        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 30px; color: #1f2937;">1. Informações Principais</h3>
+        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 30px; color: #1f2937;">1. Condição Física e Biológica</h3>
         
         <div class="form-group">
-            <label class="form-label">Categoria da Deficiência</label>
+            <label class="form-label">Categoria da Deficiência Principal</label>
             <select name="categoria_deficiencia" required>
                 <option value="Física" {% if categoria_atual == 'Física' %}selected{% endif %}>Física / Motora</option>
                 <option value="Visual" {% if categoria_atual == 'Visual' %}selected{% endif %}>Visual</option>
@@ -108,36 +92,80 @@
         </div>
 
         <div class="form-group">
-            <label class="form-label">Limitações Específicas</label>
-            <textarea name="limitacoes_especificas" rows="3">{{ biologico.limitacoes_especificas }}</textarea>
-        </div>
-
-        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 40px; color: #1f2937;">2. Objetivos e Autonomia</h3>
-        
-        <div class="form-group">
-            <label class="form-label">Qual o seu foco principal no momento?</label>
-            <select name="objetivo_principal" required>
-                <option value="estudo" {% if perfil_uso.objetivo_principal == 'estudo' %}selected{% endif %}>Estudo</option>
-                <option value="trabalho" {% if perfil_uso.objetivo_principal == 'trabalho' %}selected{% endif %}>Trabalho</option>
-                <option value="vida_diaria" {% if perfil_uso.objetivo_principal == 'vida_diaria' %}selected{% endif %}>Vida Diária e Autonomia</option>
-                <option value="reabilitacao" {% if perfil_uso.objetivo_principal == 'reabilitacao' %}selected{% endif %}>Reabilitação</option>
+            <label class="form-label">Grau de Severidade/Impacto no Dia a Dia</label>
+            <select name="grau_severidade">
+                <option value="leve" {% if biologico.grau_severidade == 'leve' %}selected{% endif %}>Leve (Impacta, mas tenho muita autonomia)</option>
+                <option value="moderado" {% if biologico.grau_severidade == 'moderado' %}selected{% endif %}>Moderado (Preciso de apoio constante em algumas áreas)</option>
+                <option value="severo" {% if biologico.grau_severidade == 'severo' %}selected{% endif %}>Severo (Dependência significativa de adaptações/terceiros)</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label class="form-label">Descreva as maiores barreiras no seu dia a dia</label>
-            <textarea name="barreiras" rows="4" required>{{ perfil_uso.barreiras_dia_a_dia }}</textarea>
+            <label class="form-label">Limitações Específicas</label>
+            <textarea name="limitacoes_especificas" rows="2">{{ biologico.limitacoes_especificas }}</textarea>
         </div>
 
-        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 40px; color: #1f2937;">3. Perfil Tecnológico</h3>
+        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 40px; color: #1f2937;">2. Aspectos Cognitivos e Comportamentais</h3>
+
+        <div class="form-group">
+            <label class="form-label">Estilo de Aprendizado</label>
+            <select name="estilo_aprendizado">
+                <option value="visual" {% if psicologico.estilo_aprendizado == 'visual' %}selected{% endif %}>Visual (Imagens, vídeos, gráficos)</option>
+                <option value="auditivo" {% if psicologico.estilo_aprendizado == 'auditivo' %}selected{% endif %}>Auditivo (Áudios, leitores de tela, podcasts)</option>
+                <option value="cinestesico" {% if psicologico.estilo_aprendizado == 'cinestesico' %}selected{% endif %}>Prático (Tocando, testando, interação física)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Barreiras Cognitivas (Opcional)</label>
+            <input type="text" name="barreiras_cognitivas" value="{{ psicologico.barreiras_cognitivas|default:'' }}">
+        </div>
+
+        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 40px; color: #1f2937;">3. Objetivos e Contexto Social</h3>
         
-        <div class="form-group" style="margin-bottom: 40px;">
+        <div class="form-group">
+            <label class="form-label">Foco principal no momento</label>
+            <select name="objetivo_principal" required>
+                <option value="estudo" {% if social.objetivo_principal == 'estudo' %}selected{% endif %}>Estudo</option>
+                <option value="trabalho" {% if social.objetivo_principal == 'trabalho' %}selected{% endif %}>Trabalho</option>
+                <option value="vida_diaria" {% if social.objetivo_principal == 'vida_diaria' %}selected{% endif %}>Vida Diária e Autonomia</option>
+                <option value="reabilitacao" {% if social.objetivo_principal == 'reabilitacao' %}selected{% endif %}>Reabilitação</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Disponibilidade financeira para aquisição</label>
+            <select name="orcamento">
+                <option value="gratuito" {% if social.orcamento == 'gratuito' %}selected{% endif %}>Busco apenas opções gratuitas/código aberto</option>
+                <option value="baixo_custo" {% if social.orcamento == 'baixo_custo' %}selected{% endif %}>Posso pagar por opções de baixo custo</option>
+                <option value="sem_restricao" {% if social.orcamento == 'sem_restricao' %}selected{% endif %}>Sem restrições (Empresa/Plano cobrem)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Maiores barreiras no seu dia a dia</label>
+            <textarea name="barreiras" rows="3" required>{{ social.barreiras_dia_a_dia }}</textarea>
+        </div>
+
+        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 40px; color: #1f2937;">4. Ambiente Tecnológico</h3>
+        
+        <div class="form-group">
             <label class="form-label">Nível de afinidade com tecnologia</label>
             <select name="nivel_tecnologico">
-                <option value="Básico" {% if tecnologico.nivel_tecnologico == 'Básico' %}selected{% endif %}>Básico (Tenho dificuldades)</option>
-                <option value="Intermediário" {% if tecnologico.nivel_tecnologico == 'Intermediário' %}selected{% endif %}>Intermediário (Me viro bem)</option>
-                <option value="Avançado" {% if tecnologico.nivel_tecnologico == 'Avançado' %}selected{% endif %}>Avançado (Tenho facilidade)</option>
+                <option value="iniciante" {% if tecnologico.nivel_tecnologico == 'iniciante' %}selected{% endif %}>Iniciante (Preciso de ferramentas simples)</option>
+                <option value="intermediario" {% if tecnologico.nivel_tecnologico == 'intermediario' %}selected{% endif %}>Intermediário (Consigo instalar e configurar)</option>
+                <option value="avancado" {% if tecnologico.nivel_tecnologico == 'avancado' %}selected{% endif %}>Avançado (Tenho facilidade com softwares)</option>
             </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Dispositivos disponíveis para uso diário</label>
+            <input type="text" name="dispositivos" value="{{ tecnologico.dispositivos_disponiveis|default:'' }}">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 40px;">
+            <label class="form-label">Ferramentas que já utiliza e funcionam bem</label>
+            <input type="text" name="ferramentas_previas" value="{{ tecnologico.ferramentas_previas|default:'' }}">
         </div>
 
         <button type="submit" class="btn-primary">Salvar Alterações</button>

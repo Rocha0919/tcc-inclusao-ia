@@ -87,7 +87,8 @@ def profile_view(request):
         'usuario': request.user,
         'categoria_atual': profile.primary_disability_category,
         'biologico': dados.get('biologico', {}),
-        'perfil_uso': dados.get('perfil_uso', {}),
+        'psicologico': dados.get('psicologico', {}), # Adicionado
+        'social': dados.get('social', {}),           # Adicionado (substitui o antigo perfil_uso)
         'tecnologico': dados.get('tecnologico', {})
     }
     return render(request, 'accounts/profile_view.html', context)
@@ -101,16 +102,23 @@ def profile_edit(request):
         # 1. Atualiza a deficiência principal
         profile.primary_disability_category = request.POST.get('categoria_deficiencia')
         
-        # 2. Reconstrói o JSON com as informações atualizadas
+        # 2. Reconstrói o JSON com as informações atualizadas do Mapeamento Biopsicossocial Completo
         profile.dynamic_data = {
             "biologico": {
-                "limitacoes_especificas": request.POST.get('limitacoes_especificas', '')
+                "limitacoes_especificas": request.POST.get('limitacoes_especificas', ''),
+                "grau_severidade": request.POST.get('grau_severidade', 'Não informado')
             },
-            "perfil_uso": {
+            "psicologico": {
+                "estilo_aprendizado": request.POST.get('estilo_aprendizado', 'Não informado'),
+                "barreiras_cognitivas": request.POST.get('barreiras_cognitivas', 'Nenhuma declarada')
+            },
+            "social": {
                 "objetivo_principal": request.POST.get('objetivo_principal', ''),
-                "barreiras_dia_a_dia": request.POST.get('barreiras', '')
+                "barreiras_dia_a_dia": request.POST.get('barreiras', ''),
+                "orcamento": request.POST.get('orcamento', 'gratuito')
             },
             "tecnologico": {
+                "dispositivos_disponiveis": request.POST.get('dispositivos', 'Não informado'),
                 "nivel_tecnologico": request.POST.get('nivel_tecnologico', ''),
                 "ferramentas_previas": request.POST.get('ferramentas_previas', '')
             }
@@ -118,7 +126,7 @@ def profile_edit(request):
         profile.save()
         
         # Redireciona para o painel principal ou página de sucesso após salvar
-        return redirect('profile_view') # Mude para o nome da url da sua página principal
+        return redirect('profile_view') 
         
     # Se for GET, extraímos os dados do JSON para preencher o formulário
     dados = profile.dynamic_data or {}
@@ -126,7 +134,8 @@ def profile_edit(request):
     context = {
         'categoria_atual': profile.primary_disability_category,
         'biologico': dados.get('biologico', {}),
-        'perfil_uso': dados.get('perfil_uso', {}),
+        'psicologico': dados.get('psicologico', {}), # Adicionado
+        'social': dados.get('social', {}),           # Adicionado
         'tecnologico': dados.get('tecnologico', {})
     }
     
