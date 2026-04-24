@@ -1,33 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
-<section style="margin-top: 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 class="text-brand">Meus Feedbacks</h2>
-        <a href="{% url 'profile_detail' %}" class="btn btn-outline" style="color: var(--primary); border-color: var(--primary);">Voltar ao Painel</a>
+<section style="margin-top: 20px; padding-bottom: 40px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h2 class="text-brand" style="margin: 0;">📋 Histórico de Avaliações</h2>
+            <p class="text-muted" style="margin: 5px 0 0 0;">Veja o que você achou das tecnologias sugeridas.</p>
+        </div>
+        <a href="{% url 'profile_detail' %}" class="btn btn-outline" style="border: 2px solid var(--primary); color: var(--primary); font-weight: bold; padding: 10px 20px; border-radius: 8px; text-decoration: none;">Voltar ao Painel</a>
     </div>
-    <hr>
+    <hr style="border: 1px solid #eee;">
 
     {% if feedbacks %}
-        <div class="recommendation-grid">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
             {% for fb in feedbacks %}
-            <div class="card">
-                <h4 style="color: var(--primary);">{{ fb.resource.name }}</h4>
-                <p><strong>Nota dada:</strong> {{ fb.score }} / 5</p>
-                <p><strong>Comentário:</strong> {{ fb.user_comment|default:"Sem comentário." }}</p>
-                <small style="color: #888;">Avaliado em: {{ fb.created_at|date:"d/m/Y" }}</small>
+            <div class="card shadow-sm" style="border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; background: white;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <h4 style="color: var(--primary); margin: 0; font-size: 1.15rem;">{{ fb.resource.name }}</h4>
+                        <div style="background: #fffbeb; color: #b45309; padding: 2px 8px; border-radius: 5px; font-weight: bold; font-size: 0.9rem;">
+                            {{ fb.score }} <span style="color: #fbbf24;">★</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin: 10px 0;">
+                        <p style="margin: 0; font-size: 0.95rem; color: #475569; font-style: italic;">
+                            "{{ fb.user_comment|default:"Sem comentário detalhado." }}"
+                        </p>
+                    </div>
+                    <small style="color: #94a3b8; display: block; margin-top: 5px;">🗓️ Avaliado em: {{ fb.created_at|date:"d/m/Y" }}</small>
+                </div>
                 
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <a href="{% url 'feedback_edit' fb.id %}" class="btn btn-primary" style="flex: 1; text-align: center;">Editar</a>
-                    <form action="{% url 'feedback_delete' fb.id %}" method="POST" style="flex: 1; display: flex;" onsubmit="return confirm('Tem certeza que deseja excluir?');">
+                <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
+                    <a href="{% url 'feedback_edit' fb.id %}" class="btn" style="flex: 1; text-align: center; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Editar</a>
+                    
+                    <form action="{% url 'feedback_delete' fb.id %}" method="POST" style="flex: 1; display: flex;" onsubmit="return confirm('Excluir esta avaliação permanentemente?');">
                         {% csrf_token %}
-                        <button type="submit" class="btn" style="background: #dc3545; color: white; width: 100%;">Excluir</button>
+                        <button type="submit" class="btn" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; width: 100%; padding: 8px; border-radius: 6px; font-size: 0.9rem; font-weight: bold;">Excluir</button>
                     </form>
                 </div>
             </div>
             {% endfor %}
         </div>
     {% else %}
-        <p style="text-align: center; color: #666; margin-top: 40px;">Você ainda não avaliou nenhuma recomendação.</p>
+        <div style="text-align: center; padding: 80px 20px; background: white; border-radius: 15px; border: 2px dashed #e2e8f0;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">✍️</div>
+            <h3 style="color: #64748b;">Nenhuma avaliação ainda</h3>
+            <p style="color: #94a3b8;">Suas opiniões sobre as tecnologias recomendadas aparecerão aqui.</p>
+        </div>
     {% endif %}
 </section>
 {% endblock %}

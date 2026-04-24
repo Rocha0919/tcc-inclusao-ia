@@ -1,48 +1,116 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-top: 20px;">
+<div class="dashboard-grid" style="display: grid; grid-template-columns: minmax(300px, 1fr) 2fr; gap: 30px; margin-top: 20px;">
     
     <aside>
-        <div class="card">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">Mapeamento Atual</h3>
+        <div class="card" style="position: sticky; top: 20px;">
+            <h3 style="color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Mapeamento Atual</h3>
             
             {% if profile %}
-                <p><strong>Usuário:</strong> {{ user.username }}</p>
-                <p><strong>Necessidade:</strong> <span class="badge">{{ profile.primary_disability_category }}</span></p>
+                <div style="margin-bottom: 20px;">
+                    <p><strong>👤 Usuário:</strong> {{ user.username }}</p>
+                    <p><strong>♿ Necessidade:</strong> <span class="badge" style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px;">{{ profile.primary_disability_category }}</span></p>
+                </div>
                 <hr>
-                <a href="{% url 'generate_plan' %}" class="btn btn-primary btn-gerar" style="width: 100%; text-align: center; padding: 15px;">
-                    ✨ Gerar Novo Plano com IA
+                
+                {% if profile.is_generating %}
+                    <div id="loading-ia-container" class="card" style="background: #e0f2fe; border-left: 5px solid var(--primary); padding: 20px; text-align: center;">
+                        <div class="spinner" style="border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: inline-block;"></div>
+                        <p style="margin-top: 10px; color: var(--primary); font-weight: bold;">
+                            A IA está redigindo seu plano...
+                        </p>
+                        <p style="font-size: 0.8rem; color: #64748b;">
+                            Você será levado ao relatório automaticamente.
+                        </p>
+                    </div>
+
+                    <script>
+                        function verificarConclusao() {
+                            // Busca o HTML da própria página de perfil silenciosamente
+                            fetch(window.location.href)
+                            .then(response => response.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                
+                                // Se o elemento de loading não existir mais no HTML retornado...
+                                const aindaCarregando = doc.getElementById('loading-ia-container');
+                                
+                                if (!aindaCarregando) {
+                                    // IA terminou! Procura o card do plano mais recente na lista
+                                    const planoRecente = doc.querySelector('.hover-card');
+                                    if (planoRecente) {
+                                        const acao = planoRecente.getAttribute('onclick');
+                                        const urlPlano = acao.match(/'([^']+)'/)[1];
+                                        window.location.href = urlPlano; // Redireciona!
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        }
+                        // Checa o status a cada 4 segundos
+                        setInterval(verificarConclusao, 4000);
+                    </script>
+                {% else %}
+                    <form id="form-gerar" action="{% url 'generate_plan' %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" id="btn-gerar" class="btn btn-primary" style="width: 100%; padding: 15px; font-weight: bold;">
+                            ✨ Gerar Novo Plano com IA
+                        </button>
+                    </form>
+                {% endif %}
+
+                <a href="{% url 'feedback_history' %}" class="btn btn-outline" style="width: 100%; text-align: center; display: block; margin-top: 10px; text-decoration: none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                    📋 Minhas Avaliações
                 </a>
-                <a href="{% url 'feedback_history' %}" class="btn btn-outline" style="width: 100%; text-align: center; display: block; border-color: var(--primary); color: var(--primary);">
-                    📋 Ver Minhas Avaliações
-                </a>
+
             {% else %}
-                <p style="color: #666;">Você ainda não configurou seu perfil biopsicossocial.</p>
-                <a href="{% url 'profile_create' %}" class="btn btn-primary" style="width: 100%; text-align: center;">Configurar Perfil Agora</a>
+                <a href="{% url 'profile_create' %}" class="btn btn-primary" style="width: 100%; text-align: center; display: block; text-decoration: none;">Configurar Perfil</a>
             {% endif %}
         </div>
     </aside>
 
     <section>
-        <h3 style="margin-bottom: 20px;">Meus Planos de Acessibilidade</h3>
+        <h3 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <span style="background: var(--primary); width: 8px; height: 24px; border-radius: 4px;"></span>
+            Meus Planos de Acessibilidade
+        </h3>
         {% if sessoes %}
             {% for sessao in sessoes %}
-                <div class="card hover-card" style="margin-bottom: 15px; border-left: 5px solid var(--primary); cursor: pointer; transition: transform 0.2s;" onclick="window.location='{% url 'plan_detail' sessao.id %}'">
+                <div class="card hover-card" style="margin-bottom: 15px; border-left: 5px solid var(--primary); cursor: pointer; transition: 0.2s;" onclick="window.location='{% url 'plan_detail' sessao.id %}'">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <h4 style="margin: 0; color: var(--primary);">Plano Gerado</h4>
-                            <small style="color: #888;">{{ sessao.created_at|date:"d/m/Y às H:i" }}</small>
+                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;">Plano de Tecnologia Assistiva</h4>
+                            <small style="color: #888;">📅 {{ sessao.created_at|date:"d/m/Y às H:i" }}</small>
                         </div>
-                        <span class="btn btn-outline" style="color: var(--primary); border-color: var(--primary); padding: 5px 15px; font-size: 0.9rem;">Abrir Detalhes &rarr;</span>
+                        <div style="text-align: right;">
+                            <span style="color: var(--primary); font-weight: bold;">Abrir Detalhes &rarr;</span>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
         {% else %}
-            <div class="card" style="text-align: center; padding: 40px; background: #fafafa;">
-                <p style="color: #666; font-size: 1.1rem;">Nenhum plano foi gerado ainda.</p>
-                <p style="font-size: 0.9rem;">Clique no botão lateral para iniciar o motor de recomendação.</p>
+            <div class="card" style="text-align: center; padding: 60px 20px; background: #fafafa; border: 2px dashed #ddd;">
+                <p style="color: #666;">Nenhum plano foi gerado ainda.</p>
             </div>
         {% endif %}
     </section>
 </div>
+
+<style>
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .hover-card:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+</style>
+
+<script>
+    document.getElementById('form-gerar')?.addEventListener('submit', function(e) {
+        const btn = document.getElementById('btn-gerar');
+        if (btn) {
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btn.innerHTML = '⚙️ Processando seu plano... Por favor, não feche a página.';
+        }
+    });
+</script>
 {% endblock %}

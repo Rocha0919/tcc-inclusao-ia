@@ -42,6 +42,7 @@ class BiopsychosocialProfile(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_generating = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Perfil de {self.user.username} ({self.primary_disability_category})"

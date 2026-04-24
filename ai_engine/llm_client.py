@@ -25,7 +25,7 @@ class LLMClient:
             resposta = requests.post(
                 cls.OLLAMA_URL,
                 json=payload,
-                timeout=300
+                timeout=600
             )
 
             print(f"🟢 Status ({model_name}):", resposta.status_code)

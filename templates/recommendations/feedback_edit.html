@@ -1,35 +1,38 @@
 {% extends 'base.html' %}
 {% block content %}
 <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 40px;">
-    <div class="card" style="width: 100%; max-width: 500px; padding: 30px;">
-        <h2 style="color: var(--primary); text-align: center; margin-bottom: 15px;">Editar Avaliação</h2>
+    <div class="card shadow-lg" style="width: 100%; max-width: 500px; padding: 0; border-radius: 15px; border: none;">
+        <div style="background: #f8fafc; padding: 20px; border-radius: 15px 15px 0 0; border-bottom: 1px solid #eee; text-align: center;">
+            <h2 style="color: var(--primary); margin: 0; font-size: 1.5rem;">Editar Avaliação</h2>
+        </div>
         
-        <p style="text-align: center; margin-bottom: 25px; color: #555; font-size: 0.95rem;">
-            Atualizando sua avaliação sobre:<br>
-            <strong style="color: var(--primary); font-size: 1.1rem;">{{ feedback.resource.name }}</strong>
-        </p>
-
-        <form method="POST">
-            {% csrf_token %}
-            
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Nota (1 a 5):</label>
-                <input type="number" name="score" min="1" max="5" value="{{ feedback.score }}" required 
-                       style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;">
+        <div style="padding: 30px;">
+            <div style="text-align: center; margin-bottom: 25px; background: #eff6ff; padding: 15px; border-radius: 10px;">
+                <span style="color: #64748b; font-size: 0.85rem; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px;">Tecnologia</span>
+                <strong style="color: #1e40af; font-size: 1.2rem;">{{ feedback.resource.name }}</strong>
             </div>
 
-            <div class="form-group" style="margin-bottom: 25px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Seu Comentário (opcional):</label>
-                <textarea name="user_comment" rows="4" 
-                          style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem; resize: vertical;">{{ feedback.user_comment|default_if_none:'' }}</textarea>
-            </div>
-
-            <div style="display: flex; gap: 15px;">
-                <a href="{% url 'feedback_history' %}" class="btn btn-outline" style="flex: 1; text-align: center; color: #555; border-color: #ccc;">Cancelar</a>
+            <form method="POST">
+                {% csrf_token %}
                 
-                <button type="submit" class="btn btn-primary" style="flex: 1;">Salvar Alterações</button>
-            </div>
-        </form>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 8px; color: #334155;">Nota (1 a 5):</label>
+                    <input type="number" name="score" min="1" max="5" value="{{ feedback.score }}" required 
+                           style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1.1rem; text-align: center; font-weight: bold; color: var(--primary);">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 8px; color: #334155;">Seu Comentário:</label>
+                    <textarea name="user_comment" rows="4" 
+                              style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; resize: vertical; line-height: 1.5;">{{ feedback.user_comment|default_if_none:'' }}</textarea>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <a href="{% url 'feedback_history' %}" class="btn btn-outline" style="flex: 1; text-align: center; border: 2px solid #cbd5e1; color: #64748b; padding: 12px; border-radius: 8px; text-decoration: none;">Cancelar</a>
+                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px; font-weight: bold; border-radius: 8px;">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

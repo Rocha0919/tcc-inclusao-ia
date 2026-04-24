@@ -22,7 +22,12 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".ngrok-free.app",
+    ".ngrok-free.dev"
+]
 
 AUTH_USER_MODEL = 'accounts.User'
 # =========================
@@ -153,8 +158,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # CSRF (dev)
 # =========================
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost',
-    'http://127.0.0.1',
+    "https://*.ngrok-free.app",
+    "https://*.ngrok-free.dev",
 ]
 
 

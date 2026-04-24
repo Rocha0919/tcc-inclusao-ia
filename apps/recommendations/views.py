@@ -3,28 +3,41 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from apps.recommendations.models import GeneratedTechnology, RecommendationSession, Feedback
 from ai_engine.service import criar_plano_para_usuario
+import threading
 
 @login_required
 def generate_plan(request):
     profile = getattr(request.user, 'profile', None)
-    
-    if not profile:
-        messages.warning(request, 'Crie seu perfil antes de gerar um plano.')
-        return redirect('profile_create')
-    
-    resultado = criar_plano_para_usuario(profile)
-
-    if not resultado:
-        messages.error(request, 'Erro ao gerar o plano. O servidor de IA está offline?')
+    if not profile or request.method != 'POST':
         return redirect('profile_detail')
-    
-    session, prompt = resultado
 
-    request.session['last_prompt'] = prompt
+    if profile.is_generating:
+        return redirect('profile_detail')
 
-    messages.success(request, 'Plano de Acessibilidade gerado com sucesso pela IA!')
+    profile.is_generating = True
+    profile.save()
+
+    # Limpamos qualquer ID antigo da sessão de mensagens para evitar conflitos
+    request.session['pending_plan_id'] = None 
+
+    def tarefa_ia():
+        try:
+            # Sua função criar_plano_para_usuario deve retornar a 'session' criada
+            resultado = criar_plano_para_usuario(profile)
+            if resultado:
+                session, prompt = resultado
+                # Guardamos o ID no banco/perfil para o front-end saber que acabou
+                profile.last_generated_session_id = session.id
+        except Exception as e:
+            print(f"Erro na IA: {e}")
+        finally:
+            profile.is_generating = False
+            profile.save()
+
+    threading.Thread(target=tarefa_ia).start()
     
-    return redirect('plan_detail', session_id=session.id)
+    messages.info(request, 'Processando seu plano personalizado...')
+    return redirect('profile_detail')
 
 @login_required
 def plan_detail(request, session_id):

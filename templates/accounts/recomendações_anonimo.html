@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 60vh; text-align: center;">
+    <div class="card" style="max-width: 600px; padding: 40px; border-top: 5px solid var(--primary);">
+        <h2 style="color: var(--primary);">Sua Recomendação Inteligente está te esperando!</h2>
+        <p style="color: var(--secondary); font-size: 1.1rem; margin-bottom: 30px;">
+            Para que nossa IA possa sugerir as melhores <strong>tecnologias assistivas</strong> para o seu perfil, precisamos te conhecer um pouco melhor.
+        </p>
+        
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <a href="{% url 'signup' %}" class="btn btn-primary" style="padding: 12px 30px;">Criar conta gratuita</a>
+            <a href="{% url 'login' %}" class="btn btn-outline" style="padding: 12px 30px;">Já tenho conta</a>
+        </div>
+        
+        <p style="margin-top: 20px; font-size: 0.85rem; color: #94a3b8;">
+            Leva menos de 2 minutos para configurar seu perfil de acessibilidade.
+        </p>
+    </div>
+</div>
+{% endblock %}

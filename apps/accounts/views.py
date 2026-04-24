@@ -62,8 +62,12 @@ def profile_create(request):
     categorias = BiopsychosocialProfile.DISABILITY_CHOICES
     return render(request, 'accounts/profile_create.html', {'categorias': categorias})
 
-@login_required
 def profile_detail(request):
+    # Se NÃO estiver logado, mostra a tela de convite (landing page)
+    if not request.user.is_authenticated:
+        return render(request, 'accounts/recomendações_anonimo.html')
+
+    # Se estiver logado, segue a lógica normal
     profile = getattr(request.user, 'profile', None)
     if not profile:
         return redirect('profile_create')

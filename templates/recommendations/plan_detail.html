@@ -1,100 +1,87 @@
 {% extends 'base.html' %}
 {% block content %}
-<section style="margin-top: 10px;">
+<section style="margin-top: 10px; padding-bottom: 50px;">
     
-    <a href="{% url 'profile_detail' %}" style="color: var(--secondary); text-decoration: none; font-weight: bold;">
-        &larr; Voltar para o Painel
+    <a href="{% url 'profile_detail' %}" style="color: var(--secondary); text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+        ← Voltar para o Painel
     </a>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-        <h2 class="text-brand">Plano Recomendado Comparativo</h2>
-        <span class="badge" style="font-size: 1rem;">
-            Data: {{ session.created_at|date:"d/m/Y" }}
-        </span>
-    </div>
-    
-    <div class="card" style="margin: 20px 0; border-left: 5px solid var(--primary); background: #fdfdfd; padding: 20px;">
-        <h3 style="margin-bottom: 10px;">Análise das Inteligências Artificiais</h3>
-        <pre style="color: #444; font-size: 1.05rem; line-height: 1.7; white-space: pre-wrap; font-family: inherit;">{{ session.justificativa_geral }}</pre>
+    <div style="background: white; border-radius: 12px; padding: 25px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #1e293b;">Relatório Comparativo de IA</h2>
+            <span class="badge" style="background: #e2e8f0; color: #475569; padding: 8px 15px; border-radius: 20px; font-weight: bold;">
+                📅 {{ session.created_at|date:"d/m/Y" }}
+            </span>
+        </div>
+        
+        <h3 style="font-size: 1.2rem; color: #334155; margin-bottom: 10px;">📋 Resumo da Análise</h3>
+        <div style="background: #f8fafc; border-left: 5px solid var(--primary); padding: 20px; border-radius: 0 8px 8px 0;">
+            <pre style="color: #334155; font-size: 1rem; line-height: 1.6; white-space: pre-wrap; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0;">{{ session.justificativa_geral }}</pre>
+        </div>
     </div>
 
-    <h3 style="margin-top: 40px; margin-bottom: 15px; color: #1a56db;">🦙 Recomendações do Llama 3</h3>
-    <div class="recommendation-grid">
+    <h3 style="margin-top: 45px; margin-bottom: 20px; color: #1d4ed8; display: flex; align-items: center; gap: 10px;">
+        <span style="background: #1d4ed8; padding: 5px 12px; border-radius: 8px; color: white;">🦙</span> 
+        Recomendações do Llama 3
+    </h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
         {% for tech in llama_techs %}
-        <div class="card" style="border-top: 4px solid #1a56db;">
-            <h4 style="margin: 10px 0;">{{ tech.name }}</h4>
-            
-            <div style="background: #f4f7f9; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed #1a56db;">
-                <strong style="color: #1a56db;">🧠 Por que o Llama recomendou:</strong>
-                <p style="font-size: 0.9rem; margin-top: 5px;">{{ tech.justification }}</p>
+        <div class="card" style="border-top: 5px solid #1d4ed8; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h4 style="font-size: 1.25rem; color: #1e3a8a; margin-top: 0;">{{ tech.name }}</h4>
+                <div style="background: #eff6ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <strong style="color: #1d4ed8; font-size: 0.85rem; text-transform: uppercase;">🧠 Justificativa Técnica:</strong>
+                    <p style="font-size: 0.95rem; line-height: 1.5; margin-top: 8px; color: #1e40af;">{{ tech.justification }}</p>
+                </div>
             </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <a href="{% url 'feedback_create' session.id tech.id %}" 
-                   class="btn" 
-                   style="color: #1a56db; border: 2px solid #1a56db; padding: 8px 16px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; flex: 1;">
-                   Avaliar
-                </a>
-                
-                <a href="{% url 'technology_detail' tech.id %}" 
-                   class="btn" 
-                   style="color: #1a56db; background: #eff6ff; border: 2px solid #1a56db; padding: 8px 16px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; flex: 1;">
-                   Detalhes →
-                </a>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <a href="{% url 'feedback_create' session.id tech.id %}" class="btn-sm" style="flex: 1; text-align: center; border: 1px solid #1d4ed8; color: #1d4ed8; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">⭐ Avaliar</a>
+                <a href="{% url 'technology_detail' tech.id %}" class="btn-sm" style="flex: 1; text-align: center; background: #1d4ed8; color: white; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Ver Detalhes</a>
             </div>
         </div>
         {% empty %}
-            <p style="color: #777;">O Llama 3 não retornou tecnologias formatadas corretamente desta vez.</p>
+            <p style="grid-column: 1/-1; text-align: center; padding: 30px; background: #f1f5f9; border-radius: 8px;">O Llama 3 não processou tecnologias válidas.</p>
         {% endfor %}
     </div>
 
-    <h3 style="margin-top: 40px; margin-bottom: 15px; color: #057a55;">🌪️ Recomendações do Mistral</h3>
-    <div class="recommendation-grid">
+    <h3 style="margin-top: 45px; margin-bottom: 20px; color: #047857; display: flex; align-items: center; gap: 10px;">
+        <span style="background: #047857; padding: 5px 12px; border-radius: 8px; color: white;">🌪️</span> 
+        Recomendações do Mistral
+    </h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
         {% for tech in mistral_techs %}
-        <div class="card" style="border-top: 4px solid #057a55;">
-            <h4 style="margin: 10px 0;">{{ tech.name }}</h4>
-            
-            <div style="background: #f0fdf4; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed #057a55;">
-                <strong style="color: #057a55;">🧠 Por que o Mistral recomendou:</strong>
-                <p style="font-size: 0.9rem; margin-top: 5px;">{{ tech.justification }}</p>
+        <div class="card" style="border-top: 5px solid #047857; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h4 style="font-size: 1.25rem; color: #064e3b; margin-top: 0;">{{ tech.name }}</h4>
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <strong style="color: #047857; font-size: 0.85rem; text-transform: uppercase;">🧠 Justificativa Técnica:</strong>
+                    <p style="font-size: 0.95rem; line-height: 1.5; margin-top: 8px; color: #065f46;">{{ tech.justification }}</p>
+                </div>
             </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <a href="{% url 'feedback_create' session.id tech.id %}" 
-                   class="btn" 
-                   style="color: #057a55; border: 2px solid #057a55; padding: 8px 16px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; flex: 1;">
-                   Avaliar
-                </a>
-                
-                <a href="{% url 'technology_detail' tech.id %}" 
-                   class="btn" 
-                   style="color: #057a55; background: #def7ec; border: 2px solid #057a55; padding: 8px 16px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; flex: 1;">
-                   Detalhes →
-                </a>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <a href="{% url 'feedback_create' session.id tech.id %}" class="btn-sm" style="flex: 1; text-align: center; border: 1px solid #047857; color: #047857; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">⭐ Avaliar</a>
+                <a href="{% url 'technology_detail' tech.id %}" class="btn-sm" style="flex: 1; text-align: center; background: #047857; color: white; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Ver Detalhes</a>
             </div>
         </div>
         {% empty %}
-            <p style="color: #777;">O Mistral não retornou tecnologias formatadas corretamente desta vez.</p>
+            <p style="grid-column: 1/-1; text-align: center; padding: 30px; background: #f1f5f9; border-radius: 8px;">O Mistral não processou tecnologias válidas.</p>
         {% endfor %}
     </div>
 
-    <hr style="margin-top: 40px;">
-
-    <h3>🧠 Prompt enviado para as IAs</h3>
     {% if prompt %}
-        <button onclick="togglePrompt()" class="btn btn-outline" style="margin-bottom: 15px;">Mostrar / Ocultar Prompt</button>
-        <div id="promptBox" style="display:none;">
-            <pre style="background:#1a202c; color:#a0aec0; padding:15px; border-radius:8px; max-height:400px; overflow:auto; white-space: pre-wrap;">{{ prompt }}</pre>
+    <div style="margin-top: 60px; opacity: 0.7;">
+        <button onclick="togglePrompt()" style="background: none; border: 1px solid #ccc; cursor: pointer; padding: 10px; border-radius: 5px;">🔍 Ver Dados Técnicos (Prompt)</button>
+        <div id="promptBox" style="display:none; margin-top: 15px;">
+            <pre style="background:#1e293b; color:#cbd5e1; padding:20px; border-radius:8px; font-size: 0.8rem; overflow-x: auto;">{{ prompt }}</pre>
         </div>
+    </div>
     {% endif %}
+</section>
 
-
-
-    <script>
+<script>
     function togglePrompt() {
         const box = document.getElementById("promptBox");
         box.style.display = box.style.display === "none" ? "block" : "none";
     }
-    </script>
-</section>
+</script>
 {% endblock %}
