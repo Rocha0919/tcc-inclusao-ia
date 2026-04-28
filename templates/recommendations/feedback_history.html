@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 <section style="margin-top: 20px; padding-bottom: 40px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px; flex-wrap: wrap;">
         <div>
-            <h2 class="text-brand" style="margin: 0;">📋 Histórico de Avaliações</h2>
-            <p class="text-muted" style="margin: 5px 0 0 0;">Veja o que você achou das tecnologias sugeridas.</p>
+            <h2 class="text-brand" style="margin: 0;">📋 {{ page_title }}</h2>
+            <p class="text-muted" style="margin: 5px 0 0 0;">{{ page_subtitle }}</p>
         </div>
-        <a href="{% url 'profile_detail' %}" class="btn btn-outline" style="border: 2px solid var(--primary); color: var(--primary); font-weight: bold; padding: 10px 20px; border-radius: 8px; text-decoration: none;">Voltar ao Painel</a>
+        <a href="{{ back_url }}" class="btn btn-outline" style="border: 2px solid var(--primary); color: var(--primary); font-weight: bold; padding: 10px 20px; border-radius: 8px; text-decoration: none;">Voltar</a>
     </div>
     <hr style="border: 1px solid #eee;">
 
@@ -15,8 +15,14 @@
             {% for fb in feedbacks %}
             <div class="card shadow-sm" style="border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; background: white;">
                 <div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-                        <h4 style="color: var(--primary); margin: 0; font-size: 1.15rem;">{{ fb.resource.name }}</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 12px;">
+                        <div>
+                            <h4 style="color: var(--primary); margin: 0; font-size: 1.15rem;">{{ fb.resource.name }}</h4>
+                            {% if not student_profile %}
+                                <small style="color: #64748b; display: block; margin-top: 4px;">Perfil: {{ fb.session.profile.display_name }}</small>
+                            {% endif %}
+                            <small style="color: #94a3b8; display: block; margin-top: 4px;">Plano de {{ fb.session.created_at|date:"d/m/Y H:i" }}</small>
+                        </div>
                         <div style="background: #fffbeb; color: #b45309; padding: 2px 8px; border-radius: 5px; font-weight: bold; font-size: 0.9rem;">
                             {{ fb.score }} <span style="color: #fbbf24;">★</span>
                         </div>
@@ -31,10 +37,13 @@
                 </div>
                 
                 <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
-                    <a href="{% url 'feedback_edit' fb.id %}" class="btn" style="flex: 1; text-align: center; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Editar</a>
+                    <a href="{% url 'feedback_edit' fb.id %}{% if student_profile %}?student_id={{ student_profile.id }}{% endif %}" class="btn" style="flex: 1; text-align: center; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Editar</a>
                     
-                    <form action="{% url 'feedback_delete' fb.id %}" method="POST" style="flex: 1; display: flex;" onsubmit="return confirm('Excluir esta avaliação permanentemente?');">
+                    <form action="{% url 'feedback_delete' fb.id %}{% if student_profile %}?student_id={{ student_profile.id }}{% endif %}" method="POST" style="flex: 1; display: flex;" onsubmit="return confirm('Excluir esta avaliação permanentemente?');">
                         {% csrf_token %}
+                        {% if student_profile %}
+                            <input type="hidden" name="student_id" value="{{ student_profile.id }}">
+                        {% endif %}
                         <button type="submit" class="btn" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; width: 100%; padding: 8px; border-radius: 6px; font-size: 0.9rem; font-weight: bold;">Excluir</button>
                     </form>
                 </div>

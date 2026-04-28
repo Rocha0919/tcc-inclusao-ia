@@ -4,7 +4,7 @@
 <style>
     .hero-wrapper {
         display: grid;
-        grid-template-columns: 1.4fr 0.6fr; /* Aumentei ainda mais o espaço do texto */
+        grid-template-columns: 1.4fr 0.6fr;
         align-items: center;
         padding: 80px 0;
         min-height: 550px;
@@ -17,12 +17,12 @@
     }
 
     .hero-text h1 {
-        font-size: 3.3rem; 
+        font-size: 3.3rem;
         line-height: 1.1;
         color: #1a202c;
         margin-bottom: 24px;
         font-weight: 800;
-        white-space: nowrap; 
+        white-space: nowrap;
     }
 
     .hero-text h1 span.text-blue { color: #1a56db; }
@@ -47,18 +47,17 @@
         transition: 0.3s;
     }
 
-    /* --- COMPOSIÇÃO DESEMBOLADA --- */
     .hero-visuals {
         position: relative;
         height: 400px;
         width: 100%;
         display: flex;
-        justify-content: flex-end; /* Garante que o grupo fique na direita */
+        justify-content: flex-end;
     }
 
     .shapes-container {
         position: relative;
-        width: 400px; /* Largura fixa para o grupo de formas */
+        width: 400px;
         height: 100%;
     }
 
@@ -68,16 +67,14 @@
         position: absolute;
     }
 
-    /* Quadrado Superior - Mais isolado no topo */
     .shape-top {
         width: 180px;
         height: 180px;
         top: -20px;
-        right: 160px; /* Distância da borda direita */
+        right: 160px;
         z-index: 1;
     }
 
-    /* Retângulo Principal - Centralizado e mais largo */
     .shape-main {
         width: 320px;
         height: 200px;
@@ -86,7 +83,6 @@
         z-index: 3;
     }
 
-    /* Quadrado da Direita - O que fica mais na ponta de fora */
     .shape-right {
         width: 180px;
         height: 180px;
@@ -110,9 +106,11 @@
         
         <div class="hero-buttons">
             {% if not user.is_authenticated %}
-                <a href="{% url 'signup' %}" class="btn-solid">Criar Conta e Começar</a>
+                <a href="{% url 'signup' %}" class="btn-solid">Criar conta e começar</a>
+            {% elif user.is_teacher %}
+                <a href="{% url 'teacher_dashboard' %}" class="btn-solid">Abrir painel do professor</a>
             {% else %}
-                <a href="{% url 'profile_detail' %}" class="btn-solid">Recomendação (Meu Painel)</a>
+                <a href="{% url 'profile_detail' %}" class="btn-solid">Abrir meu painel</a>
             {% endif %}
         </div>
     </div>

@@ -11,4 +11,9 @@ urlpatterns = [
     path('perfil/configurar/', views.profile_create, name='profile_create'),
     path('perfil/', views.profile_view, name='profile_view'), # Nova rota para visualizar
     path('perfil/editar/', views.profile_edit, name='profile_edit'),
+    path('professor/', views.teacher_dashboard, name='teacher_dashboard'),
+    path('professor/alunos/novo/', views.teacher_student_create, name='teacher_student_create'),
+    path('professor/alunos/<int:student_id>/', views.teacher_student_detail, name='teacher_student_detail'),
+    path('professor/alunos/<int:student_id>/editar/', views.teacher_student_edit, name='teacher_student_edit'),
+    path('professor/alunos/<int:student_id>/excluir/', views.teacher_student_delete, name='teacher_student_delete'),
 ]

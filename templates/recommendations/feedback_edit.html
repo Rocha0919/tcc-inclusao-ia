@@ -3,7 +3,7 @@
 <div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 40px;">
     <div class="card shadow-lg" style="width: 100%; max-width: 500px; padding: 0; border-radius: 15px; border: none;">
         <div style="background: #f8fafc; padding: 20px; border-radius: 15px 15px 0 0; border-bottom: 1px solid #eee; text-align: center;">
-            <h2 style="color: var(--primary); margin: 0; font-size: 1.5rem;">Editar Avaliação</h2>
+            <h2 style="color: var(--primary); margin: 0; font-size: 1.5rem;">Editar avaliação</h2>
         </div>
         
         <div style="padding: 30px;">
@@ -14,22 +14,25 @@
 
             <form method="POST">
                 {% csrf_token %}
+                {% if student_id %}
+                    <input type="hidden" name="student_id" value="{{ student_id }}">
+                {% endif %}
                 
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label style="display: block; font-weight: bold; margin-bottom: 8px; color: #334155;">Nota (1 a 5):</label>
-                    <input type="number" name="score" min="1" max="5" value="{{ feedback.score }}" required 
+                    <input type="number" name="score" min="1" max="5" value="{{ feedback.score }}" required
                            style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1.1rem; text-align: center; font-weight: bold; color: var(--primary);">
                 </div>
 
                 <div class="form-group" style="margin-bottom: 25px;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 8px; color: #334155;">Seu Comentário:</label>
-                    <textarea name="user_comment" rows="4" 
+                    <label style="display: block; font-weight: bold; margin-bottom: 8px; color: #334155;">Seu comentário:</label>
+                    <textarea name="user_comment" rows="4"
                               style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; resize: vertical; line-height: 1.5;">{{ feedback.user_comment|default_if_none:'' }}</textarea>
                 </div>
 
                 <div style="display: flex; gap: 15px;">
-                    <a href="{% url 'feedback_history' %}" class="btn btn-outline" style="flex: 1; text-align: center; border: 2px solid #cbd5e1; color: #64748b; padding: 12px; border-radius: 8px; text-decoration: none;">Cancelar</a>
-                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px; font-weight: bold; border-radius: 8px;">Salvar Alterações</button>
+                    <a href="{{ cancel_url }}" class="btn btn-outline" style="flex: 1; text-align: center; border: 2px solid #cbd5e1; color: #64748b; padding: 12px; border-radius: 8px; text-decoration: none;">Cancelar</a>
+                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px; font-weight: bold; border-radius: 8px;">Salvar alterações</button>
                 </div>
             </form>
         </div>

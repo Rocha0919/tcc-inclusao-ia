@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 <style>
-    /* Estilos baseados na imagem de referência - Mantidos como no seu original */
     .page-container {
         max-width: 800px;
         margin: 40px auto;
@@ -70,7 +69,7 @@
 
 <div class="page-container">
     <h1 class="page-title">Atualizar Meu Perfil</h1>
-    <div class="breadcrumb">Painel > <strong>Configurações</strong></div>
+    <div class="breadcrumb">Painel &gt; <strong>Configurações</strong></div>
     
     <form method="POST">
         {% csrf_token %}

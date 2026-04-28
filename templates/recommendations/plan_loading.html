@@ -1,0 +1,651 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="loading-shell">
+    <a href="{{ back_url }}" class="page-back-link">&larr; {{ back_label }}</a>
+
+    <div class="loading-card">
+        <div class="loading-card__intro">
+            <span class="eyebrow">Acompanhamento da geracao</span>
+            <p class="loading-card__subtitle">
+                O sistema esta preparando um plano comparativo de tecnologias assistivas com base no perfil informado.
+            </p>
+        </div>
+
+        <div id="loading-state" class="loading-panel">
+            <div aria-hidden="true" class="loading-spinner"></div>
+            <h1 id="status-title" class="loading-title">Gerando recomendacao</h1>
+            <p id="status-message" class="loading-copy">{{ loading_message }}</p>
+            <p id="status-hint" class="loading-hint">
+                A pagina acompanhara o processo automaticamente e abrira o plano assim que ele estiver pronto.
+            </p>
+            <div class="loading-steps">
+                <div class="loading-step">
+                    <span class="loading-step__index">1</span>
+                    <div>
+                        <strong class="loading-step__title">Leitura do perfil</strong>
+                        <p class="loading-step__body">O contexto biopsicossocial e educacional e organizado para a analise.</p>
+                    </div>
+                </div>
+                <div class="loading-step">
+                    <span class="loading-step__index">2</span>
+                    <div>
+                        <strong class="loading-step__title">Comparacao dos modelos</strong>
+                        <p class="loading-step__body">As sugestoes sao cruzadas para construir um plano mais util e explicavel.</p>
+                    </div>
+                </div>
+                <div class="loading-step">
+                    <span class="loading-step__index">3</span>
+                    <div>
+                        <strong class="loading-step__title">Entrega do plano</strong>
+                        <p class="loading-step__body">O relatorio final abre automaticamente assim que a sessao for concluida.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="loading-actions">
+                <button id="cancel-button" type="button" class="btn btn-soft">Cancelar geracao</button>
+                <a href="{{ back_url }}" class="btn btn-outline">Voltar</a>
+            </div>
+        </div>
+
+        <div id="result-state" class="loading-panel loading-panel--error is-hidden">
+            <div id="result-icon" class="result-icon">!</div>
+            <h2 id="result-title" class="loading-title loading-result-title">Nao foi possivel concluir a geracao</h2>
+            <p id="result-message" class="loading-copy loading-result-copy">Ocorreu um erro inesperado ao gerar as recomendacoes.</p>
+            <div class="loading-actions">
+                <button id="retry-button" type="button" class="btn btn-primary">Tentar novamente</button>
+                <a id="open-plan-link" href="#" class="btn btn-soft is-hidden">Abrir plano pronto</a>
+                <a href="{{ back_url }}" class="btn btn-outline">Voltar</a>
+            </div>
+        </div>
+    </div>
+
+    <form id="generation-csrf-form" class="visually-hidden">
+        {% csrf_token %}
+    </form>
+</section>
+
+<script>
+    (() => {
+        const generateUrl = "{{ generate_url|escapejs }}";
+        const statusUrl = "{{ status_url|escapejs }}";
+        const cancelUrl = "{{ cancel_url|escapejs }}";
+        const defaultMessage = "{{ loading_message|escapejs }}";
+        const flowType = "{{ flow_type|escapejs }}";
+        const startRequested = "{{ start_requested|yesno:'true,false' }}" === 'true';
+        const originUrl = "{{ origin_url|escapejs }}";
+        const currentProfileId = "{{ profile.id }}";
+        const currentStudentId = "{{ student_id }}";
+        const loggedUser = "{{ logged_user|escapejs }}";
+        const csrfInput = document.querySelector('#generation-csrf-form input[name="csrfmiddlewaretoken"]');
+        const loadingState = document.getElementById('loading-state');
+        const resultState = document.getElementById('result-state');
+        const statusTitle = document.getElementById('status-title');
+        const statusMessage = document.getElementById('status-message');
+        const statusHint = document.getElementById('status-hint');
+        const resultIcon = document.getElementById('result-icon');
+        const resultTitle = document.getElementById('result-title');
+        const resultMessage = document.getElementById('result-message');
+        const retryButton = document.getElementById('retry-button');
+        const cancelButton = document.getElementById('cancel-button');
+        const openPlanLink = document.getElementById('open-plan-link');
+        const cancelingMessage = 'Cancelando geracao... aguarde alguns instantes.';
+        const defaultHint = 'A pagina acompanhara o processo automaticamente e abrira o plano assim que ele estiver pronto.';
+        const cancelingHint = 'A geracao anterior esta sendo cancelada. Aguarde para iniciar uma nova.';
+
+        let pollingTimer = null;
+        let requestInFlight = false;
+        let cancelRequestedByUser = false;
+        let cancellationPending = false;
+        let startController = null;
+        let statusController = null;
+        let cancelController = null;
+        const resultToneClasses = ['loading-panel--error', 'loading-panel--cancelled', 'loading-panel--success'];
+
+        function logInfo(eventName, data = {}) {
+            console.info('[plan-loading]', eventName, {
+                flowType,
+                profileId: currentProfileId || null,
+                studentId: currentStudentId || null,
+                loggedUser,
+                generateUrl,
+                statusUrl,
+                cancelUrl,
+                originUrl,
+                ...data,
+            });
+        }
+
+        function logError(eventName, error, data = {}) {
+            console.error('[plan-loading]', eventName, {
+                flowType,
+                profileId: currentProfileId || null,
+                studentId: currentStudentId || null,
+                loggedUser,
+                generateUrl,
+                statusUrl,
+                cancelUrl,
+                originUrl,
+                ...data,
+            }, error);
+        }
+
+        function showElement(element) {
+            element.classList.remove('is-hidden');
+        }
+
+        function hideElement(element) {
+            element.classList.add('is-hidden');
+        }
+
+        function buildRequestBody(forceRetry = false) {
+            const payload = new URLSearchParams();
+            if (currentStudentId) {
+                payload.set('aluno_id', currentStudentId);
+            }
+            if (originUrl) {
+                payload.set('next', originUrl);
+            }
+            if (forceRetry) {
+                payload.set('retry', '1');
+            }
+            return payload.toString();
+        }
+
+        function clearPolling() {
+            if (pollingTimer) {
+                window.clearInterval(pollingTimer);
+                pollingTimer = null;
+            }
+        }
+
+        function abortController(controller) {
+            if (controller) {
+                controller.abort();
+            }
+        }
+
+        function abortActiveRequests() {
+            abortController(startController);
+            abortController(statusController);
+        }
+
+        function setButtonState(button, disabled, label) {
+            if (!button) {
+                return;
+            }
+            button.disabled = disabled;
+            if (label) {
+                button.textContent = label;
+            }
+        }
+
+        function setResultTone(tone) {
+            resultState.classList.remove(...resultToneClasses);
+            resultState.classList.add(`loading-panel--${tone}`);
+        }
+
+        function showLoading(message) {
+            showElement(loadingState);
+            hideElement(resultState);
+            hideElement(openPlanLink);
+            statusTitle.textContent = 'Gerando recomendacao';
+            statusMessage.textContent = message || defaultMessage;
+            statusHint.textContent = defaultHint;
+            setButtonState(cancelButton, false, 'Cancelar geracao');
+        }
+
+        function showCanceling(message) {
+            showElement(loadingState);
+            hideElement(resultState);
+            hideElement(openPlanLink);
+            statusTitle.textContent = 'Cancelando geracao';
+            statusMessage.textContent = message || cancelingMessage;
+            statusHint.textContent = cancelingHint;
+            setButtonState(cancelButton, true, 'Cancelando...');
+            setButtonState(retryButton, true, 'Aguarde...');
+            requestInFlight = false;
+        }
+
+        function showResult(options) {
+            const tone = options.tone || 'error';
+            const iconMap = {
+                error: '!',
+                cancelled: 'x',
+                success: 'ok',
+            };
+
+            clearPolling();
+            hideElement(loadingState);
+            showElement(resultState);
+            setResultTone(tone);
+            resultIcon.textContent = iconMap[tone] || iconMap.error;
+            resultTitle.textContent = options.title;
+            resultMessage.textContent = options.message;
+
+            if (options.redirectUrl) {
+                showElement(openPlanLink);
+                openPlanLink.href = options.redirectUrl;
+            } else {
+                hideElement(openPlanLink);
+                openPlanLink.href = '#';
+            }
+
+            setButtonState(retryButton, false, 'Tentar novamente');
+            setButtonState(cancelButton, false, 'Cancelar geracao');
+            requestInFlight = false;
+        }
+
+        function redirectToOrigin(reason) {
+            const targetUrl = originUrl || "{{ back_url|escapejs }}";
+            logInfo('redirect_to_origin', {
+                reason,
+                targetUrl,
+            });
+            clearPolling();
+            window.location.replace(targetUrl);
+        }
+
+        function handlePlanReady(redirectUrl) {
+            if (cancelRequestedByUser || cancellationPending) {
+                logInfo('plan_ready_ignored_after_cancel', {
+                    redirectUrl,
+                });
+                showCanceling(cancelingMessage);
+                window.setTimeout(pollStatus, 1200);
+                return;
+            }
+
+            clearPolling();
+            window.location.replace(redirectUrl);
+        }
+
+        async function readJson(response) {
+            try {
+                return await response.json();
+            } catch (_error) {
+                return {};
+            }
+        }
+
+        async function pollStatus() {
+            abortController(statusController);
+            statusController = new AbortController();
+
+            try {
+                logInfo('status_request');
+                const response = await fetch(statusUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
+                    signal: statusController.signal
+                });
+                const data = await readJson(response);
+                logInfo('status_response', {
+                    httpStatus: response.status,
+                    generationStatus: data.status || null,
+                });
+
+                if (!response.ok || !data.status) {
+                    const message = data.message || 'Nao foi possivel acompanhar o andamento da geracao. Tente novamente.';
+                    logError('status_response_invalid', new Error(message), {
+                        httpStatus: response.status,
+                        responseData: data,
+                    });
+                    showResult({
+                        tone: 'error',
+                        title: 'Nao foi possivel acompanhar a geracao',
+                        message: message,
+                    });
+                    return;
+                }
+
+                if (data.status === 'success' && data.redirect_url) {
+                    handlePlanReady(data.redirect_url);
+                    return;
+                }
+
+                if (data.status === 'canceling') {
+                    cancellationPending = true;
+                    showCanceling(data.message || cancelingMessage);
+                    return;
+                }
+
+                if (data.status === 'cancelled') {
+                    cancellationPending = false;
+                    redirectToOrigin('status_cancelled');
+                    return;
+                }
+
+                if (data.status === 'error') {
+                    showResult({
+                        tone: 'error',
+                        title: 'Nao foi possivel concluir a geracao',
+                        message: data.message || 'Ocorreu um erro inesperado ao gerar as recomendacoes.',
+                    });
+                    return;
+                }
+
+                if (data.message) {
+                    statusMessage.textContent = data.message;
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    logInfo('status_request_aborted');
+                    return;
+                }
+                logError('status_request_failed', error);
+                showResult({
+                    tone: 'error',
+                    title: 'Nao foi possivel acompanhar a geracao',
+                    message: 'Nao foi possivel acompanhar o andamento da geracao. Tente novamente.',
+                });
+            }
+        }
+
+        function startPolling() {
+            clearPolling();
+            pollStatus();
+            pollingTimer = window.setInterval(pollStatus, 3000);
+        }
+
+        async function startGeneration(forceRetry = false) {
+            if (requestInFlight) {
+                return;
+            }
+
+            cancelRequestedByUser = false;
+            cancellationPending = false;
+            requestInFlight = true;
+            abortController(cancelController);
+            cancelController = null;
+            setButtonState(retryButton, true, 'Iniciando...');
+            setButtonState(cancelButton, true, 'Preparando...');
+            showLoading(defaultMessage);
+
+            startController = new AbortController();
+
+            try {
+                const requestBody = buildRequestBody(forceRetry);
+                logInfo('generate_request', {
+                    forceRetry,
+                    requestBody: requestBody || '(empty)',
+                });
+                const response = await fetch(generateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-CSRFToken': csrfInput ? csrfInput.value : '',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: requestBody,
+                    credentials: 'same-origin',
+                    signal: startController.signal
+                });
+                const data = await readJson(response);
+                requestInFlight = false;
+                logInfo('generate_response', {
+                    httpStatus: response.status,
+                    generationStatus: data.status || null,
+                });
+
+                if (!response.ok || !data.status) {
+                    const message = data.message || 'Ocorreu um problema ao iniciar a geracao.';
+                    logError('generate_response_invalid', new Error(message), {
+                        forceRetry,
+                        httpStatus: response.status,
+                        responseData: data,
+                    });
+                    showResult({
+                        tone: 'error',
+                        title: 'Nao foi possivel iniciar a geracao',
+                        message: message,
+                    });
+                    return;
+                }
+
+                if (data.status === 'success' && data.redirect_url) {
+                    handlePlanReady(data.redirect_url);
+                    return;
+                }
+
+                if (data.status === 'canceling') {
+                    cancellationPending = true;
+                    showCanceling(data.message || cancelingMessage);
+                    startPolling();
+                    return;
+                }
+
+                if (data.status === 'cancelled') {
+                    redirectToOrigin('generate_cancelled');
+                    return;
+                }
+
+                if (data.status === 'error') {
+                    showResult({
+                        tone: 'error',
+                        title: 'Nao foi possivel iniciar a geracao',
+                        message: data.message || 'Ocorreu um problema ao iniciar a geracao.',
+                    });
+                    return;
+                }
+
+                if (data.message) {
+                    statusMessage.textContent = data.message;
+                }
+
+                setButtonState(cancelButton, false, 'Cancelar geracao');
+                startPolling();
+            } catch (error) {
+                requestInFlight = false;
+                if (error.name === 'AbortError') {
+                    logInfo('generate_request_aborted', { forceRetry });
+                    return;
+                }
+                logError('generate_request_failed', error, { forceRetry });
+                showResult({
+                    tone: 'error',
+                    title: 'Nao foi possivel iniciar a geracao',
+                    message: 'Ocorreu um problema ao iniciar a geracao. Tente novamente.',
+                });
+            }
+        }
+
+        async function cancelGeneration() {
+            cancelRequestedByUser = true;
+            cancellationPending = true;
+            clearPolling();
+            abortActiveRequests();
+            showCanceling(cancelingMessage);
+
+            cancelController = new AbortController();
+
+            try {
+                const requestBody = buildRequestBody(false);
+                logInfo('cancel_request', {
+                    requestBody: requestBody || '(empty)',
+                });
+                const response = await fetch(cancelUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-CSRFToken': csrfInput ? csrfInput.value : '',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: requestBody,
+                    credentials: 'same-origin',
+                    signal: cancelController.signal
+                });
+                const data = await readJson(response);
+                logInfo('cancel_response', {
+                    httpStatus: response.status,
+                    generationStatus: data.status || null,
+                });
+
+                if (!response.ok || !data.status) {
+                    const message = data.message || 'O servidor nao conseguiu confirmar o cancelamento agora. Aguarde alguns instantes.';
+                    logError('cancel_response_invalid', new Error(message), {
+                        httpStatus: response.status,
+                        responseData: data,
+                    });
+                    showResult({
+                        tone: 'error',
+                        title: 'Nao foi possivel confirmar o cancelamento',
+                        message: message,
+                    });
+                    return;
+                }
+
+                if (data.status === 'canceling') {
+                    showCanceling(data.message || cancelingMessage);
+                    startPolling();
+                    return;
+                }
+
+                if (data.status === 'cancelled' || data.status === 'completed') {
+                    cancellationPending = false;
+                    redirectToOrigin('cancel_finished');
+                    return;
+                }
+
+                showResult({
+                    tone: 'error',
+                    title: 'Nao foi possivel confirmar o cancelamento',
+                    message: data.message || 'O servidor nao conseguiu confirmar o cancelamento agora. Aguarde alguns instantes.',
+                });
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    logInfo('cancel_request_aborted');
+                    return;
+                }
+                logError('cancel_request_failed', error);
+                showResult({
+                    tone: 'error',
+                    title: 'Nao foi possivel confirmar o cancelamento',
+                    message: 'O redirecionamento foi interrompido nesta tela, mas o servidor nao confirmou o cancelamento. Aguarde alguns instantes e tente novamente.',
+                });
+            }
+        }
+
+        async function initializeGenerationView() {
+            logInfo('initialize');
+            if (startRequested && window.history.replaceState) {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.delete('start');
+                window.history.replaceState({}, document.title, currentUrl.toString());
+            }
+            showLoading(defaultMessage);
+            abortController(statusController);
+            statusController = new AbortController();
+
+            try {
+                logInfo('initial_status_request');
+                const response = await fetch(statusUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
+                    signal: statusController.signal
+                });
+                const data = await readJson(response);
+                logInfo('initial_status_response', {
+                    httpStatus: response.status,
+                    generationStatus: data.status || null,
+                });
+
+                if (!response.ok && response.status !== 404) {
+                    const message = data.message || 'Ocorreu um erro inesperado ao consultar a geracao.';
+                    logError('initial_status_invalid_http', new Error(message), {
+                        httpStatus: response.status,
+                        responseData: data,
+                    });
+                    showResult({
+                        tone: 'error',
+                        title: 'Nao foi possivel concluir a geracao',
+                        message: message,
+                    });
+                    return;
+                }
+
+                if (data.status === 'success' && data.redirect_url) {
+                    handlePlanReady(data.redirect_url);
+                    return;
+                }
+
+                if (data.status === 'canceling') {
+                    cancellationPending = true;
+                    showCanceling(data.message || cancelingMessage);
+                    startPolling();
+                    return;
+                }
+
+                if (data.status === 'processing') {
+                    if (data.message) {
+                        statusMessage.textContent = data.message;
+                    }
+                    setButtonState(cancelButton, false, 'Cancelar geracao');
+                    startPolling();
+                    return;
+                }
+
+                if (data.status === 'cancelled') {
+                    redirectToOrigin('initial_status_cancelled');
+                    return;
+                }
+
+                if (data.status === 'error' && response.status !== 404) {
+                    logError('initial_status_error', new Error(data.message || 'Erro na consulta inicial de status.'), {
+                        httpStatus: response.status,
+                        responseData: data,
+                    });
+                    showResult({
+                        tone: 'error',
+                        title: 'Nao foi possivel concluir a geracao',
+                        message: data.message || 'Ocorreu um erro inesperado ao gerar as recomendacoes.',
+                    });
+                    return;
+                }
+
+                if (!data.status && response.status !== 404) {
+                    logError('initial_status_missing_state', new Error('Resposta sem status na consulta inicial.'), {
+                        httpStatus: response.status,
+                        responseData: data,
+                    });
+                    showResult({
+                        tone: 'error',
+                        title: 'Nao foi possivel concluir a geracao',
+                        message: 'Ocorreu um erro inesperado ao consultar o status da geracao.',
+                    });
+                    return;
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    logInfo('initial_status_aborted');
+                    return;
+                }
+                logError('initial_status_failed', error);
+            }
+
+            startGeneration();
+        }
+
+        retryButton.addEventListener('click', function() {
+            startGeneration(true);
+        });
+        cancelButton.addEventListener('click', cancelGeneration);
+        window.addEventListener('beforeunload', function() {
+            clearPolling();
+            abortActiveRequests();
+            abortController(cancelController);
+        });
+
+        initializeGenerationView();
+    })();
+</script>
+{% endblock %}

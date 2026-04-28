@@ -12,4 +12,9 @@ urlpatterns = [
     # Rota para a inteligência artificial e recomendações
     path('recomendacoes/', include('apps.recommendations.urls')),
     
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
+
+if settings.DEBUG:
+    static_dir = settings.STATICFILES_DIRS[0] if getattr(settings, 'STATICFILES_DIRS', None) else settings.STATIC_ROOT
+    urlpatterns += static(settings.STATIC_URL, document_root=static_dir)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

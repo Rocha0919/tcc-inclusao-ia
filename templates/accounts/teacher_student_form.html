@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="form-shell">
+    <div class="form-card">
+        <div class="form-header">
+            <a href="{% if is_editing %}{% url 'teacher_student_detail' student_profile.id %}{% else %}{% url 'teacher_dashboard' %}{% endif %}" class="page-back-link">&larr; Voltar</a>
+            <span class="eyebrow">Cadastro de aluno</span>
+            <h1 class="form-title">{{ page_title }}</h1>
+            <p class="form-intro">
+                Preencha os dados biopsicossociais e educacionais do aluno para permitir recomendacoes mais aderentes ao contexto informado.
+            </p>
+        </div>
+
+        <form method="POST" class="form-stack">
+            {% csrf_token %}
+
+            <section class="form-section">
+                <h2 class="form-section__title">Identificacao</h2>
+                <div class="field-grid">
+                    <div class="field-group field-group--wide">
+                        <label class="field-label" for="student_name">Nome do aluno</label>
+                        <input id="student_name" type="text" name="student_name" value="{{ form_values.student_name }}" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="form-section__title">1. Condicao fisica e biologica</h2>
+                <div class="field-grid">
+                    <div class="field-group">
+                        <label class="field-label" for="primary_disability_category">Categoria de deficiencia principal</label>
+                        <select id="primary_disability_category" name="primary_disability_category" required>
+                            <option value="">Selecione...</option>
+                            {% for sigla, nome in categorias %}
+                                <option value="{{ sigla }}" {% if form_values.primary_disability_category == sigla %}selected{% endif %}>{{ nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="grau_severidade">Grau de severidade</label>
+                        <select id="grau_severidade" name="grau_severidade">
+                            <option value="">Selecione...</option>
+                            <option value="leve" {% if form_values.grau_severidade == 'leve' %}selected{% endif %}>Leve</option>
+                            <option value="moderado" {% if form_values.grau_severidade == 'moderado' %}selected{% endif %}>Moderado</option>
+                            <option value="severo" {% if form_values.grau_severidade == 'severo' %}selected{% endif %}>Severo</option>
+                        </select>
+                    </div>
+                    <div class="field-group field-group--wide">
+                        <label class="field-label" for="limitacoes_especificas">Limitacoes motoras ou sensoriais especificas</label>
+                        <input id="limitacoes_especificas" type="text" name="limitacoes_especificas" value="{{ form_values.limitacoes_especificas }}">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="form-section__title">2. Aspectos cognitivos e comportamentais</h2>
+                <div class="field-grid">
+                    <div class="field-group">
+                        <label class="field-label" for="estilo_aprendizado">Como o aluno prefere absorver informacoes?</label>
+                        <select id="estilo_aprendizado" name="estilo_aprendizado">
+                            <option value="">Selecione...</option>
+                            <option value="visual" {% if form_values.estilo_aprendizado == 'visual' %}selected{% endif %}>Visual</option>
+                            <option value="auditivo" {% if form_values.estilo_aprendizado == 'auditivo' %}selected{% endif %}>Auditivo</option>
+                            <option value="cinestesico" {% if form_values.estilo_aprendizado == 'cinestesico' %}selected{% endif %}>Pratico</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="barreiras_cognitivas">Barreiras cognitivas ou emocionais</label>
+                        <input id="barreiras_cognitivas" type="text" name="barreiras_cognitivas" value="{{ form_values.barreiras_cognitivas }}">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="form-section__title">3. Objetivos e contexto social</h2>
+                <div class="field-grid">
+                    <div class="field-group">
+                        <label class="field-label" for="objetivo_principal">Foco principal no momento</label>
+                        <select id="objetivo_principal" name="objetivo_principal" required>
+                            <option value="">Selecione...</option>
+                            <option value="estudo" {% if form_values.objetivo_principal == 'estudo' %}selected{% endif %}>Estudo</option>
+                            <option value="trabalho" {% if form_values.objetivo_principal == 'trabalho' %}selected{% endif %}>Trabalho</option>
+                            <option value="vida_diaria" {% if form_values.objetivo_principal == 'vida_diaria' %}selected{% endif %}>Vida diaria</option>
+                            <option value="reabilitacao" {% if form_values.objetivo_principal == 'reabilitacao' %}selected{% endif %}>Reabilitacao</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="orcamento">Disponibilidade financeira</label>
+                        <select id="orcamento" name="orcamento">
+                            <option value="gratuito" {% if form_values.orcamento == 'gratuito' %}selected{% endif %}>Priorizar gratuito</option>
+                            <option value="baixo_custo" {% if form_values.orcamento == 'baixo_custo' %}selected{% endif %}>Baixo custo</option>
+                            <option value="sem_restricao" {% if form_values.orcamento == 'sem_restricao' %}selected{% endif %}>Sem restricao</option>
+                        </select>
+                    </div>
+                    <div class="field-group field-group--wide">
+                        <label class="field-label" for="barreiras">Barreiras no dia a dia</label>
+                        <textarea id="barreiras" name="barreiras" rows="4" required>{{ form_values.barreiras }}</textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="form-section__title">4. Ambiente tecnologico</h2>
+                <div class="field-grid">
+                    <div class="field-group field-group--wide">
+                        <label class="field-label" for="dispositivos">Dispositivos disponiveis</label>
+                        <input id="dispositivos" type="text" name="dispositivos" value="{{ form_values.dispositivos }}">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="nivel_tecnologico">Nivel de afinidade com tecnologia</label>
+                        <select id="nivel_tecnologico" name="nivel_tecnologico" required>
+                            <option value="">Selecione...</option>
+                            <option value="iniciante" {% if form_values.nivel_tecnologico == 'iniciante' %}selected{% endif %}>Iniciante</option>
+                            <option value="intermediario" {% if form_values.nivel_tecnologico == 'intermediario' %}selected{% endif %}>Intermediario</option>
+                            <option value="avancado" {% if form_values.nivel_tecnologico == 'avancado' %}selected{% endif %}>Avancado</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="ferramentas_previas">Ferramentas previas</label>
+                        <input id="ferramentas_previas" type="text" name="ferramentas_previas" value="{{ form_values.ferramentas_previas }}">
+                    </div>
+                </div>
+            </section>
+
+            <div class="page-actions">
+                <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

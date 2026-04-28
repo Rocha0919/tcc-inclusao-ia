@@ -1,0 +1,142 @@
+<script>
+    (() => {
+        const watcherNodes = Array.from(document.querySelectorAll('[data-generation-watcher="true"]'));
+        if (!watcherNodes.length) {
+            return;
+        }
+
+        const activeStates = new Set(['generating', 'canceling']);
+        let pollingTimer = null;
+        let reloadScheduled = false;
+
+        function normalizeState(payload) {
+            if (payload && payload.generation_state) {
+                return payload.generation_state;
+            }
+
+            switch (payload && payload.status) {
+                case 'processing':
+                    return 'generating';
+                case 'canceling':
+                    return 'canceling';
+                case 'success':
+                    return 'completed';
+                case 'cancelled':
+                    return 'canceled';
+                case 'error':
+                    return 'error';
+                case 'idle':
+                    return 'idle';
+                default:
+                    return '';
+            }
+        }
+
+        function scheduleReload(reason, context = {}) {
+            if (reloadScheduled) {
+                return;
+            }
+
+            reloadScheduled = true;
+            if (pollingTimer) {
+                window.clearInterval(pollingTimer);
+                pollingTimer = null;
+            }
+
+            console.info('[generation-status-polling] reload', {
+                reason,
+                ...context,
+            });
+            window.location.reload();
+        }
+
+        async function pollWatcher(node) {
+            const statusUrl = node.dataset.statusUrl;
+            const currentState = node.dataset.currentState || '';
+            const profileId = node.dataset.profileId || null;
+
+            if (!statusUrl || !activeStates.has(currentState) || reloadScheduled) {
+                return currentState;
+            }
+
+            try {
+                const response = await fetch(statusUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
+                });
+                const data = await response.json().catch(() => ({}));
+                const nextState = normalizeState(data);
+
+                console.info('[generation-status-polling] status', {
+                    profileId,
+                    statusUrl,
+                    currentState,
+                    nextState,
+                    httpStatus: response.status,
+                });
+
+                if (response.status === 404) {
+                    scheduleReload('status_not_found', {
+                        profileId,
+                        statusUrl,
+                    });
+                    return currentState;
+                }
+
+                if (!response.ok || !nextState) {
+                    return currentState;
+                }
+
+                if (nextState !== currentState) {
+                    node.dataset.currentState = nextState;
+                    scheduleReload('status_changed', {
+                        profileId,
+                        statusUrl,
+                        from: currentState,
+                        to: nextState,
+                    });
+                    return nextState;
+                }
+
+                return nextState;
+            } catch (error) {
+                console.error('[generation-status-polling] request_failed', {
+                    profileId,
+                    statusUrl,
+                    currentState,
+                }, error);
+                return currentState;
+            }
+        }
+
+        async function pollWatchers() {
+            if (reloadScheduled) {
+                return;
+            }
+
+            const states = await Promise.all(watcherNodes.map(pollWatcher));
+            if (reloadScheduled) {
+                return;
+            }
+
+            const hasActiveWatchers = states.some((state) => activeStates.has(state));
+            if (!hasActiveWatchers && pollingTimer) {
+                window.clearInterval(pollingTimer);
+                pollingTimer = null;
+            }
+        }
+
+        pollWatchers();
+        pollingTimer = window.setInterval(pollWatchers, 4000);
+        window.addEventListener('beforeunload', function() {
+            if (pollingTimer) {
+                window.clearInterval(pollingTimer);
+                pollingTimer = null;
+            }
+        });
+    })();
+</script>

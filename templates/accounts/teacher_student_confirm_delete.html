@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="confirm-shell">
+    <div class="confirm-card">
+        <div class="confirm-header">
+            <span class="eyebrow">Acao sensivel</span>
+            <h1 class="confirm-title">Excluir aluno</h1>
+            <p class="confirm-copy">
+                Tem certeza de que deseja excluir o perfil de <strong>{{ student_profile.display_name }}</strong>?
+                As recomendacoes e avaliacoes associadas a esse perfil tambem serao removidas.
+            </p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="confirm-actions">
+                <a href="{% url 'teacher_student_detail' student_profile.id %}" class="btn btn-soft">Cancelar</a>
+                <button type="submit" class="btn btn-danger">Confirmar exclusao</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

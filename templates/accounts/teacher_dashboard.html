@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-shell">
+    <div class="page-header">
+        <div class="page-header__text">
+            <span class="eyebrow">Fluxo do professor</span>
+            <h1 class="page-title">Painel do professor</h1>
+            <p class="page-subtitle">
+                Cadastre alunos, acompanhe perfis, gere novos planos e revise o historico de recomendacoes de cada um.
+            </p>
+        </div>
+        <div class="page-actions">
+            <a href="{% url 'teacher_student_create' %}" class="btn btn-primary">Cadastrar aluno</a>
+        </div>
+    </div>
+
+    {% if students %}
+        <div class="student-grid">
+            {% for student in students %}
+                <article class="student-card">
+                    {% if student.is_generating %}
+                        <div
+                            data-generation-watcher="true"
+                            data-profile-id="{{ student.id }}"
+                            data-status-url="{% url 'student_plan_generation_status' student.id %}"
+                            data-current-state="{% if student.generation_cancel_requested %}canceling{% else %}generating{% endif %}"
+                            hidden
+                        ></div>
+                    {% endif %}
+
+                    <div class="student-card__top">
+                        <div>
+                            <h2 class="student-card__name">{{ student.display_name }}</h2>
+                            <p class="student-card__subtitle">{{ student.primary_disability_category }}</p>
+                        </div>
+                        {% if student.is_generating and student.generation_cancel_requested %}
+                            <span class="status-pill status-pill--warning">Cancelando geracao</span>
+                        {% elif student.is_generating %}
+                            <span class="status-pill status-pill--info">Gerando plano</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="student-metrics">
+                        <div class="metric-card">
+                            <span class="metric-card__label">Planos gerados</span>
+                            <span class="metric-card__value">{{ student.total_sessions }}</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-card__label">Ultimo plano</span>
+                            <span class="metric-card__value">
+                                {% if student.last_session_at %}
+                                    {{ student.last_session_at|date:"d/m/Y" }}
+                                {% else %}
+                                    Ainda nao gerado
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="student-card__actions">
+                        <div class="action-grid">
+                            <a href="{% url 'teacher_student_detail' student.id %}" class="btn btn-soft btn-sm">Ver perfil</a>
+                            <a href="{% url 'teacher_student_edit' student.id %}" class="btn btn-outline btn-sm">Editar</a>
+                        </div>
+
+                        <div class="action-grid">
+                            {% if student.is_generating and student.generation_cancel_requested %}
+                                <div class="status-panel status-panel--canceling">
+                                    <p class="status-panel__title">Cancelando geracao...</p>
+                                    <p class="status-panel__body">Aguarde para iniciar uma nova.</p>
+                                </div>
+                            {% elif student.is_generating %}
+                                <a href="{% url 'student_plan_generation_loading' student.id %}?next={{ request.path|urlencode }}" class="btn btn-primary btn-sm">
+                                    Acompanhar geracao
+                                </a>
+                            {% else %}
+                                <form
+                                    class="inline-form"
+                                    action="{% url 'student_plan_generation_loading' student.id %}"
+                                    method="GET"
+                                    data-loading-form
+                                    data-loading-button-id="student-generate-button-{{ student.id }}"
+                                    data-loading-text="Abrindo carregamento..."
+                                >
+                                    <input type="hidden" name="start" value="1">
+                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                    <button type="submit" id="student-generate-button-{{ student.id }}" class="btn btn-primary btn-sm btn-full" data-loading-button>
+                                        Gerar recomendacao
+                                    </button>
+                                </form>
+                            {% endif %}
+                            <a href="{% url 'teacher_student_delete' student.id %}" class="btn btn-soft btn-sm">Excluir</a>
+                        </div>
+                    </div>
+
+                    {% if student.is_generating and student.generation_cancel_requested %}
+                        <p class="section-note student-card__note">A geracao anterior esta sendo cancelada. Aguarde para iniciar uma nova.</p>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2 class="empty-state__title">Nenhum aluno cadastrado ainda</h2>
+            <p class="empty-state__body">
+                Crie o primeiro perfil para organizar recomendacoes, feedbacks e historico por aluno dentro do seu painel.
+            </p>
+            <div class="page-actions">
+                <a href="{% url 'teacher_student_create' %}" class="btn btn-primary">Cadastrar primeiro aluno</a>
+            </div>
+        </div>
+    {% endif %}
+</section>
+
+{% include 'recommendations/_generation_status_polling.html' %}
+{% endblock %}

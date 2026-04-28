@@ -13,56 +13,53 @@
                 </div>
                 <hr>
                 
-                {% if profile.is_generating %}
+                {% if profile.is_generating and profile.generation_cancel_requested %}
+                    <div class="card" style="background: #fff1f2; border-left: 5px solid #dc2626; padding: 20px; text-align: center;">
+                        <p style="margin: 0; color: #b91c1c; font-weight: bold;">Cancelando a geração anterior...</p>
+                        <p style="font-size: 0.85rem; color: #7f1d1d;">Aguarde alguns instantes para iniciar uma nova recomendação.</p>
+                    </div>
+                {% elif profile.is_generating %}
                     <div id="loading-ia-container" class="card" style="background: #e0f2fe; border-left: 5px solid var(--primary); padding: 20px; text-align: center;">
                         <div class="spinner" style="border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: inline-block;"></div>
                         <p style="margin-top: 10px; color: var(--primary); font-weight: bold;">
                             A IA está redigindo seu plano...
                         </p>
                         <p style="font-size: 0.8rem; color: #64748b;">
-                            Você será levado ao relatório automaticamente.
+                            Abra a tela de acompanhamento para seguir o andamento.
                         </p>
+                        <a href="{% url 'plan_generation_loading' %}?next={{ request.path|urlencode }}" class="btn btn-primary" style="margin-top: 10px; width: 100%;">
+                            Acompanhar geração
+                        </a>
                     </div>
-
-                    <script>
-                        function verificarConclusao() {
-                            // Busca o HTML da própria página de perfil silenciosamente
-                            fetch(window.location.href)
-                            .then(response => response.text())
-                            .then(html => {
-                                const parser = new DOMParser();
-                                const doc = parser.parseFromString(html, 'text/html');
-                                
-                                // Se o elemento de loading não existir mais no HTML retornado...
-                                const aindaCarregando = doc.getElementById('loading-ia-container');
-                                
-                                if (!aindaCarregando) {
-                                    // IA terminou! Procura o card do plano mais recente na lista
-                                    const planoRecente = doc.querySelector('.hover-card');
-                                    if (planoRecente) {
-                                        const acao = planoRecente.getAttribute('onclick');
-                                        const urlPlano = acao.match(/'([^']+)'/)[1];
-                                        window.location.href = urlPlano; // Redireciona!
-                                    } else {
-                                        window.location.reload();
-                                    }
-                                }
-                            });
-                        }
-                        // Checa o status a cada 4 segundos
-                        setInterval(verificarConclusao, 4000);
-                    </script>
                 {% else %}
-                    <form id="form-gerar" action="{% url 'generate_plan' %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" id="btn-gerar" class="btn btn-primary" style="width: 100%; padding: 15px; font-weight: bold;">
-                            ✨ Gerar Novo Plano com IA
+                    <form
+                        id="form-gerar"
+                        action="{% url 'plan_generation_loading' %}"
+                        method="GET"
+                        data-loading-form
+                        data-loading-button-id="btn-gerar"
+                        data-loading-text="Abrindo tela de carregamento..."
+                    >
+                        <input type="hidden" name="start" value="1">
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" id="btn-gerar" class="btn btn-primary" style="width: 100%; padding: 15px; font-weight: bold;" data-loading-button>
+                            ✨ Gerar novo plano com IA
                         </button>
                     </form>
                 {% endif %}
 
+                {% if profile.is_generating %}
+                    <div
+                        data-generation-watcher="true"
+                        data-profile-id="{{ profile.id }}"
+                        data-status-url="{% url 'plan_generation_status' %}"
+                        data-current-state="{% if profile.generation_cancel_requested %}canceling{% else %}generating{% endif %}"
+                        hidden
+                    ></div>
+                {% endif %}
+
                 <a href="{% url 'feedback_history' %}" class="btn btn-outline" style="width: 100%; text-align: center; display: block; margin-top: 10px; text-decoration: none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                    📋 Minhas Avaliações
+                    📋 Minhas avaliações
                 </a>
 
             {% else %}
@@ -100,17 +97,7 @@
 
 <style>
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .hover-card:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 </style>
 
-<script>
-    document.getElementById('form-gerar')?.addEventListener('submit', function(e) {
-        const btn = document.getElementById('btn-gerar');
-        if (btn) {
-            btn.disabled = true;
-            btn.style.opacity = '0.7';
-            btn.innerHTML = '⚙️ Processando seu plano... Por favor, não feche a página.';
-        }
-    });
-</script>
+{% include 'recommendations/_generation_status_polling.html' %}
 {% endblock %}

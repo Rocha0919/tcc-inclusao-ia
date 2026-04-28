@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 <style>
-    /* Estilos baseados na imagem de referência */
     .page-container {
         max-width: 800px;
-        margin: 40px auto; /* Centraliza a coluna, mas o texto fica à esquerda */
+        margin: 40px auto;
         padding: 0 20px;
         font-family: sans-serif;
         color: #1f2937;
@@ -33,7 +32,6 @@
         font-size: 1rem;
         color: #1f2937;
     }
-    /* Estiliza os inputs gerados pelo Django automaticamente */
     .form-group input[type="text"],
     .form-group input[type="password"],
     .form-group input[type="email"],
@@ -42,7 +40,7 @@
     .form-group textarea {
         width: 100%;
         padding: 14px;
-        border: 1px solid #1f2937; /* Borda escura igual à imagem */
+        border: 1px solid #1f2937;
         border-radius: 4px;
         font-size: 1rem;
         box-sizing: border-box;
@@ -62,15 +60,15 @@
     .checkbox-group input[type="checkbox"] {
         width: 18px;
         height: 18px;
-        accent-color: #2563eb; /* Deixa o check azul */
+        accent-color: #2563eb;
     }
     .checkbox-group a {
-        color: #2563eb; /* Azul dos links */
+        color: #2563eb;
         text-decoration: underline;
         font-weight: 600;
     }
     .btn-primary {
-        background-color: #2563eb; /* Azul do botão */
+        background-color: #2563eb;
         color: #ffffff;
         border: none;
         padding: 14px 40px;
@@ -86,7 +84,7 @@
 </style>
 <div class="page-container">
     <h1 class="page-title">Fazer Login</h1>
-    <div class="breadcrumb">Cadastro > <strong>Login</strong></div>
+    <div class="breadcrumb">Cadastro &gt; <strong>Login</strong></div>
     
     <form method="POST">
         {% csrf_token %}

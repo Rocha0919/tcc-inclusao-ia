@@ -42,3 +42,15 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"Nota {self.score} para {self.resource.name} ({self.session.profile.user.username})"
+
+
+def _recommendation_session_str(self):
+    return f"Sessão de {self.profile.display_name} - {self.created_at.strftime('%d/%m/%Y')}"
+
+
+def _feedback_str(self):
+    return f"Nota {self.score} para {self.resource.name} ({self.session.profile.display_name})"
+
+
+RecommendationSession.__str__ = _recommendation_session_str
+Feedback.__str__ = _feedback_str

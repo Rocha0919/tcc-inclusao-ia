@@ -2,7 +2,6 @@
 {% block content %}
 
 <style>
-    /* CSS Manual focado em leitura e acessibilidade */
     .profile-card {
         max-width: 800px;
         margin: 40px auto;
@@ -38,7 +37,7 @@
     }
     .info-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr; /* Dividido em duas colunas para telas maiores */
+        grid-template-columns: 1fr 1fr;
         gap: 20px;
         background-color: #f9fbfd;
         padding: 20px;
@@ -47,7 +46,7 @@
     }
     @media (max-width: 600px) {
         .info-grid {
-            grid-template-columns: 1fr; /* Volta para uma coluna no celular */
+            grid-template-columns: 1fr;
         }
     }
     .info-item {

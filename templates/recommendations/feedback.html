@@ -4,13 +4,13 @@
     <div class="card" style="width: 100%; max-width: 500px; padding: 0; overflow: hidden;">
         
         <div style="background: var(--primary); padding: 20px; text-align: center; color: white;">
-            <h3 style="margin: 0; font-size: 1.3rem;">Avaliar Tecnologia</h3>
+            <h3 style="margin: 0; font-size: 1.3rem;">{% if existing_feedback %}Editar avaliação{% else %}Avaliar tecnologia{% endif %}</h3>
         </div>
 
         <div style="padding: 30px;">
             <div style="text-align: center; margin-bottom: 25px;">
                 <p style="font-size: 1.2rem; color: var(--text-dark); margin: 0;"><strong>{{ item.name }}</strong></p>
-                <p style="color: var(--secondary); font-size: 0.9rem; margin-top: 5px;">Sua opinião ajuda a melhorar a IA.</p>
+                <p style="color: var(--secondary); font-size: 0.9rem; margin-top: 5px;">Feedback vinculado ao plano de {{ profile_display_name }}.</p>
             </div>
             
             <hr style="border: none; border-top: 1px solid #e2e8f0; margin-bottom: 25px;">
@@ -23,12 +23,12 @@
                         Qual nota você daria?
                     </label>
                     
-                    <input type="range" name="score" min="1" max="5" step="1" id="scoreRange" value="3" 
+                    <input type="range" name="score" min="1" max="5" step="1" id="scoreRange" value="{{ initial_score }}"
                            oninput="document.getElementById('scoreOutput').innerText = this.value"
                            style="width: 100%; cursor: pointer; accent-color: var(--primary);">
                     
                     <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 15px;">
-                        <span style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="scoreOutput">3</span>
+                        <span style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="scoreOutput">{{ initial_score }}</span>
                         <span style="font-size: 1.8rem; color: #ffc107;">★</span>
                     </div>
                     
@@ -39,18 +39,18 @@
                 </div>
 
                 <div style="margin-bottom: 25px;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 8px; color: var(--secondary);">Comentário (Opcional)</label>
-                    <textarea name="user_comment" rows="3" 
+                    <label style="display: block; font-weight: bold; margin-bottom: 8px; color: var(--secondary);">Comentário opcional</label>
+                    <textarea name="user_comment" rows="3"
                               placeholder="Por que essa nota?"
-                              style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 1rem; resize: vertical;"></textarea>
+                              style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 1rem; resize: vertical;">{{ initial_comment }}</textarea>
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;">
-                        Enviar Avaliação
+                        {% if existing_feedback %}Salvar avaliação{% else %}Enviar avaliação{% endif %}
                     </button>
-                    <a href="{% url 'plan_detail' session.id %}" style="text-align: center; color: var(--secondary); text-decoration: none; font-size: 0.9rem; font-weight: bold;">
-                        Cancelar e Voltar
+                    <a href="{{ cancel_url }}" style="text-align: center; color: var(--secondary); text-decoration: none; font-size: 0.9rem; font-weight: bold;">
+                        Cancelar e voltar
                     </a>
                 </div>
             </form>

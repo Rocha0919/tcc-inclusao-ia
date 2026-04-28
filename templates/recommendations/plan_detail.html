@@ -1,42 +1,60 @@
 {% extends 'base.html' %}
 {% block content %}
 <section style="margin-top: 10px; padding-bottom: 50px;">
-    
-    <a href="{% url 'profile_detail' %}" style="color: var(--secondary); text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px;">
-        ← Voltar para o Painel
-    </a>
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
+        <a href="{{ back_url|default:'#' }}" style="color: var(--secondary); text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+            ← {{ back_label|default:'Voltar' }}
+        </a>
+        <a href="{{ feedback_history_url }}" class="btn btn-outline" style="text-decoration: none;">Ver histórico de avaliações</a>
+    </div>
 
     <div style="background: white; border-radius: 12px; padding: 25px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 20px;">
-            <h2 style="margin: 0; color: #1e293b;">Relatório Comparativo de IA</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 20px; gap: 20px; flex-wrap: wrap;">
+            <div>
+                <h2 style="margin: 0; color: #1e293b;">Relatório comparativo de IA</h2>
+                <p style="margin: 6px 0 0 0; color: #64748b;">Plano gerado para {{ profile_display_name }}.</p>
+            </div>
             <span class="badge" style="background: #e2e8f0; color: #475569; padding: 8px 15px; border-radius: 20px; font-weight: bold;">
                 📅 {{ session.created_at|date:"d/m/Y" }}
             </span>
         </div>
         
-        <h3 style="font-size: 1.2rem; color: #334155; margin-bottom: 10px;">📋 Resumo da Análise</h3>
+        <h3 style="font-size: 1.2rem; color: #334155; margin-bottom: 10px;">📋 Resumo da análise</h3>
         <div style="background: #f8fafc; border-left: 5px solid var(--primary); padding: 20px; border-radius: 0 8px 8px 0;">
             <pre style="color: #334155; font-size: 1rem; line-height: 1.6; white-space: pre-wrap; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0;">{{ session.justificativa_geral }}</pre>
         </div>
     </div>
 
     <h3 style="margin-top: 45px; margin-bottom: 20px; color: #1d4ed8; display: flex; align-items: center; gap: 10px;">
-        <span style="background: #1d4ed8; padding: 5px 12px; border-radius: 8px; color: white;">🦙</span> 
+        <span style="background: #1d4ed8; padding: 5px 12px; border-radius: 8px; color: white;">🦙</span>
         Recomendações do Llama 3
     </h3>
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
         {% for tech in llama_techs %}
         <div class="card" style="border-top: 5px solid #1d4ed8; display: flex; flex-direction: column; justify-content: space-between;">
             <div>
-                <h4 style="font-size: 1.25rem; color: #1e3a8a; margin-top: 0;">{{ tech.name }}</h4>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                    <h4 style="font-size: 1.25rem; color: #1e3a8a; margin-top: 0;">{{ tech.name }}</h4>
+                    {% if tech.current_feedback %}
+                        <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: bold;">Avaliado</span>
+                    {% else %}
+                        <span style="background: #dbeafe; color: #1d4ed8; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: bold;">Aguardando feedback</span>
+                    {% endif %}
+                </div>
                 <div style="background: #eff6ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                    <strong style="color: #1d4ed8; font-size: 0.85rem; text-transform: uppercase;">🧠 Justificativa Técnica:</strong>
+                    <strong style="color: #1d4ed8; font-size: 0.85rem; text-transform: uppercase;">🧠 Justificativa técnica:</strong>
                     <p style="font-size: 0.95rem; line-height: 1.5; margin-top: 8px; color: #1e40af;">{{ tech.justification }}</p>
                 </div>
+                {% if tech.current_feedback %}
+                    <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px;">
+                        <strong style="display: block; color: #9a3412; margin-bottom: 6px;">Avaliação salva</strong>
+                        <p style="margin: 0; color: #7c2d12;">Nota {{ tech.current_feedback.score }}/5. {{ tech.current_feedback.user_comment|default:"Sem comentário detalhado." }}</p>
+                    </div>
+                {% endif %}
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <a href="{% url 'feedback_create' session.id tech.id %}" class="btn-sm" style="flex: 1; text-align: center; border: 1px solid #1d4ed8; color: #1d4ed8; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">⭐ Avaliar</a>
-                <a href="{% url 'technology_detail' tech.id %}" class="btn-sm" style="flex: 1; text-align: center; background: #1d4ed8; color: white; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Ver Detalhes</a>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <a href="{% url 'feedback_create' session.id tech.id %}" class="btn-sm" style="flex: 1; text-align: center; border: 1px solid #1d4ed8; color: #1d4ed8; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">{% if tech.current_feedback %}Editar avaliação{% else %}Avaliar{% endif %}</a>
+                <a href="{% url 'technology_detail' tech.id %}" class="btn-sm" style="flex: 1; text-align: center; background: #1d4ed8; color: white; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Ver detalhes</a>
             </div>
         </div>
         {% empty %}
@@ -45,22 +63,35 @@
     </div>
 
     <h3 style="margin-top: 45px; margin-bottom: 20px; color: #047857; display: flex; align-items: center; gap: 10px;">
-        <span style="background: #047857; padding: 5px 12px; border-radius: 8px; color: white;">🌪️</span> 
+        <span style="background: #047857; padding: 5px 12px; border-radius: 8px; color: white;">🌪️</span>
         Recomendações do Mistral
     </h3>
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
         {% for tech in mistral_techs %}
         <div class="card" style="border-top: 5px solid #047857; display: flex; flex-direction: column; justify-content: space-between;">
             <div>
-                <h4 style="font-size: 1.25rem; color: #064e3b; margin-top: 0;">{{ tech.name }}</h4>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                    <h4 style="font-size: 1.25rem; color: #064e3b; margin-top: 0;">{{ tech.name }}</h4>
+                    {% if tech.current_feedback %}
+                        <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: bold;">Avaliado</span>
+                    {% else %}
+                        <span style="background: #dcfce7; color: #047857; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: bold;">Aguardando feedback</span>
+                    {% endif %}
+                </div>
                 <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                    <strong style="color: #047857; font-size: 0.85rem; text-transform: uppercase;">🧠 Justificativa Técnica:</strong>
+                    <strong style="color: #047857; font-size: 0.85rem; text-transform: uppercase;">🧠 Justificativa técnica:</strong>
                     <p style="font-size: 0.95rem; line-height: 1.5; margin-top: 8px; color: #065f46;">{{ tech.justification }}</p>
                 </div>
+                {% if tech.current_feedback %}
+                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px;">
+                        <strong style="display: block; color: #1d4ed8; margin-bottom: 6px;">Avaliação salva</strong>
+                        <p style="margin: 0; color: #1e40af;">Nota {{ tech.current_feedback.score }}/5. {{ tech.current_feedback.user_comment|default:"Sem comentário detalhado." }}</p>
+                    </div>
+                {% endif %}
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <a href="{% url 'feedback_create' session.id tech.id %}" class="btn-sm" style="flex: 1; text-align: center; border: 1px solid #047857; color: #047857; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">⭐ Avaliar</a>
-                <a href="{% url 'technology_detail' tech.id %}" class="btn-sm" style="flex: 1; text-align: center; background: #047857; color: white; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Ver Detalhes</a>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <a href="{% url 'feedback_create' session.id tech.id %}" class="btn-sm" style="flex: 1; text-align: center; border: 1px solid #047857; color: #047857; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">{% if tech.current_feedback %}Editar avaliação{% else %}Avaliar{% endif %}</a>
+                <a href="{% url 'technology_detail' tech.id %}" class="btn-sm" style="flex: 1; text-align: center; background: #047857; color: white; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Ver detalhes</a>
             </div>
         </div>
         {% empty %}
@@ -70,7 +101,7 @@
 
     {% if prompt %}
     <div style="margin-top: 60px; opacity: 0.7;">
-        <button onclick="togglePrompt()" style="background: none; border: 1px solid #ccc; cursor: pointer; padding: 10px; border-radius: 5px;">🔍 Ver Dados Técnicos (Prompt)</button>
+        <button onclick="togglePrompt()" style="background: none; border: 1px solid #ccc; cursor: pointer; padding: 10px; border-radius: 5px;">🔍 Ver dados técnicos do prompt</button>
         <div id="promptBox" style="display:none; margin-top: 15px;">
             <pre style="background:#1e293b; color:#cbd5e1; padding:20px; border-radius:8px; font-size: 0.8rem; overflow-x: auto;">{{ prompt }}</pre>
         </div>

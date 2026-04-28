@@ -5,7 +5,7 @@ from .models import RecommendationSession, Feedback, GeneratedTechnology
 @admin.register(RecommendationSession)
 class RecommendationSessionAdmin(admin.ModelAdmin):
     list_display = ("id", "profile", "created_at")
-    search_fields = ("profile__user__username",)
+    search_fields = ("profile__user__username", "profile__teacher__username", "profile__student_name")
     readonly_fields = ("justificativa_geral",)
 
 
