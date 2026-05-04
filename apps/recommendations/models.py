@@ -11,6 +11,15 @@ class RecommendationSession(models.Model):
         return f"Sessão de {self.profile.user.username} - {self.created_at.strftime('%d/%m/%Y')}"
 
 class GeneratedTechnology(models.Model):
+    SOURCE_UNKNOWN = 'unknown'
+    SOURCE_JSON_REFERENCE = 'json_reference'
+    SOURCE_AI_SUGGESTED = 'ai_suggested'
+    SOURCE_CHOICES = [
+        (SOURCE_UNKNOWN, 'Origem nao identificada'),
+        (SOURCE_JSON_REFERENCE, 'Base de referencia'),
+        (SOURCE_AI_SUGGESTED, 'Sugestao livre da IA'),
+    ]
+
     session = models.ForeignKey(RecommendationSession, on_delete=models.CASCADE, related_name='technologies')
     name = models.CharField(max_length=255)
     what_is_it = models.TextField()
@@ -18,6 +27,11 @@ class GeneratedTechnology(models.Model):
     justification = models.TextField() # Personalizada para o usuário
     video_search_term = models.CharField(max_length=255)
     ai_model = models.CharField(max_length=50, default='llama3')
+    recommendation_source = models.CharField(
+        max_length=20,
+        choices=SOURCE_CHOICES,
+        default=SOURCE_UNKNOWN,
+    )
     
     # Removi score e user_comment daqui para evitar duplicidade com a tabela Feedback
 

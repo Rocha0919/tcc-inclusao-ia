@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from ai_engine.prompt_builder import PromptBuilder
 from ai_engine.service import GenerationCancelled, criar_plano_para_usuario
 from apps.accounts.models import BiopsychosocialProfile
 from apps.recommendations.models import Feedback, GeneratedTechnology, RecommendationSession
@@ -535,6 +536,23 @@ class RecommendationGenerationServiceTests(TestCase):
             dynamic_data={},
         )
 
+    def test_prompt_builder_uses_reference_list_without_limiting_recommendations(self):
+        prompt = PromptBuilder.build_final_prompt(self.profile)
+
+        self.assertIn(
+            'Use as tecnologias fornecidas como referencia, nao como limitacao.',
+            prompt,
+        )
+        self.assertIn(
+            'Voce pode recomendar tecnologias alem das listadas abaixo, se forem mais adequadas ao perfil.',
+            prompt,
+        )
+        self.assertIn(
+            'O campo "nome" nao precisa corresponder exatamente a um item da lista de referencia',
+            prompt,
+        )
+        self.assertNotIn('Nome exato conforme a lista fornecida', prompt)
+
     @patch('ai_engine.service.LLMClient.gerar_recomendacao')
     def test_cancelled_generation_does_not_persist_incomplete_session(self, llm_mock):
         llm_mock.return_value = {
@@ -560,6 +578,76 @@ class RecommendationGenerationServiceTests(TestCase):
             criar_plano_para_usuario(self.profile, should_cancel=should_cancel)
 
         self.assertEqual(RecommendationSession.objects.count(), 0)
+
+    @patch('ai_engine.service.cancellable_sleep', return_value=None)
+    @patch('ai_engine.service.LLMClient.gerar_recomendacao')
+    def test_generation_accepts_free_suggestions_and_deduplicates_names(self, llm_mock, _sleep_mock):
+        llm_mock.side_effect = [
+            {
+                'justificativa_geral': 'Resumo tecnico do perfil.',
+                'tecnologias': [
+                    {
+                        'nome': 'Leitores de tela (ex: NVDA, VoiceOver)',
+                        'o_que_e': 'Software que converte interface em audio.',
+                        'para_que_serve': 'Apoia leitura e navegacao.',
+                        'justificativa_usuario': 'Atende a barreira principal de leitura visual.',
+                        'termo_youtube': 'nvda voiceover acessibilidade',
+                    },
+                    {
+                        'nome': '  leitores de tela (ex: nvda, voiceover)  ',
+                        'o_que_e': 'Descricao duplicada.',
+                        'para_que_serve': 'Duplicado.',
+                        'justificativa_usuario': 'Duplicado.',
+                        'termo_youtube': 'duplicado',
+                    },
+                    {
+                        'nome': 'Be My Eyes',
+                        'o_que_e': 'Aplicativo de assistencia visual remota.',
+                        'para_que_serve': 'Conecta o usuario a voluntarios ou especialistas.',
+                        'justificativa_usuario': 'Ajuda em tarefas visuais pontuais do cotidiano.',
+                        'termo_youtube': 'be my eyes acessibilidade',
+                    },
+                    {
+                        'nome': 'Seeing AI',
+                        'o_que_e': 'Aplicativo com leitura de texto e descricao de ambiente.',
+                        'para_que_serve': 'Auxilia reconhecimento de documentos e objetos.',
+                        'justificativa_usuario': 'Apoia autonomia em leitura e identificacao de itens.',
+                        'termo_youtube': 'seeing ai acessibilidade',
+                    },
+                ],
+            },
+            None,
+        ]
+
+        session, _prompt = criar_plano_para_usuario(self.profile)
+
+        technologies = list(session.technologies.order_by('id'))
+
+        self.assertEqual(len(technologies), 3)
+        self.assertEqual(
+            [technology.name for technology in technologies],
+            [
+                'Leitores de tela (ex: NVDA, VoiceOver)',
+                'Be My Eyes',
+                'Seeing AI',
+            ],
+        )
+        self.assertEqual(
+            technologies[0].recommendation_source,
+            GeneratedTechnology.SOURCE_JSON_REFERENCE,
+        )
+        self.assertEqual(
+            technologies[1].recommendation_source,
+            GeneratedTechnology.SOURCE_AI_SUGGESTED,
+        )
+        self.assertEqual(
+            technologies[2].recommendation_source,
+            GeneratedTechnology.SOURCE_AI_SUGGESTED,
+        )
+        self.assertEqual(
+            technologies[1].video_search_term,
+            'be my eyes acessibilidade',
+        )
 
 
 class RecommendationFeedbackFlowTests(TestCase):

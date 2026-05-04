@@ -1,7 +1,10 @@
 import json
 import os
+
 from django.conf import settings
+
 from apps.recommendations.models import Feedback
+
 
 class PromptBuilder:
 
@@ -9,11 +12,11 @@ class PromptBuilder:
     def get_filtered_technologies(category):
         path = os.path.join(settings.BASE_DIR, 'data', 'tecnologias.json')
         try:
-            with open(path, 'r', encoding='utf-8') as f:
-                full_data = json.load(f)
+            with open(path, 'r', encoding='utf-8') as file:
+                full_data = json.load(file)
                 return full_data.get(category, [])
-        except Exception as e:
-            print("Erro ao ler JSON:", e)
+        except Exception as error:
+            print("Erro ao ler JSON:", error)
             return []
 
     @staticmethod
@@ -26,68 +29,121 @@ class PromptBuilder:
 
         feedbacks = Feedback.objects.filter(session__profile=profile)
 
-        negativos = [f"{f.resource.name}: {f.user_comment}" for f in feedbacks if f.score <= 2 and f.resource]
-        positivos = [f"{f.resource.name}: {f.user_comment}" for f in feedbacks if f.score >= 3 and f.resource]
+        negativos = [
+            f"{feedback.resource.name}: {feedback.user_comment}"
+            for feedback in feedbacks
+            if feedback.score <= 2 and feedback.resource
+        ]
+        positivos = [
+            f"{feedback.resource.name}: {feedback.user_comment}"
+            for feedback in feedbacks
+            if feedback.score >= 3 and feedback.resource
+        ]
 
-        # Montando o contexto detalhado para a IA
-        contexto = "--- PERFIL BIOPSICOSSOCIAL DO USUÁRIO ---\n"
-        contexto += f"[Condição Biológica]\n- Limitações Físicas: {biologico.get('limitacoes_especificas', 'Não informado')}\n- Severidade: {biologico.get('grau_severidade', 'Não informado')}\n\n"
-        
-        contexto += f"[Perfil Psicológico/Cognitivo]\n- Estilo de Aprendizado: {psicologico.get('estilo_aprendizado', 'Não informado')}\n- Desafios Cognitivos: {psicologico.get('barreiras_cognitivas', 'Não informado')}\n\n"
-        
-        contexto += f"[Contexto Social e Objetivos]\n- Objetivo Atual: {social.get('objetivo_principal', 'Não informado')}\n- Barreiras no Dia a Dia: {social.get('barreiras_dia_a_dia', 'Não informado')}\n- Capacidade Financeira: {social.get('orcamento', 'Não informado')} (priorizar tecnologias que respeitem este orçamento)\n\n"
-        
-        contexto += f"[Ambiente Tecnológico]\n- Nível de Proficiência: {tecnologico.get('nivel_tecnologico', 'Não informado')} (recomendar interfaces compatíveis com esta curva de aprendizado)\n- Dispositivos Utilizados: {tecnologico.get('dispositivos_disponiveis', 'Não informado')}\n- Ferramentas Prévias: {tecnologico.get('ferramentas_previas', 'Nenhuma')}\n\n"
+        contexto = "--- PERFIL BIOPSICOSSOCIAL DO USUARIO ---\n"
+        contexto += (
+            f"[Condicao Biologica]\n"
+            f"- Limitacoes Fisicas: {biologico.get('limitacoes_especificas', 'Nao informado')}\n"
+            f"- Severidade: {biologico.get('grau_severidade', 'Nao informado')}\n\n"
+        )
+        contexto += (
+            f"[Perfil Psicologico/Cognitivo]\n"
+            f"- Estilo de Aprendizado: {psicologico.get('estilo_aprendizado', 'Nao informado')}\n"
+            f"- Desafios Cognitivos: {psicologico.get('barreiras_cognitivas', 'Nao informado')}\n\n"
+        )
+        contexto += (
+            f"[Contexto Social e Objetivos]\n"
+            f"- Objetivo Atual: {social.get('objetivo_principal', 'Nao informado')}\n"
+            f"- Barreiras no Dia a Dia: {social.get('barreiras_dia_a_dia', 'Nao informado')}\n"
+            f"- Capacidade Financeira: {social.get('orcamento', 'Nao informado')} "
+            f"(priorizar tecnologias que respeitem este orcamento)\n\n"
+        )
+        contexto += (
+            f"[Ambiente Tecnologico]\n"
+            f"- Nivel de Proficiencia: {tecnologico.get('nivel_tecnologico', 'Nao informado')} "
+            f"(recomendar interfaces compativeis com esta curva de aprendizado)\n"
+            f"- Dispositivos Utilizados: {tecnologico.get('dispositivos_disponiveis', 'Nao informado')}\n"
+            f"- Ferramentas Previas: {tecnologico.get('ferramentas_previas', 'Nenhuma')}\n\n"
+        )
 
         if negativos:
-            contexto += f"⚠️ ATENÇÃO - Histórico Negativo (Evitar similares): {', '.join(negativos)}.\n"
-        
+            contexto += (
+                "ATENCAO - Historico Negativo (evitar similares): "
+                f"{', '.join(negativos)}.\n"
+            )
+
         if positivos:
-            contexto += f"✅ Histórico Positivo (Priorizar similares): {', '.join(positivos)}.\n"
+            contexto += (
+                "Historico Positivo (priorizar similares): "
+                f"{', '.join(positivos)}.\n"
+            )
 
         return contexto
+
+    @staticmethod
+    def build_reference_block(options):
+        if not options:
+            return "[]"
+        return json.dumps(options, ensure_ascii=False, indent=2)
 
     @classmethod
     def build_final_prompt(cls, profile):
         categoria = profile.primary_disability_category
         opcoes = cls.get_filtered_technologies(categoria)
+        referencias = cls.build_reference_block(opcoes)
         contexto = cls.get_user_context(profile)
 
         prompt = f"""
-Você é um Motor de Recomendação Especializado em Tecnologia Assistiva.
+Voce e um Motor de Recomendacao Especializado em Tecnologia Assistiva.
 
 ### DIRETRIZES DE COMPORTAMENTO:
-1. PERSONA: Atue como um analista técnico imparcial.
+1. PERSONA: Atue como um analista tecnico imparcial.
 2. VOZ: Use estritamente a TERCEIRA PESSOA. Proibido usar "eu", "meu", "acredito" ou "sugiro".
-3. FOCO: Analise as necessidades do perfil fornecido e correlacione com as opções disponíveis.
-4. OBJETIVIDADE: Evite adjetivos vagos. Seja específico sobre a funcionalidade técnica.
+3. FOCO: Priorize as necessidades funcionais, o contexto de acessibilidade, os dispositivos, o orcamento e a curva de aprendizado do perfil.
+4. OBJETIVIDADE: Evite adjetivos vagos. Seja especifico sobre funcionalidade tecnica, barreira atendida e criterio de adequacao.
+5. FLEXIBILIDADE CONTROLADA: Use as tecnologias fornecidas como referencia, nao como limitacao.
+6. EXPANSAO RESPONSAVEL: Voce pode recomendar tecnologias alem das listadas abaixo, se forem mais adequadas ao perfil.
+7. QUALIDADE: Evite recomendacoes genericas, repetidas, redundantes ou semanticamente equivalentes.
+8. CONFIABILIDADE: Recomende apenas tecnologias reais, categorias reais de tecnologia assistiva ou ferramentas amplamente reconhecidas. Nao invente nomes inexistentes.
 
 ### DADOS DE ENTRADA:
 - CATEGORIA ANALISADA: {categoria.upper()}
-- OPÇÕES DISPONÍVEIS: {json.dumps(opcoes, ensure_ascii=False)}
-- PERFIL DO USUÁRIO (CONTEXTO): {contexto}
+- TECNOLOGIAS DE REFERENCIA (BASE CONFIAVEL, NAO LISTA FECHADA): {referencias}
+- PERFIL DO USUARIO (CONTEXTO): {contexto}
+
+### COMO USAR A BASE DE REFERENCIA:
+- Considere a lista como exemplos confiaveis ja mapeados para a categoria.
+- Priorize a relevancia para o perfil antes de priorizar a semelhanca com a lista.
+- Se houver uma opcao fora da lista que atenda melhor ao usuario, ela pode e deve ser recomendada.
+- Quando recomendar algo fora da lista, use um nome real e reconhecivel e explique tecnicamente por que a escolha faz sentido.
+- Nao repita a mesma tecnologia com nomes levemente diferentes.
 
 ### TAREFA:
-Selecione as 3 tecnologias mais aderentes ao contexto do usuário. Para cada uma, gere:
-1. Definição técnica (O que é).
-2. Aplicabilidade prática (Para que serve).
-3. Nexo Causal: Justificativa técnica de como o recurso resolve uma barreira específica identificada no contexto do usuário.
+Selecione as 3 tecnologias mais aderentes ao contexto do usuario. As recomendacoes podem misturar:
+1. Tecnologias da base de referencia.
+2. Tecnologias fora da base, desde que sejam reais e coerentes com o perfil.
+
+Para cada tecnologia, gere:
+1. Definicao tecnica (O que e).
+2. Aplicabilidade pratica (Para que serve).
+3. Nexo causal: justificativa tecnica de como o recurso reduz uma barreira especifica do contexto.
 4. Query de busca otimizada para YouTube.
 
 ### REQUISITOS DO OUTPUT (JSON):
-- Retorne APENAS o objeto JSON, sem textos introdutórios ou conclusivos.
-- O campo "justificativa_geral" deve resumir o quadro clínico/funcional do usuário sob a ótica da tecnologia assistiva.
+- Retorne APENAS o objeto JSON, sem textos introdutorios ou conclusivos.
+- O campo "justificativa_geral" deve resumir o quadro funcional do usuario sob a otica da tecnologia assistiva.
+- O campo "nome" nao precisa corresponder exatamente a um item da lista de referencia, mas precisa identificar uma tecnologia real e pertinente.
 - Certifique-se de que todas as strings estejam devidamente escapadas.
 
 ### ESTRUTURA DO JSON:
 {{
-    "justificativa_geral": "Análise técnica do perfil do usuário em terceira pessoa...",
+    "justificativa_geral": "Analise tecnica do perfil do usuario em terceira pessoa...",
     "tecnologias": [
         {{
-            "nome": "Nome exato conforme a lista fornecida",
-            "o_que_e": "Definição concisa",
+            "nome": "Nome real e especifico da tecnologia recomendada",
+            "o_que_e": "Definicao concisa",
             "para_que_serve": "Utilidade principal",
-            "justificativa_usuario": "Explicação de como esta ferramenta mitiga as limitações descritas no contexto (em terceira pessoa).",
+            "justificativa_usuario": "Explicacao tecnica de como esta ferramenta mitiga as limitacoes descritas no contexto, em terceira pessoa.",
             "termo_youtube": "Busca recomendada"
         }}
     ]

@@ -11,7 +11,7 @@ class RecommendationSessionAdmin(admin.ModelAdmin):
 
 @admin.register(GeneratedTechnology)
 class GeneratedTechnologyAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "session")
+    list_display = ("id", "name", "recommendation_source", "ai_model", "session")
     search_fields = ("name",)
 
 
