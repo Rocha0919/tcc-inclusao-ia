@@ -1,108 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
-<style>
-    .page-container {
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 0 20px;
-        font-family: sans-serif;
-        color: #1f2937;
-    }
-    .page-title {
-        font-size: 2.2rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-        color: #1f2937;
-    }
-    .breadcrumb {
-        color: #4b5563;
-        margin-bottom: 40px;
-        font-size: 1rem;
-    }
-    .breadcrumb strong {
-        color: #1f2937;
-    }
-    .form-group {
-        margin-bottom: 25px;
-    }
-    .form-label {
-        display: block;
-        font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 1rem;
-        color: #1f2937;
-    }
-    .form-group input[type="text"],
-    .form-group input[type="password"],
-    .form-group input[type="email"],
-    .form-group input[type="number"],
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 14px;
-        border: 1px solid #1f2937;
-        border-radius: 4px;
-        font-size: 1rem;
-        box-sizing: border-box;
-        background-color: #fff;
-    }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-        outline: 2px solid #2563eb;
-        border-color: transparent;
-    }
-    .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 30px;
-        font-size: 0.95rem;
-    }
-    .checkbox-group input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        accent-color: #2563eb;
-    }
-    .checkbox-group a {
-        color: #2563eb;
-        text-decoration: underline;
-        font-weight: 600;
-    }
-    .btn-primary {
-        background-color: #2563eb;
-        color: #ffffff;
-        border: none;
-        padding: 14px 40px;
-        font-size: 1rem;
-        font-weight: 700;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    .btn-primary:hover {
-        background-color: #1d4ed8;
-    }
-</style>
-<div class="page-container">
-    <h1 class="page-title">Fazer Login</h1>
-    <div class="breadcrumb">Cadastro &gt; <strong>Login</strong></div>
-    
-    <form method="POST">
-        {% csrf_token %}
-        {% for field in form %}
-            <div class="form-group">
-                <label class="form-label">{{ field.label }}</label>
-                {{ field }}
-                {% for error in field.errors %}
-                    <p style="color: #dc2626; font-size: 0.85rem; margin-top: 5px; font-weight: bold;">{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endfor %}
-        
-        <button type="submit" class="btn-primary">Entrar</button>
-    </form>
-    
-    <p style="margin-top: 30px; font-size: 0.95rem; color: #4b5563;">
-        Ainda não tem conta? <a href="{% url 'signup' %}" style="color: #2563eb; font-weight: 700; text-decoration: underline;">Cadastre-se aqui</a>
-    </p>
-</div>
+<section class="auth-shell">
+    <div class="auth-card">
+        <div class="auth-header">
+            <span class="eyebrow">Acesso a plataforma</span>
+            <h1 class="auth-title">Fazer login</h1>
+            <p class="auth-subtitle">Entre com sua conta para acessar o sistema.</p>
+        </div>
+
+        <form method="POST" class="form-stack">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="field-group">
+                    <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+        </form>
+
+        <p class="auth-footer">
+            Ainda nao tem conta?
+            <a href="{% url 'signup' %}" class="auth-link">Cadastre-se aqui</a>
+        </p>
+    </div>
+</section>
 {% endblock %}

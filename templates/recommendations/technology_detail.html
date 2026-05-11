@@ -1,55 +1,109 @@
 {% extends 'base.html' %}
 {% block content %}
-<main style="max-width: 1100px; margin: 30px auto; padding: 20px;">
-    <header style="margin-bottom: 35px;">
-        <a href="{{ back_url|default:'javascript:history.back()' }}" style="text-decoration: none; color: #666; font-weight: bold;">← Voltar</a>
-        <h1 style="color: var(--primary); font-size: 2.5rem; margin: 15px 0 5px 0;">{{ tecnologia.name }}</h1>
-        <div style="display: inline-block; background: #e0e7ff; color: #4338ca; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; text-transform: uppercase;">
-            Modelo: {{ tecnologia.ai_model }}
+<section class="page-shell">
+    <div class="report-header">
+        <a href="{{ back_url|default:'#' }}" class="page-back-link">&larr; {{ back_label|default:'Voltar ao plano' }}</a>
+        <span class="badge {% if tecnologia.ai_model == 'mistral' %}badge--success{% else %}badge--info{% endif %}">
+            {{ tecnologia.ai_model|title }}
+        </span>
+    </div>
+
+    <div class="page-header dashboard-banner">
+        <div class="page-header__text">
+            <span class="eyebrow">Tecnologia recomendada</span>
+            <h1 class="page-title">{{ tecnologia.name }}</h1>
+            <p class="page-subtitle">Descricao, aplicacao pratica e contexto desta recomendacao.</p>
         </div>
-    </header>
+    </div>
 
-    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: start;">
-        <section>
-            <div class="card" style="margin-bottom: 25px; border-radius: 12px; padding: 25px;">
-                <h2 style="color: var(--secondary); font-size: 1.3rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 15px;">🔍 Definição</h2>
-                <p style="line-height: 1.7; color: #334155; font-size: 1.05rem;">{{ tecnologia.what_is_it }}</p>
-            </div>
+    <div class="summary-strip">
+        <article class="summary-card">
+            <span class="summary-card__label">Modelo</span>
+            <span class="summary-card__value">{{ tecnologia.ai_model|title }}</span>
+            <p class="summary-card__note">Origem da sugestao.</p>
+        </article>
+        <article class="summary-card">
+            <span class="summary-card__label">Uso</span>
+            <span class="summary-card__value">Contextualizado</span>
+            <p class="summary-card__note">Aplicacao orientada ao perfil analisado.</p>
+        </article>
+        <article class="summary-card">
+            <span class="summary-card__label">Pesquisa</span>
+            <span class="summary-card__value">YouTube e imagens</span>
+            <p class="summary-card__note">Atalhos externos para aprofundar.</p>
+        </article>
+    </div>
 
-            <div class="card" style="margin-bottom: 25px; border-radius: 12px; padding: 25px;">
-                <h2 style="color: var(--secondary); font-size: 1.3rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 15px;">🛠️ Aplicação prática</h2>
-                <p style="line-height: 1.7; color: #334155; font-size: 1.05rem;">{{ tecnologia.purpose }}</p>
-            </div>
+    <div class="detail-layout">
+        <div class="detail-main">
+            <section class="surface-card">
+                <div class="section-headline">
+                    <span class="section-headline__bar"></span>
+                    <div>
+                        <h2 class="section-title">O que e</h2>
+                        <p class="section-note">Visao geral do recurso recomendado.</p>
+                    </div>
+                </div>
+                <p class="formatted-block">{{ tecnologia.what_is_it }}</p>
+            </section>
 
-            <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 25px; border-radius: 12px; border-left: 6px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                <h2 style="color: var(--primary); font-size: 1.3rem; margin-top: 0;">💡 Por que sugerimos isso a você?</h2>
-                <p style="line-height: 1.7; color: #1e40af; font-weight: 500; margin-bottom: 0;">{{ tecnologia.justification }}</p>
-            </div>
-        </section>
+            <section class="surface-card">
+                <div class="section-headline">
+                    <span class="section-headline__bar"></span>
+                    <div>
+                        <h2 class="section-title">Como pode ajudar</h2>
+                        <p class="section-note">Aplicacao no contexto do perfil analisado.</p>
+                    </div>
+                </div>
+                <p class="formatted-block">{{ tecnologia.purpose }}</p>
+            </section>
 
-        <aside style="position: sticky; top: 20px;">
-            <h2 style="color: var(--secondary); font-size: 1.3rem; margin-bottom: 15px;">📺 Pesquisa e conteúdo</h2>
-            
-            <div style="margin-bottom: 15px;">
-                <a href="https://www.youtube.com/results?search_query={{ tecnologia.name|urlencode }}" target="_blank"
-                   rel="noopener noreferrer"
-                   style="display: flex; align-items: center; justify-content: center; gap: 10px; background: white; color: #ef4444; border: 2px solid #ef4444; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; transition: 0.3s;">
-                    ▶️ Pesquisar vídeos no YouTube
-                </a>
-            </div>
+            <section class="surface-card">
+                <div class="section-headline">
+                    <span class="section-headline__bar"></span>
+                    <div>
+                        <h2 class="section-title">Justificativa</h2>
+                        <p class="section-note">Motivo pelo qual a tecnologia entrou no plano.</p>
+                    </div>
+                </div>
+                <div class="justification-box {% if tecnologia.ai_model == 'mistral' %}justification-box--mistral{% else %}justification-box--llama{% endif %}">
+                    <p class="formatted-block">{{ tecnologia.justification }}</p>
+                </div>
+            </section>
+        </div>
 
-            <div>
-                <a href="https://www.google.com/search?tbm=isch&q={{ tecnologia.name|urlencode }}" target="_blank"
-                   rel="noopener noreferrer"
-                   style="display: flex; align-items: center; justify-content: center; gap: 10px; background: white; color: var(--primary); border: 2px solid var(--primary); padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; transition: 0.3s;">
-                    🖼️ Ver galeria de imagens no Google
-                </a>
-            </div>
+        <aside class="detail-sidebar">
+            <section class="surface-card surface-card--sticky">
+                <div class="section-headline">
+                    <span class="section-headline__bar"></span>
+                    <div>
+                        <h2 class="section-title">Pesquisa complementar</h2>
+                        <p class="section-note">Atalhos externos para descobrir videos e imagens.</p>
+                    </div>
+                </div>
 
-            <p style="font-size: 0.85rem; color: #64748b; margin-top: 20px; text-align: center; background: #f8fafc; padding: 10px; border-radius: 8px;">
-                🔎 Pesquisando por: <strong>{{ tecnologia.name }}</strong>
-            </p>
+                <div class="action-stack">
+                    <a
+                        href="https://www.youtube.com/results?search_query={{ tecnologia.name|urlencode }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn btn-outline action-tile"
+                    >
+                        Pesquisar videos no YouTube
+                    </a>
+                    <a
+                        href="https://www.google.com/search?tbm=isch&q={{ tecnologia.name|urlencode }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn btn-primary action-tile"
+                    >
+                        Ver imagens no Google
+                    </a>
+                </div>
+
+                <p class="stat-note">Pesquisa sugerida para <strong>{{ tecnologia.name }}</strong>.</p>
+            </section>
         </aside>
     </div>
-</main>
+</section>
 {% endblock %}

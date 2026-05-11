@@ -53,6 +53,7 @@ class RecommendationGenerationFlowTests(TestCase):
         self.assertContains(response, 'Gerando recomendacao')
         self.assertContains(response, reverse('generate_plan'))
         self.assertContains(response, reverse('cancel_plan_generation'))
+        self.assertContains(response, 'id="status-hint"')
 
     @patch('apps.recommendations.views.start_plan_generation')
     def test_generate_plan_ajax_returns_processing_json_for_individual_user(self, start_mock):
@@ -238,6 +239,7 @@ class RecommendationGenerationFlowTests(TestCase):
         self.assertContains(response, student_profile.display_name)
         self.assertContains(response, reverse('generate_student_plan', args=[student_profile.id]))
         self.assertContains(response, reverse('cancel_student_plan_generation', args=[student_profile.id]))
+        self.assertContains(response, 'id="status-hint"')
 
     @patch('apps.recommendations.views.start_plan_generation')
     def test_teacher_generate_plan_ajax_returns_processing_json(self, start_mock):
@@ -789,6 +791,27 @@ class RecommendationFeedbackFlowTests(TestCase):
         self.assertContains(response, 'Leitor A')
         self.assertNotContains(response, 'Leitor B')
         self.assertContains(response, reverse('teacher_student_detail', args=[student_one.id]))
+
+    def test_teacher_feedback_history_can_search_by_student_name(self):
+        teacher = self.create_teacher_user('professor_busca_feedback')
+        student_one = self.create_teacher_managed_profile(teacher, student_name='Eduarda')
+        student_two = self.create_teacher_managed_profile(teacher, student_name='Fabio')
+        session_one, technology_one = self.create_session_with_technology(student_one, tech_name='Leitor A')
+        session_two, technology_two = self.create_session_with_technology(student_two, tech_name='Leitor B')
+        Feedback.objects.create(session=session_one, resource=technology_one, score=4, user_comment='Bom para Eduarda.')
+        Feedback.objects.create(session=session_two, resource=technology_two, score=3, user_comment='Bom para Fabio.')
+        self.client.force_login(teacher)
+
+        response = self.client.get(
+            reverse('feedback_history'),
+            {'q': 'Edu'},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Eduarda')
+        self.assertContains(response, 'Leitor A')
+        self.assertNotContains(response, 'Fabio')
+        self.assertNotContains(response, 'Leitor B')
 
     def test_teacher_cannot_filter_feedback_history_for_other_teacher_student(self):
         owner_teacher = self.create_teacher_user('professor_hist_dono')

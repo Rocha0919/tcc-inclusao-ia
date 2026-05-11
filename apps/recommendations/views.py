@@ -1,5 +1,6 @@
 import logging
 import threading
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -91,6 +92,8 @@ def get_accessible_feedback_or_404(request, feedback_id):
 
 def get_feedback_history_redirect_url(request, profile=None):
     requested_student_id = request.POST.get('student_id') or request.GET.get('student_id')
+    search_query = (request.POST.get('q') or request.GET.get('q') or '').strip()
+    query_params = {}
     if (
         profile is not None
         and request.user.is_teacher
@@ -98,8 +101,13 @@ def get_feedback_history_redirect_url(request, profile=None):
         and requested_student_id
         and str(profile.id) == str(requested_student_id)
     ):
-        return f"{reverse('feedback_history')}?student_id={profile.id}"
-    return reverse('feedback_history')
+        query_params['student_id'] = profile.id
+    if request.user.is_teacher and search_query:
+        query_params['q'] = search_query
+    history_url = reverse('feedback_history')
+    if query_params:
+        return f"{history_url}?{urlencode(query_params)}"
+    return history_url
 
 
 def get_feedback_score_value(raw_score, fallback=None):
@@ -1053,6 +1061,7 @@ def feedback_history(request):
     )
     student_profile = None
     requested_student_id = request.GET.get('student_id')
+    search_query = (request.GET.get('q') or '').strip()
 
     if request.user.is_teacher and requested_student_id:
         student_profile = get_object_or_404(
@@ -1063,9 +1072,37 @@ def feedback_history(request):
         )
         feedbacks = feedbacks.filter(session__profile=student_profile)
 
+    if request.user.is_teacher and search_query:
+        feedbacks = feedbacks.filter(
+            Q(session__profile__student_name__icontains=search_query)
+            | Q(session__profile__user__username__icontains=search_query)
+            | Q(session__profile__user__first_name__icontains=search_query)
+            | Q(session__profile__user__last_name__icontains=search_query)
+        )
+
+    history_query = urlencode({
+        key: value
+        for key, value in {
+            'student_id': student_profile.id if student_profile else '',
+            'q': search_query if request.user.is_teacher else '',
+        }.items()
+        if value
+    })
+
+    clear_search_url = (
+        f"{reverse('feedback_history')}?student_id={student_profile.id}"
+        if student_profile
+        else reverse('feedback_history')
+    )
+
     return render(request, 'recommendations/feedback_history.html', {
         'feedbacks': feedbacks,
         'student_profile': student_profile,
+        'search_query': search_query,
+        'history_query': history_query,
+        'feedback_count': feedbacks.count(),
+        'show_teacher_search': request.user.is_teacher and not student_profile,
+        'clear_search_url': clear_search_url,
         'page_title': (
             f'Historico de avaliacoes de {student_profile.display_name}'
             if student_profile
@@ -1098,6 +1135,7 @@ def feedback_edit(request, feedback_id):
     feedback = get_accessible_feedback_or_404(request, feedback_id)
     student_id = None
     requested_student_id = request.POST.get('student_id') or request.GET.get('student_id')
+    search_query = (request.POST.get('q') or request.GET.get('q') or '').strip()
     if (
         request.user.is_teacher
         and requested_student_id
@@ -1112,6 +1150,7 @@ def feedback_edit(request, feedback_id):
             return render(request, 'recommendations/feedback_edit.html', {
                 'feedback': feedback,
                 'student_id': student_id,
+                'search_query': search_query,
                 'cancel_url': get_feedback_history_redirect_url(request, feedback.session.profile),
             })
         feedback.score = score
@@ -1123,5 +1162,6 @@ def feedback_edit(request, feedback_id):
     return render(request, 'recommendations/feedback_edit.html', {
         'feedback': feedback,
         'student_id': student_id,
+        'search_query': search_query,
         'cancel_url': get_feedback_history_redirect_url(request, feedback.session.profile),
     })

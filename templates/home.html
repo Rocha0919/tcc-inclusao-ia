@@ -1,127 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
+<section class="hero-shell">
+    <div class="surface-card surface-card--hero dashboard-banner hero-stage">
+        <div class="hero-layout">
+            <div class="hero-copy">
+                <span class="eyebrow">Plataforma de recomendacao assistiva</span>
+                <h1 class="hero-title">
+                    Tecnologia assistiva
+                    <span class="hero-title__accent">personalizada</span>
+                    para cada contexto
+                </h1>
+                <p class="hero-body">
+                    Recomendacoes orientadas pelo perfil biopsicossocial, com leitura clara para usuarios, professores e equipes de apoio.
+                </p>
 
-<style>
-    .hero-wrapper {
-        display: grid;
-        grid-template-columns: 1.4fr 0.6fr;
-        align-items: center;
-        padding: 80px 0;
-        min-height: 550px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+                <div class="hero-badges">
+                    <span class="info-chip">Perfil personalizado</span>
+                    <span class="info-chip">Plano comparativo</span>
+                    <span class="info-chip">Historico e feedbacks</span>
+                </div>
 
-    .hero-text {
-        z-index: 10;
-    }
+                <div class="hero-actions">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'signup' %}" class="btn btn-primary">Criar conta e comecar</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline">Ja tenho acesso</a>
+                    {% elif user.is_teacher %}
+                        <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">Abrir painel do professor</a>
+                        <a href="{% url 'feedback_history' %}" class="btn btn-outline">Ver feedbacks</a>
+                    {% else %}
+                        <a href="{% url 'profile_detail' %}" class="btn btn-primary">Abrir meu painel</a>
+                        <a href="{% url 'profile_view' %}" class="btn btn-outline">Ver meu perfil</a>
+                    {% endif %}
+                </div>
+            </div>
 
-    .hero-text h1 {
-        font-size: 3.3rem;
-        line-height: 1.1;
-        color: #1a202c;
-        margin-bottom: 24px;
-        font-weight: 800;
-        white-space: nowrap;
-    }
-
-    .hero-text h1 span.text-blue { color: #1a56db; }
-
-    .hero-text p {
-        font-size: 1.1rem;
-        color: #4a5568;
-        margin-bottom: 45px;
-        max-width: 500px;
-        line-height: 1.6;
-    }
-
-    .btn-solid {
-        background-color: #1a56db;
-        color: white;
-        padding: 16px 32px;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 1.1rem;
-        display: inline-block;
-        transition: 0.3s;
-    }
-
-    .hero-visuals {
-        position: relative;
-        height: 400px;
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    .shapes-container {
-        position: relative;
-        width: 400px;
-        height: 100%;
-    }
-
-    .shape {
-        background-color: #e2e8f0;
-        border-radius: 40px;
-        position: absolute;
-    }
-
-    .shape-top {
-        width: 180px;
-        height: 180px;
-        top: -20px;
-        right: 160px;
-        z-index: 1;
-    }
-
-    .shape-main {
-        width: 320px;
-        height: 200px;
-        bottom: 20px;
-        right: 80px;
-        z-index: 3;
-    }
-
-    .shape-right {
-        width: 180px;
-        height: 180px;
-        right: -20px;
-        top: 60px;
-        z-index: 2;
-    }
-
-    @media (max-width: 1100px) {
-        .hero-text h1 { white-space: normal; font-size: 2.8rem; }
-        .hero-wrapper { grid-template-columns: 1fr; text-align: center; }
-        .hero-visuals { justify-content: center; margin-top: 50px; }
-        .shapes-container { transform: scale(0.8); }
-    }
-</style>
-
-<section class="hero-wrapper">
-    <div class="hero-text">
-        <h1>Tecnologia assistiva <br><span class="text-blue">personalizada</span></h1>
-        <p>Recomendações inteligentes baseadas no perfil, necessidades e contexto de cada usuário.</p>
-        
-        <div class="hero-buttons">
-            {% if not user.is_authenticated %}
-                <a href="{% url 'signup' %}" class="btn-solid">Criar conta e começar</a>
-            {% elif user.is_teacher %}
-                <a href="{% url 'teacher_dashboard' %}" class="btn-solid">Abrir painel do professor</a>
-            {% else %}
-                <a href="{% url 'profile_detail' %}" class="btn-solid">Abrir meu painel</a>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="hero-visuals">
-        <div class="shapes-container">
-            <div class="shape shape-top"></div>
-            <div class="shape shape-main"></div>
-            <div class="shape shape-right"></div>
+            <aside class="hero-panel">
+                <div class="hero-panel__card">
+                    <h2 class="hero-panel__title">Fluxo simples e objetivo</h2>
+                    <div class="hero-mini-grid">
+                        <article class="hero-mini-card">
+                            <strong class="hero-mini-card__title">1. Perfil</strong>
+                            <p class="hero-mini-card__body">Condicoes, objetivos e ambiente tecnologico em um unico lugar.</p>
+                        </article>
+                        <article class="hero-mini-card">
+                            <strong class="hero-mini-card__title">2. Recomendacao</strong>
+                            <p class="hero-mini-card__body">Sugestoes organizadas em cards, com leitura limpa e rapida.</p>
+                        </article>
+                        <article class="hero-mini-card">
+                            <strong class="hero-mini-card__title">3. Acompanhamento</strong>
+                            <p class="hero-mini-card__body">Feedbacks e historico para acompanhar o que funciona melhor.</p>
+                        </article>
+                    </div>
+                </div>
+            </aside>
         </div>
     </div>
 </section>
-
 {% endblock %}

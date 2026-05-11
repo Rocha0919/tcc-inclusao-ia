@@ -1,173 +1,120 @@
 {% extends 'base.html' %}
 {% block content %}
-<style>
-    .page-container {
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 0 20px;
-        font-family: sans-serif;
-        color: #1f2937;
-    }
-    .page-title {
-        font-size: 2.2rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-        color: #1f2937;
-    }
-    .breadcrumb {
-        color: #4b5563;
-        margin-bottom: 40px;
-        font-size: 1rem;
-    }
-    .breadcrumb strong {
-        color: #1f2937;
-    }
-    .form-group {
-        margin-bottom: 25px;
-    }
-    .form-label {
-        display: block;
-        font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 1rem;
-        color: #1f2937;
-    }
-    .form-group input[type="text"],
-    .form-group input[type="password"],
-    .form-group input[type="email"],
-    .form-group input[type="number"],
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 14px;
-        border: 1px solid #1f2937;
-        border-radius: 4px;
-        font-size: 1rem;
-        box-sizing: border-box;
-        background-color: #fff;
-    }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-        outline: 2px solid #2563eb;
-        border-color: transparent;
-    }
-    .btn-primary {
-        background-color: #2563eb;
-        color: #ffffff;
-        border: none;
-        padding: 14px 40px;
-        font-size: 1rem;
-        font-weight: 700;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        margin-bottom: 40px;
-    }
-    .btn-primary:hover {
-        background-color: #1d4ed8;
-    }
-</style>
-
-<div class="page-container">
-    <h1 class="page-title">Atualizar Meu Perfil</h1>
-    <div class="breadcrumb">Painel &gt; <strong>Configurações</strong></div>
-    
-    <form method="POST">
-        {% csrf_token %}
-        
-        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 30px; color: #1f2937;">1. Condição Física e Biológica</h3>
-        
-        <div class="form-group">
-            <label class="form-label">Categoria da Deficiência Principal</label>
-            <select name="categoria_deficiencia" required>
-                <option value="Física" {% if categoria_atual == 'Física' %}selected{% endif %}>Física / Motora</option>
-                <option value="Visual" {% if categoria_atual == 'Visual' %}selected{% endif %}>Visual</option>
-                <option value="Auditiva" {% if categoria_atual == 'Auditiva' %}selected{% endif %}>Auditiva</option>
-                <option value="Intelectual" {% if categoria_atual == 'Intelectual' %}selected{% endif %}>Intelectual</option>
-                <option value="TEA" {% if categoria_atual == 'TEA' %}selected{% endif %}>Transtorno do Espectro Autista (TEA)</option>
-                <option value="TDAH" {% if categoria_atual == 'TDAH' %}selected{% endif %}>TDAH</option>
-                <option value="Altas Habilidades" {% if categoria_atual == 'Altas Habilidades' %}selected{% endif %}>Altas Habilidades / Superdotação</option>
-                <option value="Múltipla" {% if categoria_atual == 'Múltipla' %}selected{% endif %}>Múltipla</option>
-            </select>
+<section class="form-shell form-shell--wide">
+    <div class="form-card">
+        <div class="form-header">
+            <a href="{% url 'profile_view' %}" class="page-back-link">&larr; Voltar ao perfil</a>
+            <span class="eyebrow">Meu perfil</span>
+            <h1 class="form-title">Revisar mapeamento</h1>
+            <p class="form-intro">Ajuste apenas o que mudou para manter as recomendacoes alinhadas ao seu contexto.</p>
         </div>
 
-        <div class="form-group">
-            <label class="form-label">Grau de Severidade/Impacto no Dia a Dia</label>
-            <select name="grau_severidade">
-                <option value="leve" {% if biologico.grau_severidade == 'leve' %}selected{% endif %}>Leve (Impacta, mas tenho muita autonomia)</option>
-                <option value="moderado" {% if biologico.grau_severidade == 'moderado' %}selected{% endif %}>Moderado (Preciso de apoio constante em algumas áreas)</option>
-                <option value="severo" {% if biologico.grau_severidade == 'severo' %}selected{% endif %}>Severo (Dependência significativa de adaptações/terceiros)</option>
-            </select>
-        </div>
+        <form method="POST" class="form-stack">
+            {% csrf_token %}
 
-        <div class="form-group">
-            <label class="form-label">Limitações Específicas</label>
-            <textarea name="limitacoes_especificas" rows="2">{{ biologico.limitacoes_especificas }}</textarea>
-        </div>
+            <section class="form-section">
+                <h2 class="form-section__title">1. Perfil fisico e sensorial</h2>
+                <div class="field-grid">
+                    <div class="field-group">
+                        <label class="field-label" for="categoria_deficiencia">Categoria principal</label>
+                        <select id="categoria_deficiencia" name="categoria_deficiencia" required>
+                            <option value="Física" {% if categoria_atual == 'Física' %}selected{% endif %}>Fisica / Motora</option>
+                            <option value="Visual" {% if categoria_atual == 'Visual' %}selected{% endif %}>Visual</option>
+                            <option value="Auditiva" {% if categoria_atual == 'Auditiva' %}selected{% endif %}>Auditiva</option>
+                            <option value="Intelectual" {% if categoria_atual == 'Intelectual' %}selected{% endif %}>Intelectual</option>
+                            <option value="TEA" {% if categoria_atual == 'TEA' %}selected{% endif %}>TEA</option>
+                            <option value="TDAH" {% if categoria_atual == 'TDAH' %}selected{% endif %}>TDAH</option>
+                            <option value="Altas Habilidades" {% if categoria_atual == 'Altas Habilidades' %}selected{% endif %}>Altas Habilidades</option>
+                            <option value="Múltipla" {% if categoria_atual == 'Múltipla' %}selected{% endif %}>Multipla</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="grau_severidade">Grau de severidade</label>
+                        <select id="grau_severidade" name="grau_severidade">
+                            <option value="leve" {% if biologico.grau_severidade == 'leve' %}selected{% endif %}>Leve</option>
+                            <option value="moderado" {% if biologico.grau_severidade == 'moderado' %}selected{% endif %}>Moderado</option>
+                            <option value="severo" {% if biologico.grau_severidade == 'severo' %}selected{% endif %}>Severo</option>
+                        </select>
+                    </div>
+                    <div class="field-group field-group--wide">
+                        <label class="field-label" for="limitacoes_especificas">Limitacoes que impactam o uso</label>
+                        <textarea id="limitacoes_especificas" name="limitacoes_especificas" rows="3">{{ biologico.limitacoes_especificas }}</textarea>
+                    </div>
+                </div>
+            </section>
 
-        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 40px; color: #1f2937;">2. Aspectos Cognitivos e Comportamentais</h3>
+            <section class="form-section">
+                <h2 class="form-section__title">2. Aprendizagem e atencao</h2>
+                <div class="field-grid">
+                    <div class="field-group">
+                        <label class="field-label" for="estilo_aprendizado">Estilo de aprendizado</label>
+                        <select id="estilo_aprendizado" name="estilo_aprendizado">
+                            <option value="visual" {% if psicologico.estilo_aprendizado == 'visual' %}selected{% endif %}>Visual</option>
+                            <option value="auditivo" {% if psicologico.estilo_aprendizado == 'auditivo' %}selected{% endif %}>Auditivo</option>
+                            <option value="cinestesico" {% if psicologico.estilo_aprendizado == 'cinestesico' %}selected{% endif %}>Pratico</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="barreiras_cognitivas">Barreiras cognitivas</label>
+                        <input id="barreiras_cognitivas" type="text" name="barreiras_cognitivas" value="{{ psicologico.barreiras_cognitivas|default:'' }}">
+                    </div>
+                </div>
+            </section>
 
-        <div class="form-group">
-            <label class="form-label">Estilo de Aprendizado</label>
-            <select name="estilo_aprendizado">
-                <option value="visual" {% if psicologico.estilo_aprendizado == 'visual' %}selected{% endif %}>Visual (Imagens, vídeos, gráficos)</option>
-                <option value="auditivo" {% if psicologico.estilo_aprendizado == 'auditivo' %}selected{% endif %}>Auditivo (Áudios, leitores de tela, podcasts)</option>
-                <option value="cinestesico" {% if psicologico.estilo_aprendizado == 'cinestesico' %}selected{% endif %}>Prático (Tocando, testando, interação física)</option>
-            </select>
-        </div>
+            <section class="form-section">
+                <h2 class="form-section__title">3. Objetivos e rotina</h2>
+                <div class="field-grid">
+                    <div class="field-group">
+                        <label class="field-label" for="objetivo_principal">Foco principal</label>
+                        <select id="objetivo_principal" name="objetivo_principal" required>
+                            <option value="estudo" {% if social.objetivo_principal == 'estudo' %}selected{% endif %}>Estudo</option>
+                            <option value="trabalho" {% if social.objetivo_principal == 'trabalho' %}selected{% endif %}>Trabalho</option>
+                            <option value="vida_diaria" {% if social.objetivo_principal == 'vida_diaria' %}selected{% endif %}>Vida diaria</option>
+                            <option value="reabilitacao" {% if social.objetivo_principal == 'reabilitacao' %}selected{% endif %}>Reabilitacao</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="orcamento">Orcamento</label>
+                        <select id="orcamento" name="orcamento">
+                            <option value="gratuito" {% if social.orcamento == 'gratuito' %}selected{% endif %}>Priorizar gratuito</option>
+                            <option value="baixo_custo" {% if social.orcamento == 'baixo_custo' %}selected{% endif %}>Baixo custo</option>
+                            <option value="sem_restricao" {% if social.orcamento == 'sem_restricao' %}selected{% endif %}>Sem restricao</option>
+                        </select>
+                    </div>
+                    <div class="field-group field-group--wide">
+                        <label class="field-label" for="barreiras">Barreiras da rotina</label>
+                        <textarea id="barreiras" name="barreiras" rows="4" required>{{ social.barreiras_dia_a_dia }}</textarea>
+                    </div>
+                </div>
+            </section>
 
-        <div class="form-group">
-            <label class="form-label">Barreiras Cognitivas (Opcional)</label>
-            <input type="text" name="barreiras_cognitivas" value="{{ psicologico.barreiras_cognitivas|default:'' }}">
-        </div>
+            <section class="form-section">
+                <h2 class="form-section__title">4. Ambiente tecnologico</h2>
+                <div class="field-grid">
+                    <div class="field-group">
+                        <label class="field-label" for="nivel_tecnologico">Nivel com tecnologia</label>
+                        <select id="nivel_tecnologico" name="nivel_tecnologico">
+                            <option value="iniciante" {% if tecnologico.nivel_tecnologico == 'iniciante' %}selected{% endif %}>Iniciante</option>
+                            <option value="intermediario" {% if tecnologico.nivel_tecnologico == 'intermediario' %}selected{% endif %}>Intermediario</option>
+                            <option value="avancado" {% if tecnologico.nivel_tecnologico == 'avancado' %}selected{% endif %}>Avancado</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="dispositivos">Dispositivos disponiveis</label>
+                        <input id="dispositivos" type="text" name="dispositivos" value="{{ tecnologico.dispositivos_disponiveis|default:'' }}">
+                    </div>
+                    <div class="field-group field-group--wide">
+                        <label class="field-label" for="ferramentas_previas">Ferramentas ja utilizadas</label>
+                        <input id="ferramentas_previas" type="text" name="ferramentas_previas" value="{{ tecnologico.ferramentas_previas|default:'' }}">
+                    </div>
+                </div>
+            </section>
 
-        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 40px; color: #1f2937;">3. Objetivos e Contexto Social</h3>
-        
-        <div class="form-group">
-            <label class="form-label">Foco principal no momento</label>
-            <select name="objetivo_principal" required>
-                <option value="estudo" {% if social.objetivo_principal == 'estudo' %}selected{% endif %}>Estudo</option>
-                <option value="trabalho" {% if social.objetivo_principal == 'trabalho' %}selected{% endif %}>Trabalho</option>
-                <option value="vida_diaria" {% if social.objetivo_principal == 'vida_diaria' %}selected{% endif %}>Vida Diária e Autonomia</option>
-                <option value="reabilitacao" {% if social.objetivo_principal == 'reabilitacao' %}selected{% endif %}>Reabilitação</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Disponibilidade financeira para aquisição</label>
-            <select name="orcamento">
-                <option value="gratuito" {% if social.orcamento == 'gratuito' %}selected{% endif %}>Busco apenas opções gratuitas/código aberto</option>
-                <option value="baixo_custo" {% if social.orcamento == 'baixo_custo' %}selected{% endif %}>Posso pagar por opções de baixo custo</option>
-                <option value="sem_restricao" {% if social.orcamento == 'sem_restricao' %}selected{% endif %}>Sem restrições (Empresa/Plano cobrem)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Maiores barreiras no seu dia a dia</label>
-            <textarea name="barreiras" rows="3" required>{{ social.barreiras_dia_a_dia }}</textarea>
-        </div>
-
-        <h3 style="font-size: 1.3rem; margin-bottom: 20px; margin-top: 40px; color: #1f2937;">4. Ambiente Tecnológico</h3>
-        
-        <div class="form-group">
-            <label class="form-label">Nível de afinidade com tecnologia</label>
-            <select name="nivel_tecnologico">
-                <option value="iniciante" {% if tecnologico.nivel_tecnologico == 'iniciante' %}selected{% endif %}>Iniciante (Preciso de ferramentas simples)</option>
-                <option value="intermediario" {% if tecnologico.nivel_tecnologico == 'intermediario' %}selected{% endif %}>Intermediário (Consigo instalar e configurar)</option>
-                <option value="avancado" {% if tecnologico.nivel_tecnologico == 'avancado' %}selected{% endif %}>Avançado (Tenho facilidade com softwares)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Dispositivos disponíveis para uso diário</label>
-            <input type="text" name="dispositivos" value="{{ tecnologico.dispositivos_disponiveis|default:'' }}">
-        </div>
-
-        <div class="form-group" style="margin-bottom: 40px;">
-            <label class="form-label">Ferramentas que já utiliza e funcionam bem</label>
-            <input type="text" name="ferramentas_previas" value="{{ tecnologico.ferramentas_previas|default:'' }}">
-        </div>
-
-        <button type="submit" class="btn-primary">Salvar Alterações</button>
-    </form>
-</div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Salvar alteracoes</button>
+                <a href="{% url 'profile_view' %}" class="btn btn-soft">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</section>
 {% endblock %}

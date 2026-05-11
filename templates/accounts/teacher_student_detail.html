@@ -1,125 +1,247 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="page-shell">
-    <a href="{% url 'teacher_dashboard' %}" class="page-back-link">&larr; Voltar ao painel do professor</a>
-
-    <div class="page-header">
-        <div class="page-header__text">
-            <span class="eyebrow">Perfil do aluno</span>
-            <h1 class="page-title">{{ student_profile.display_name }}</h1>
-            <p class="page-subtitle">
-                Perfil educacional e biopsicossocial usado para gerar recomendacoes mais aderentes ao contexto informado.
-            </p>
+<section class="app-shell">
+    <aside class="app-sidebar">
+        <div class="app-sidebar__section">
+            <span class="app-sidebar__label">Perfil do aluno</span>
+            <h1 class="app-sidebar__title">{{ student_profile.display_name }}</h1>
+            <p class="app-sidebar__copy">Dados do perfil e acesso rapido ao historico deste aluno.</p>
         </div>
-        <div class="page-actions">
-            <a href="{% url 'feedback_history' %}?student_id={{ student_profile.id }}" class="btn btn-soft">Historico de avaliacoes</a>
-            <a href="{% url 'teacher_student_edit' student_profile.id %}" class="btn btn-outline">Editar aluno</a>
-            {% if student_profile.is_generating and student_profile.generation_cancel_requested %}
-                <span class="status-pill status-pill--warning">Cancelando geracao</span>
-            {% elif student_profile.is_generating %}
-                <a href="{% url 'student_plan_generation_loading' student_profile.id %}?next={{ request.path|urlencode }}" class="btn btn-primary">Acompanhar geracao</a>
-            {% else %}
-                <form
-                    id="student-generate-form"
-                    class="inline-form"
-                    action="{% url 'student_plan_generation_loading' student_profile.id %}"
-                    method="GET"
-                    data-loading-form
-                    data-loading-button-id="student-generate-button"
-                    data-loading-text="Abrindo carregamento..."
-                >
-                    <input type="hidden" name="start" value="1">
-                    <input type="hidden" name="next" value="{{ request.path }}">
-                    <button id="student-generate-button" type="submit" class="btn btn-primary" data-loading-button>Gerar recomendacao</button>
-                </form>
-            {% endif %}
+
+        <div class="app-sidebar__section">
+            <span class="app-sidebar__label">Navegacao</span>
+            <nav class="app-sidebar__nav">
+                <a href="{% url 'teacher_dashboard' %}" class="app-sidebar__link">Dashboard</a>
+                <a href="{% url 'teacher_student_detail' student_profile.id %}" class="app-sidebar__link app-sidebar__link--active">Perfil</a>
+                <a href="{% url 'teacher_student_edit' student_profile.id %}" class="app-sidebar__link">Editar</a>
+                <a href="{% url 'feedback_history' %}?student_id={{ student_profile.id }}" class="app-sidebar__link">Feedbacks</a>
+            </nav>
         </div>
-    </div>
 
-    {% if student_profile.is_generating %}
-        <div
-            data-generation-watcher="true"
-            data-profile-id="{{ student_profile.id }}"
-            data-status-url="{% url 'student_plan_generation_status' student_profile.id %}"
-            data-current-state="{% if student_profile.generation_cancel_requested %}canceling{% else %}generating{% endif %}"
-            hidden
-        ></div>
-    {% endif %}
-
-    <div class="detail-section-grid">
-        <section class="detail-card detail-card--blue">
-            <h2 class="detail-card__title">Condicao fisica e biologica</h2>
-            <div class="detail-card__list">
-                <p class="detail-card__row"><strong>Categoria:</strong> {{ categoria_atual|default:"Nao informado" }}</p>
-                <p class="detail-card__row"><strong>Severidade:</strong> {{ biologico.grau_severidade|default:"Nao informado" }}</p>
-                <p class="detail-card__row"><strong>Limitacoes:</strong> {{ biologico.limitacoes_especificas|default:"Nenhuma declarada." }}</p>
-            </div>
-        </section>
-
-        <section class="detail-card detail-card--violet">
-            <h2 class="detail-card__title">Perfil cognitivo</h2>
-            <div class="detail-card__list">
-                <p class="detail-card__row"><strong>Estilo de aprendizado:</strong> {{ psicologico.estilo_aprendizado|default:"Nao informado" }}</p>
-                <p class="detail-card__row"><strong>Barreiras cognitivas:</strong> {{ psicologico.barreiras_cognitivas|default:"Nenhuma declarada." }}</p>
-            </div>
-        </section>
-
-        <section class="detail-card detail-card--green">
-            <h2 class="detail-card__title">Objetivos e contexto social</h2>
-            <div class="detail-card__list">
-                <p class="detail-card__row"><strong>Objetivo principal:</strong> {{ social.objetivo_principal|default:"Nao informado" }}</p>
-                <p class="detail-card__row"><strong>Orcamento:</strong> {{ social.orcamento|default:"Nao informado" }}</p>
-                <p class="detail-card__row"><strong>Barreiras do dia a dia:</strong> {{ social.barreiras_dia_a_dia|default:"Nao informado" }}</p>
-            </div>
-        </section>
-
-        <section class="detail-card detail-card--cyan">
-            <h2 class="detail-card__title">Ambiente tecnologico</h2>
-            <div class="detail-card__list">
-                <p class="detail-card__row"><strong>Nivel tecnologico:</strong> {{ tecnologico.nivel_tecnologico|default:"Nao informado" }}</p>
-                <p class="detail-card__row"><strong>Dispositivos:</strong> {{ tecnologico.dispositivos_disponiveis|default:"Nao informado" }}</p>
-                <p class="detail-card__row"><strong>Ferramentas previas:</strong> {{ tecnologico.ferramentas_previas|default:"Nenhuma declarada." }}</p>
-            </div>
-        </section>
-    </div>
-
-    {% if student_profile.is_generating and student_profile.generation_cancel_requested %}
-        <div class="status-panel status-panel--canceling">
-            <p class="status-panel__title">A geracao anterior esta sendo cancelada.</p>
-            <p class="status-panel__body">Assim que o status mudar, uma nova geracao ficara disponivel automaticamente.</p>
+        <div class="app-sidebar__section">
+            <span class="app-sidebar__label">Resumo</span>
+            <span class="badge badge--info">{{ categoria_atual|default:"Nao informado" }}</span>
+            <p class="app-sidebar__hint">{{ sessoes|length }} plano{{ sessoes|length|pluralize }} registrado{{ sessoes|length|pluralize }}.</p>
         </div>
-    {% endif %}
 
-    <div class="section-headline">
-        <span class="section-headline__bar"></span>
-        <div>
-            <h2 class="section-title">Recomendacoes geradas</h2>
-            <p class="section-note">Historico dos planos criados para este aluno.</p>
+        <div class="app-sidebar__section">
+            <span class="app-sidebar__label">Acoes</span>
+            <div class="app-sidebar__actions">
+                {% if student_profile.is_generating and student_profile.generation_cancel_requested %}
+                    <div class="status-panel status-panel--canceling">
+                        <p class="status-panel__title">Cancelando geracao</p>
+                        <p class="status-panel__body">Aguarde antes de iniciar uma nova.</p>
+                    </div>
+                {% elif student_profile.is_generating %}
+                    <a href="{% url 'student_plan_generation_loading' student_profile.id %}?next={{ request.path|urlencode }}" class="btn btn-primary">Acompanhar</a>
+                {% else %}
+                    <form
+                        id="student-generate-form"
+                        class="inline-form"
+                        action="{% url 'student_plan_generation_loading' student_profile.id %}"
+                        method="GET"
+                        data-loading-form
+                        data-loading-button-id="student-generate-button"
+                        data-loading-text="Abrindo carregamento..."
+                    >
+                        <input type="hidden" name="start" value="1">
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button id="student-generate-button" type="submit" class="btn btn-primary" data-loading-button>Gerar recomendacao</button>
+                    </form>
+                {% endif %}
+                <a href="{% url 'teacher_student_edit' student_profile.id %}" class="btn btn-outline">Editar aluno</a>
+            </div>
         </div>
-    </div>
+    </aside>
 
-    {% if sessoes %}
-        <div class="panel-list">
-            {% for sessao in sessoes %}
-                <a href="{% url 'plan_detail' sessao.id %}" class="panel-link">
-                    <article class="surface-card">
-                        <div class="panel-link__row">
-                            <div>
-                                <h3 class="panel-link__title">Plano {{ forloop.counter }} de tecnologia assistiva</h3>
-                                <p class="panel-link__meta">{{ sessao.created_at|date:"d/m/Y H:i" }}</p>
+    <div class="app-content">
+        <a href="{% url 'teacher_dashboard' %}" class="page-back-link">&larr; Voltar ao painel do professor</a>
+
+        <div class="page-header dashboard-banner">
+            <div class="page-header__text">
+                <span class="eyebrow">Perfil do aluno</span>
+                <h1 class="page-title">{{ student_profile.display_name }}</h1>
+                <p class="page-subtitle">Perfil usado nas recomendacoes deste aluno.</p>
+            </div>
+            <div class="page-actions">
+                <a href="{% url 'feedback_history' %}?student_id={{ student_profile.id }}" class="btn btn-soft">Historico</a>
+                <a href="{% url 'teacher_student_edit' student_profile.id %}" class="btn btn-outline">Editar</a>
+                {% if student_profile.is_generating and student_profile.generation_cancel_requested %}
+                    <span class="status-pill status-pill--warning">Cancelando</span>
+                {% elif student_profile.is_generating %}
+                    <a href="{% url 'student_plan_generation_loading' student_profile.id %}?next={{ request.path|urlencode }}" class="btn btn-primary">Acompanhar</a>
+                {% else %}
+                    <form
+                        id="student-generate-form-header"
+                        class="inline-form"
+                        action="{% url 'student_plan_generation_loading' student_profile.id %}"
+                        method="GET"
+                        data-loading-form
+                        data-loading-button-id="student-generate-button-header"
+                        data-loading-text="Abrindo carregamento..."
+                    >
+                        <input type="hidden" name="start" value="1">
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button id="student-generate-button-header" type="submit" class="btn btn-primary" data-loading-button>Gerar</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if student_profile.is_generating %}
+            <div
+                data-generation-watcher="true"
+                data-profile-id="{{ student_profile.id }}"
+                data-status-url="{% url 'student_plan_generation_status' student_profile.id %}"
+                data-current-state="{% if student_profile.generation_cancel_requested %}canceling{% else %}generating{% endif %}"
+                hidden
+            ></div>
+        {% endif %}
+
+        <div class="summary-strip">
+            <article class="summary-card">
+                <span class="summary-card__label">Categoria</span>
+                <span class="summary-card__value">{{ categoria_atual|default:"Nao informado" }}</span>
+                <p class="summary-card__note">Base do perfil atual.</p>
+            </article>
+            <article class="summary-card">
+                <span class="summary-card__label">Planos</span>
+                <span class="summary-card__value">{{ sessoes|length }}</span>
+                <p class="summary-card__note">Historico disponivel do aluno.</p>
+            </article>
+        </div>
+
+        <div class="profile-section-grid">
+            <section class="surface-card">
+                <div class="section-headline">
+                    <span class="section-headline__bar"></span>
+                    <div>
+                        <h2 class="section-title">Fisico e sensorial</h2>
+                        <p class="section-note">Necessidades que impactam o uso.</p>
+                    </div>
+                </div>
+                <div class="profile-panel">
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Categoria</span>
+                        <span class="profile-panel__value">{{ categoria_atual|default:"Nao informado" }}</span>
+                    </div>
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Severidade</span>
+                        <span class="profile-panel__value">{{ biologico.grau_severidade|default:"Nao informado" }}</span>
+                    </div>
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Limitacoes</span>
+                        <span class="profile-panel__value">{{ biologico.limitacoes_especificas|default:"Nenhuma declarada." }}</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="surface-card">
+                <div class="section-headline">
+                    <span class="section-headline__bar"></span>
+                    <div>
+                        <h2 class="section-title">Cognitivo</h2>
+                        <p class="section-note">Preferencias e barreiras de aprendizado.</p>
+                    </div>
+                </div>
+                <div class="profile-panel">
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Estilo</span>
+                        <span class="profile-panel__value">{{ psicologico.estilo_aprendizado|default:"Nao informado" }}</span>
+                    </div>
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Barreiras</span>
+                        <span class="profile-panel__value">{{ psicologico.barreiras_cognitivas|default:"Nenhuma declarada." }}</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="surface-card">
+                <div class="section-headline">
+                    <span class="section-headline__bar"></span>
+                    <div>
+                        <h2 class="section-title">Objetivos e rotina</h2>
+                        <p class="section-note">Contexto pratico para a recomendacao.</p>
+                    </div>
+                </div>
+                <div class="profile-panel">
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Objetivo</span>
+                        <span class="profile-panel__value">{{ social.objetivo_principal|default:"Nao informado" }}</span>
+                    </div>
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Orcamento</span>
+                        <span class="profile-panel__value">{{ social.orcamento|default:"Nao informado" }}</span>
+                    </div>
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Barreiras</span>
+                        <span class="profile-panel__value">{{ social.barreiras_dia_a_dia|default:"Nao informado" }}</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="surface-card">
+                <div class="section-headline">
+                    <span class="section-headline__bar"></span>
+                    <div>
+                        <h2 class="section-title">Tecnologia</h2>
+                        <p class="section-note">Dispositivos e recursos ja conhecidos.</p>
+                    </div>
+                </div>
+                <div class="profile-panel">
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Nivel</span>
+                        <span class="profile-panel__value">{{ tecnologico.nivel_tecnologico|default:"Nao informado" }}</span>
+                    </div>
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Dispositivos</span>
+                        <span class="profile-panel__value">{{ tecnologico.dispositivos_disponiveis|default:"Nao informado" }}</span>
+                    </div>
+                    <div class="profile-panel__row">
+                        <span class="profile-panel__label">Ferramentas</span>
+                        <span class="profile-panel__value">{{ tecnologico.ferramentas_previas|default:"Nenhuma declarada." }}</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        {% if student_profile.is_generating and student_profile.generation_cancel_requested %}
+            <div class="status-panel status-panel--canceling">
+                <p class="status-panel__title">Cancelando geracao</p>
+                <p class="status-panel__body">Uma nova recomendacao ficara disponivel quando o processo terminar.</p>
+            </div>
+        {% endif %}
+
+        <section class="surface-card">
+            <div class="section-headline">
+                <span class="section-headline__bar"></span>
+                <div>
+                    <h2 class="section-title">Historico de planos</h2>
+                    <p class="section-note">Relatorios gerados para este aluno.</p>
+                </div>
+            </div>
+
+            {% if sessoes %}
+                <div class="history-list">
+                    {% for sessao in sessoes %}
+                        <a href="{% url 'plan_detail' sessao.id %}" class="plan-item">
+                            <span class="plan-item__icon">{{ forloop.counter }}</span>
+                            <div class="plan-item__info">
+                                <h3 class="plan-item__title">Plano de tecnologia assistiva</h3>
+                                <p class="plan-item__meta">{{ sessao.created_at|date:"d/m/Y H:i" }}</p>
                             </div>
-                            <span class="panel-link__cta">Abrir relatorio</span>
-                        </div>
-                    </article>
-                </a>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="empty-state">
-            <h3 class="empty-state__title">Nenhuma recomendacao gerada ainda</h3>
-            <p class="empty-state__body">Assim que um plano for criado para este aluno, ele aparecera aqui com acesso rapido ao historico.</p>
-        </div>
-    {% endif %}
+                            <span class="badge badge--success">Pronto</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3 class="empty-state__title">Nenhum plano gerado</h3>
+                    <p class="empty-state__body">Quando uma recomendacao for criada, ela aparecera aqui.</p>
+                </div>
+            {% endif %}
+        </section>
+    </div>
 </section>
 
 {% include 'recommendations/_generation_status_polling.html' %}

@@ -1,48 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
 <section class="loading-shell">
-    <a href="{{ back_url }}" class="page-back-link">&larr; {{ back_label }}</a>
 
     <div class="loading-card">
         <div class="loading-card__intro">
-            <span class="eyebrow">Acompanhamento da geracao</span>
-            <p class="loading-card__subtitle">
-                O sistema esta preparando um plano comparativo de tecnologias assistivas com base no perfil informado.
-            </p>
+            <span class="eyebrow">Geracao em andamento</span>
+            <p class="loading-card__subtitle">Estamos preparando o plano com base no perfil informado.</p>
         </div>
 
         <div id="loading-state" class="loading-panel">
             <div aria-hidden="true" class="loading-spinner"></div>
             <h1 id="status-title" class="loading-title">Gerando recomendacao</h1>
             <p id="status-message" class="loading-copy">{{ loading_message }}</p>
-            <p id="status-hint" class="loading-hint">
-                A pagina acompanhara o processo automaticamente e abrira o plano assim que ele estiver pronto.
-            </p>
-            <div class="loading-steps">
-                <div class="loading-step">
-                    <span class="loading-step__index">1</span>
-                    <div>
-                        <strong class="loading-step__title">Leitura do perfil</strong>
-                        <p class="loading-step__body">O contexto biopsicossocial e educacional e organizado para a analise.</p>
-                    </div>
-                </div>
-                <div class="loading-step">
-                    <span class="loading-step__index">2</span>
-                    <div>
-                        <strong class="loading-step__title">Comparacao dos modelos</strong>
-                        <p class="loading-step__body">As sugestoes sao cruzadas para construir um plano mais util e explicavel.</p>
-                    </div>
-                </div>
-                <div class="loading-step">
-                    <span class="loading-step__index">3</span>
-                    <div>
-                        <strong class="loading-step__title">Entrega do plano</strong>
-                        <p class="loading-step__body">O relatorio final abre automaticamente assim que a sessao for concluida.</p>
-                    </div>
-                </div>
-            </div>
+            <p id="status-hint" class="loading-hint">A tela sera atualizada automaticamente quando o plano estiver pronto.</p>
             <div class="loading-actions">
-                <button id="cancel-button" type="button" class="btn btn-soft">Cancelar geracao</button>
+                <button id="cancel-button" type="button" class="btn btn-soft">Cancelar</button>
                 <a href="{{ back_url }}" class="btn btn-outline">Voltar</a>
             </div>
         </div>
@@ -89,8 +61,8 @@
         const cancelButton = document.getElementById('cancel-button');
         const openPlanLink = document.getElementById('open-plan-link');
         const cancelingMessage = 'Cancelando geracao... aguarde alguns instantes.';
-        const defaultHint = 'A pagina acompanhara o processo automaticamente e abrira o plano assim que ele estiver pronto.';
-        const cancelingHint = 'A geracao anterior esta sendo cancelada. Aguarde para iniciar uma nova.';
+        const defaultHint = 'A tela sera atualizada automaticamente quando o plano estiver pronto.';
+        const cancelingHint = 'O cancelamento esta em andamento. Aguarde alguns instantes.';
 
         let pollingTimer = null;
         let requestInFlight = false;
@@ -101,32 +73,12 @@
         let cancelController = null;
         const resultToneClasses = ['loading-panel--error', 'loading-panel--cancelled', 'loading-panel--success'];
 
-        function logInfo(eventName, data = {}) {
-            console.info('[plan-loading]', eventName, {
-                flowType,
-                profileId: currentProfileId || null,
-                studentId: currentStudentId || null,
-                loggedUser,
-                generateUrl,
-                statusUrl,
-                cancelUrl,
-                originUrl,
-                ...data,
-            });
+        function logInfo() {
+            return;
         }
 
-        function logError(eventName, error, data = {}) {
-            console.error('[plan-loading]', eventName, {
-                flowType,
-                profileId: currentProfileId || null,
-                studentId: currentStudentId || null,
-                loggedUser,
-                generateUrl,
-                statusUrl,
-                cancelUrl,
-                originUrl,
-                ...data,
-            }, error);
+        function logError() {
+            return;
         }
 
         function showElement(element) {
@@ -184,23 +136,30 @@
             resultState.classList.add(`loading-panel--${tone}`);
         }
 
+        function setElementText(element, value) {
+            if (!element) {
+                return;
+            }
+            element.textContent = value;
+        }
+
         function showLoading(message) {
             showElement(loadingState);
             hideElement(resultState);
             hideElement(openPlanLink);
-            statusTitle.textContent = 'Gerando recomendacao';
-            statusMessage.textContent = message || defaultMessage;
-            statusHint.textContent = defaultHint;
-            setButtonState(cancelButton, false, 'Cancelar geracao');
+            setElementText(statusTitle, 'Gerando recomendacao');
+            setElementText(statusMessage, message || defaultMessage);
+            setElementText(statusHint, defaultHint);
+            setButtonState(cancelButton, false, 'Cancelar');
         }
 
         function showCanceling(message) {
             showElement(loadingState);
             hideElement(resultState);
             hideElement(openPlanLink);
-            statusTitle.textContent = 'Cancelando geracao';
-            statusMessage.textContent = message || cancelingMessage;
-            statusHint.textContent = cancelingHint;
+            setElementText(statusTitle, 'Cancelando geracao');
+            setElementText(statusMessage, message || cancelingMessage);
+            setElementText(statusHint, cancelingHint);
             setButtonState(cancelButton, true, 'Cancelando...');
             setButtonState(retryButton, true, 'Aguarde...');
             requestInFlight = false;
@@ -210,8 +169,8 @@
             const tone = options.tone || 'error';
             const iconMap = {
                 error: '!',
-                cancelled: 'x',
-                success: 'ok',
+                cancelled: 'X',
+                success: 'OK',
             };
 
             clearPolling();
@@ -231,7 +190,7 @@
             }
 
             setButtonState(retryButton, false, 'Tentar novamente');
-            setButtonState(cancelButton, false, 'Cancelar geracao');
+            setButtonState(cancelButton, false, 'Cancelar');
             requestInFlight = false;
         }
 
@@ -329,7 +288,7 @@
                 }
 
                 if (data.message) {
-                    statusMessage.textContent = data.message;
+                    setElementText(statusMessage, data.message);
                 }
             } catch (error) {
                 if (error.name === 'AbortError') {
@@ -434,10 +393,10 @@
                 }
 
                 if (data.message) {
-                    statusMessage.textContent = data.message;
+                    setElementText(statusMessage, data.message);
                 }
 
-                setButtonState(cancelButton, false, 'Cancelar geracao');
+                setButtonState(cancelButton, false, 'Cancelar');
                 startPolling();
             } catch (error) {
                 requestInFlight = false;
@@ -587,9 +546,9 @@
 
                 if (data.status === 'processing') {
                     if (data.message) {
-                        statusMessage.textContent = data.message;
+                        setElementText(statusMessage, data.message);
                     }
-                    setButtonState(cancelButton, false, 'Cancelar geracao');
+                    setButtonState(cancelButton, false, 'Cancelar');
                     startPolling();
                     return;
                 }

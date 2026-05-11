@@ -47,3 +47,26 @@ class TeacherStudentCreationTests(TestCase):
         self.assertFalse(student_profile.generation_cancel_requested)
         self.assertIsNone(student_profile.last_generated_session_id)
         self.assertEqual(student_profile.last_generation_error, '')
+
+    def test_teacher_dashboard_can_search_student_by_name(self):
+        BiopsychosocialProfile.objects.create(
+            teacher=self.teacher,
+            student_name='Eduarda Silva',
+            primary_disability_category='Visual',
+            dynamic_data={},
+        )
+        BiopsychosocialProfile.objects.create(
+            teacher=self.teacher,
+            student_name='Fabio Costa',
+            primary_disability_category='Auditiva',
+            dynamic_data={},
+        )
+
+        response = self.client.get(
+            reverse('teacher_dashboard'),
+            {'q': 'Edu'},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Eduarda Silva')
+        self.assertNotContains(response, 'Fabio Costa')

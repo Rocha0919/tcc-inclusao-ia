@@ -1,60 +1,119 @@
 {% extends 'base.html' %}
 {% block content %}
-<div style="display: flex; justify-content: center; align-items: flex-start; padding-top: 40px; min-height: 80vh;">
-    <div class="card" style="width: 100%; max-width: 500px; padding: 0; overflow: hidden;">
-        
-        <div style="background: var(--primary); padding: 20px; text-align: center; color: white;">
-            <h3 style="margin: 0; font-size: 1.3rem;">{% if existing_feedback %}Editar avaliação{% else %}Avaliar tecnologia{% endif %}</h3>
+<section class="page-shell">
+    <div class="report-header">
+        <a href="{{ cancel_url }}" class="page-back-link">&larr; Voltar ao plano</a>
+        <span class="badge {% if item.ai_model == 'mistral' %}badge--mistral{% else %}badge--info{% endif %}">{{ item.ai_model|title }}</span>
+    </div>
+
+    <div class="page-header dashboard-banner">
+        <div class="page-header__text">
+            <span class="eyebrow">Feedback</span>
+            <h1 class="page-title">{% if existing_feedback %}Editar avaliacao{% else %}Avaliar tecnologia{% endif %}</h1>
+            <p class="page-subtitle">{{ profile_display_name }}</p>
         </div>
+    </div>
 
-        <div style="padding: 30px;">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <p style="font-size: 1.2rem; color: var(--text-dark); margin: 0;"><strong>{{ item.name }}</strong></p>
-                <p style="color: var(--secondary); font-size: 0.9rem; margin-top: 5px;">Feedback vinculado ao plano de {{ profile_display_name }}.</p>
-            </div>
-            
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin-bottom: 25px;">
-            
-            <form method="POST">
+    <div class="feedback-layout">
+        <div class="feedback-main">
+            <form method="POST" class="surface-card feedback-form feedback-form-card">
                 {% csrf_token %}
-                
-                <div style="margin-bottom: 30px;">
-                    <label style="display: block; font-weight: bold; text-align: center; margin-bottom: 15px; color: var(--secondary);">
-                        Qual nota você daria?
-                    </label>
-                    
-                    <input type="range" name="score" min="1" max="5" step="1" id="scoreRange" value="{{ initial_score }}"
-                           oninput="document.getElementById('scoreOutput').innerText = this.value"
-                           style="width: 100%; cursor: pointer; accent-color: var(--primary);">
-                    
-                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 15px;">
-                        <span style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="scoreOutput">{{ initial_score }}</span>
-                        <span style="font-size: 1.8rem; color: #ffc107;">★</span>
+
+                <div class="feedback-target">
+                    <div class="feedback-target__meta">
+                        <span class="feedback-target__label">Tecnologia recomendada</span>
+                        {% if existing_feedback %}
+                            <span class="badge badge--info">Avaliacao em edicao</span>
+                        {% else %}
+                            <span class="badge badge--neutral">Nova avaliacao</span>
+                        {% endif %}
                     </div>
-                    
-                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #94a3b8; padding: 0 5px;">
-                        <span>😞 Ruim</span>
-                        <span>🤩 Excelente</span>
+                    <h2 class="feedback-target__name">{{ item.name }}</h2>
+                </div>
+
+                <div class="feedback-score-panel">
+                    <div class="section-headline">
+                        <span class="section-headline__bar"></span>
+                        <div>
+                            <h2 class="section-title">Sua nota</h2>
+                            <p class="section-note">Use a escala para indicar o quanto essa tecnologia ajudou no contexto real.</p>
+                        </div>
+                    </div>
+
+                    <div class="rating-meter">
+                        <input
+                            type="range"
+                            name="score"
+                            min="1"
+                            max="5"
+                            step="1"
+                            id="scoreRange"
+                            value="{{ initial_score }}"
+                            class="rating-slider"
+                            oninput="document.getElementById('scoreOutput').innerText = this.value"
+                        >
+
+                        <div class="rating-display">
+                            <div class="score-badge">
+                                <span id="scoreOutput" class="score-badge__value">{{ initial_score }}</span>
+                                <span class="score-badge__star">*</span>
+                            </div>
+                        </div>
+
+                        <div class="score-scale">
+                            <span>1 Pouco util</span>
+                            <span>5 Muito util</span>
+                        </div>
                     </div>
                 </div>
 
-                <div style="margin-bottom: 25px;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 8px; color: var(--secondary);">Comentário opcional</label>
-                    <textarea name="user_comment" rows="3"
-                              placeholder="Por que essa nota?"
-                              style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 1rem; resize: vertical;">{{ initial_comment }}</textarea>
+                <div class="field-group">
+                    <label class="field-label" for="user_comment">Comentario</label>
+                    <textarea id="user_comment" name="user_comment" rows="5" class="feedback-textarea" placeholder="Conte o que funcionou bem, o que atrapalhou e em que contexto voce usou a tecnologia.">{{ initial_comment }}</textarea>
+                    <span class="field-help">Um comentario objetivo ajuda a tornar as proximas recomendacoes mais aderentes.</span>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;">
-                        {% if existing_feedback %}Salvar avaliação{% else %}Enviar avaliação{% endif %}
-                    </button>
-                    <a href="{{ cancel_url }}" style="text-align: center; color: var(--secondary); text-decoration: none; font-size: 0.9rem; font-weight: bold;">
-                        Cancelar e voltar
-                    </a>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">{% if existing_feedback %}Salvar avaliacao{% else %}Enviar avaliacao{% endif %}</button>
+                    <a href="{{ cancel_url }}" class="btn btn-soft">Cancelar</a>
                 </div>
             </form>
         </div>
+
+        <aside class="feedback-sidebar">
+            <section class="surface-card surface-card--sticky feedback-sidecard">
+                <div class="section-headline">
+                    <span class="section-headline__bar"></span>
+                    <div>
+                        <h2 class="section-title">Resumo</h2>
+                        <p class="section-note">Contexto desta avaliacao.</p>
+                    </div>
+                </div>
+
+                <div class="meta-list">
+                    <div class="meta-row">
+                        <span class="meta-label">Perfil</span>
+                        <span class="meta-value">{{ profile_display_name }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Modelo</span>
+                        <span class="meta-value">{{ item.ai_model|title }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Plano</span>
+                        <span class="meta-value">{{ session.created_at|date:"d/m/Y" }}</span>
+                    </div>
+                </div>
+
+                <div class="feedback-sidecard__note">
+                    {% if existing_feedback %}
+                        Revise a nota e ajuste o comentario para manter o historico alinhado ao uso mais recente.
+                    {% else %}
+                        Registre uma impressao curta e direta para enriquecer o historico da tecnologia.
+                    {% endif %}
+                </div>
+            </section>
+        </aside>
     </div>
-</div>
+</section>
 {% endblock %}

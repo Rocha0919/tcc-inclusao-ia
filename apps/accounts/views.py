@@ -3,7 +3,7 @@ from functools import wraps
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -330,15 +330,30 @@ def profile_edit(request):
 @login_required
 @teacher_required
 def teacher_dashboard(request):
+    students_base = BiopsychosocialProfile.objects.filter(
+        teacher=request.user,
+        user__isnull=True,
+    )
+    search_query = (request.GET.get('q') or '').strip()
+
+    if search_query:
+        students_base = students_base.filter(
+            Q(student_name__icontains=search_query)
+        )
+
     students = (
-        BiopsychosocialProfile.objects.filter(teacher=request.user, user__isnull=True)
+        students_base
         .annotate(
             total_sessions=Count('recommendationsession'),
             last_session_at=Max('recommendationsession__created_at'),
         )
         .order_by('student_name', 'created_at')
     )
-    return render(request, 'accounts/teacher_dashboard.html', {'students': students})
+    return render(request, 'accounts/teacher_dashboard.html', {
+        'students': students,
+        'search_query': search_query,
+        'student_count': students.count(),
+    })
 
 
 @login_required

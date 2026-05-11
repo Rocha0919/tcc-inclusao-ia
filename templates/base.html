@@ -4,182 +4,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}TecnoAcessível{% endblock %}</title>
+    <title>{% block title %}TecnoAcessivel{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="{% static 'js/scripts.js' %}" defer></script>
-    <style>
-        body {
-            margin: 0;
-            font-family: sans-serif;
-            color: #1a202c;
-            transition: all 0.3s ease;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .topbar {
-            background: #fff;
-            padding: 15px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .topbar .container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo-area {
-            text-decoration: none;
-        }
-
-        .logo-text-main {
-            font-weight: bold;
-            font-size: 1.4rem;
-            color: #1a56db;
-        }
-
-        .logo-text-sub {
-            font-size: 0.6rem;
-            color: #718096;
-            display: block;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .nav-link {
-            text-decoration: none;
-            color: #4a5568;
-            position: relative;
-            font-size: 1rem;
-        }
-
-        .nav-link.active {
-            font-weight: bold;
-            color: #1a202c;
-        }
-
-        .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #1a56db;
-        }
-
-        .auth-area {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .btn-user {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background-color: #1a56db;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-user:hover {
-            background-color: #1e40af;
-        }
-
-        .btn-user.active-user {
-            background-color: #1e40af;
-        }
-
-        .high-contrast {
-            background: #000 !important;
-            color: #fff !important;
-        }
-
-        .high-contrast a {
-            color: yellow !important;
-        }
-    </style>
 </head>
 <body>
-<header class="topbar">
-    <div class="container">
-        <a href="{% url 'home' %}" class="logo-area">
-            <span class="logo-text-main">
-                Tecno<span style="color:#48bb78;">Acessível</span>
-            </span>
-            <span class="logo-text-sub">— SOLUÇÕES PERSONALIZADAS —</span>
+{% with current=request.resolver_match.url_name %}
+<header class="site-header">
+    <div class="container site-header__inner">
+        <a href="{% url 'home' %}" class="brand">
+            <span class="brand__name">Tecno<span class="brand__accent">Acessivel</span></span>
         </a>
 
-        <nav class="nav-links">
-            <a href="{% url 'home' %}"
-               class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-               Início
-            </a>
+        <nav class="site-nav" aria-label="Navegacao principal">
+            <a href="{% url 'home' %}" class="site-nav__link {% if current == 'home' %}site-nav__link--active{% endif %}">Inicio</a>
 
             {% if user.is_authenticated %}
-                <a href="{% if user.is_teacher %}{% url 'teacher_dashboard' %}{% else %}{% url 'profile_detail' %}{% endif %}"
-                   class="nav-link {% if request.resolver_match.url_name == 'profile_detail' or request.resolver_match.url_name == 'plan_detail' or request.resolver_match.url_name == 'technology_detail' or request.resolver_match.url_name == 'feedback_create' or request.resolver_match.url_name == 'plan_generation_loading' or request.resolver_match.url_name == 'student_plan_generation_loading' or request.resolver_match.url_name == 'teacher_dashboard' or request.resolver_match.url_name == 'teacher_student_detail' or request.resolver_match.url_name == 'teacher_student_create' or request.resolver_match.url_name == 'teacher_student_edit' or request.resolver_match.url_name == 'teacher_student_delete' %}active{% endif %}">
-                   Recomendações
-                </a>
-                <a href="{% url 'feedback_history' %}"
-                   class="nav-link {% if request.resolver_match.url_name == 'feedback_history' or request.resolver_match.url_name == 'feedback_edit' %}active{% endif %}">
-                   Feedbacks
-                </a>
-            {% else %}
-                <a href="{% url 'login' %}"
-                   class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
-                   Entrar
+                {% if user.is_teacher %}
+                    <a
+                        href="{% url 'teacher_dashboard' %}"
+                        class="site-nav__link {% if current == 'teacher_dashboard' or current == 'teacher_student_detail' or current == 'teacher_student_create' or current == 'teacher_student_edit' or current == 'teacher_student_delete' or current == 'student_plan_generation_loading' %}site-nav__link--active{% endif %}"
+                    >
+                        Dashboard
+                    </a>
+                {% else %}
+                    <a
+                        href="{% url 'profile_detail' %}"
+                        class="site-nav__link {% if current == 'profile_detail' or current == 'plan_detail' or current == 'technology_detail' or current == 'plan_generation_loading' %}site-nav__link--active{% endif %}"
+                    >
+                        Meu painel
+                    </a>
+                    <a
+                        href="{% url 'profile_view' %}"
+                        class="site-nav__link {% if current == 'profile_view' or current == 'profile_edit' or current == 'profile_create' %}site-nav__link--active{% endif %}"
+                    >
+                        Perfil
+                    </a>
+                {% endif %}
+                <a
+                    href="{% url 'feedback_history' %}"
+                    class="site-nav__link {% if current == 'feedback_history' or current == 'feedback_edit' or current == 'feedback_create' %}site-nav__link--active{% endif %}"
+                >
+                    Feedbacks
                 </a>
             {% endif %}
         </nav>
 
-        <div class="auth-area">
+        <div class="site-user">
             {% if user.is_authenticated %}
-                <a href="{% if user.is_teacher %}{% url 'teacher_dashboard' %}{% else %}{% url 'profile_view' %}{% endif %}"
-                   class="btn-user {% if request.resolver_match.url_name == 'profile_view' or request.resolver_match.url_name == 'teacher_dashboard' %}active-user{% endif %}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span>{{ user.username|title }}</span>
+                <a
+                    href="{% if user.is_teacher %}{% url 'teacher_dashboard' %}{% else %}{% url 'profile_view' %}{% endif %}"
+                    class="site-user__profile"
+                >
+                    <span class="site-user__avatar">{{ user.username|slice:":2"|upper }}</span>
                 </a>
 
-                <form action="{% url 'logout' %}" method="post">
+                <form action="{% url 'logout' %}" method="post" class="inline-form">
                     {% csrf_token %}
-                    <button type="submit" style="background:none; border:none; cursor:pointer;">Sair</button>
+                    <button type="submit" class="site-user__logout">Sair</button>
                 </form>
             {% else %}
-                <a href="{% url 'login' %}">Entrar</a>
-                <a href="{% url 'signup' %}" class="btn-user">Cadastrar</a>
+                <a href="{% url 'login' %}" class="site-nav__link">Entrar</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary">Criar conta</a>
             {% endif %}
         </div>
     </div>
 </header>
+{% endwith %}
 
-<main class="container" style="margin-top: 20px;">
+<main class="site-main">
+    <div class="container">
         {% if messages %}
-            {% for message in messages %}
-                <div style="padding:10px; background:#ebf8fa; margin-bottom:10px;">
-                    {{ message }}
-                </div>
-            {% endfor %}
+            <div class="flash-list">
+                {% for message in messages %}
+                    <div class="flash-message {% if 'success' in message.tags %}flash-message--success{% elif 'error' in message.tags %}flash-message--error{% elif 'warning' in message.tags %}flash-message--warning{% else %}flash-message--info{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
 
         {% block content %}{% endblock %}
+    </div>
 </main>
 </body>
 </html>

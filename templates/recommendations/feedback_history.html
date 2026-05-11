@@ -1,60 +1,109 @@
 {% extends 'base.html' %}
 {% block content %}
-<section style="margin-top: 20px; padding-bottom: 40px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px; flex-wrap: wrap;">
-        <div>
-            <h2 class="text-brand" style="margin: 0;">📋 {{ page_title }}</h2>
-            <p class="text-muted" style="margin: 5px 0 0 0;">{{ page_subtitle }}</p>
+<section class="page-shell">
+    <div class="page-header dashboard-banner">
+        <div class="page-header__text">
+            <span class="eyebrow">Historico de feedbacks</span>
+            <h1 class="page-title">{{ page_title }}</h1>
+            <p class="page-subtitle">{{ page_subtitle }}</p>
         </div>
-        <a href="{{ back_url }}" class="btn btn-outline" style="border: 2px solid var(--primary); color: var(--primary); font-weight: bold; padding: 10px 20px; border-radius: 8px; text-decoration: none;">Voltar</a>
+        <div class="page-actions">
+            <a href="{{ back_url }}" class="btn btn-outline">Voltar</a>
+        </div>
     </div>
-    <hr style="border: 1px solid #eee;">
+
+    {% if show_teacher_search %}
+        <form method="GET" class="surface-card feedback-toolbar">
+            <div class="feedback-toolbar__field">
+                <label class="field-label" for="feedbackSearch">Buscar aluno</label>
+                <input
+                    id="feedbackSearch"
+                    type="search"
+                    name="q"
+                    value="{{ search_query }}"
+                    placeholder="Digite o nome do aluno"
+                    class="feedback-search-input"
+                >
+            </div>
+            <div class="feedback-toolbar__actions">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+                {% if search_query %}
+                    <a href="{{ clear_search_url }}" class="btn btn-soft">Limpar</a>
+                {% endif %}
+            </div>
+        </form>
+    {% endif %}
+
+    <div class="summary-strip">
+        <article class="summary-card">
+            <span class="summary-card__label">Avaliacoes</span>
+            <span class="summary-card__value">{{ feedback_count }}</span>
+            <p class="summary-card__note">Registros disponiveis neste recorte.</p>
+        </article>
+    </div>
 
     {% if feedbacks %}
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+        <div class="feedback-grid">
             {% for fb in feedbacks %}
-            <div class="card shadow-sm" style="border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; background: white;">
-                <div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 12px;">
+                <article class="feedback-card">
+                    <div class="feedback-card__top">
                         <div>
-                            <h4 style="color: var(--primary); margin: 0; font-size: 1.15rem;">{{ fb.resource.name }}</h4>
-                            {% if not student_profile %}
-                                <small style="color: #64748b; display: block; margin-top: 4px;">Perfil: {{ fb.session.profile.display_name }}</small>
+                            <span class="feedback-card__eyebrow">
+                                {% if request.user.is_teacher and not student_profile %}
+                                    {{ fb.session.profile.display_name }}
+                                {% else %}
+                                    Plano de {{ fb.session.created_at|date:"d/m/Y" }}
+                                {% endif %}
+                            </span>
+                            <h2 class="feedback-card__title">{{ fb.resource.name }}</h2>
+                            <p class="feedback-card__subtitle">
+                                {% if request.user.is_teacher and not student_profile %}{{ fb.session.profile.display_name }} | {% endif %}
+                                {{ fb.session.created_at|date:"d/m/Y H:i" }}
+                            </p>
+                        </div>
+                        <div class="feedback-card__badges">
+                            <span class="feedback-score">{{ fb.score }}/5</span>
+                            <span class="badge {% if fb.resource.ai_model == 'mistral' %}badge--mistral{% else %}badge--info{% endif %}">
+                                {{ fb.resource.ai_model|title }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="feedback-card__meta">
+                        <span>Registrado em {{ fb.created_at|date:"d/m/Y" }}</span>
+                        <span>Plano {{ fb.session.created_at|date:"d/m/Y" }}</span>
+                    </div>
+
+                    <blockquote class="feedback-quote">
+                        "{{ fb.user_comment|default:"Sem comentario detalhado." }}"
+                    </blockquote>
+
+                    <div class="feedback-actions">
+                        <a href="{% url 'feedback_edit' fb.id %}{% if history_query %}?{{ history_query }}{% endif %}" class="btn btn-soft btn-sm">Editar</a>
+
+                        <form
+                            action="{% url 'feedback_delete' fb.id %}{% if history_query %}?{{ history_query }}{% endif %}"
+                            method="POST"
+                            class="inline-confirm"
+                            onsubmit="return confirm('Excluir esta avaliacao permanentemente?');"
+                        >
+                            {% csrf_token %}
+                            {% if student_profile %}
+                                <input type="hidden" name="student_id" value="{{ student_profile.id }}">
                             {% endif %}
-                            <small style="color: #94a3b8; display: block; margin-top: 4px;">Plano de {{ fb.session.created_at|date:"d/m/Y H:i" }}</small>
-                        </div>
-                        <div style="background: #fffbeb; color: #b45309; padding: 2px 8px; border-radius: 5px; font-weight: bold; font-size: 0.9rem;">
-                            {{ fb.score }} <span style="color: #fbbf24;">★</span>
-                        </div>
+                            {% if search_query %}
+                                <input type="hidden" name="q" value="{{ search_query }}">
+                            {% endif %}
+                            <button type="submit" class="btn btn-danger btn-sm btn-full">Excluir</button>
+                        </form>
                     </div>
-                    
-                    <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin: 10px 0;">
-                        <p style="margin: 0; font-size: 0.95rem; color: #475569; font-style: italic;">
-                            "{{ fb.user_comment|default:"Sem comentário detalhado." }}"
-                        </p>
-                    </div>
-                    <small style="color: #94a3b8; display: block; margin-top: 5px;">🗓️ Avaliado em: {{ fb.created_at|date:"d/m/Y" }}</small>
-                </div>
-                
-                <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
-                    <a href="{% url 'feedback_edit' fb.id %}{% if student_profile %}?student_id={{ student_profile.id }}{% endif %}" class="btn" style="flex: 1; text-align: center; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Editar</a>
-                    
-                    <form action="{% url 'feedback_delete' fb.id %}{% if student_profile %}?student_id={{ student_profile.id }}{% endif %}" method="POST" style="flex: 1; display: flex;" onsubmit="return confirm('Excluir esta avaliação permanentemente?');">
-                        {% csrf_token %}
-                        {% if student_profile %}
-                            <input type="hidden" name="student_id" value="{{ student_profile.id }}">
-                        {% endif %}
-                        <button type="submit" class="btn" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; width: 100%; padding: 8px; border-radius: 6px; font-size: 0.9rem; font-weight: bold;">Excluir</button>
-                    </form>
-                </div>
-            </div>
+                </article>
             {% endfor %}
         </div>
     {% else %}
-        <div style="text-align: center; padding: 80px 20px; background: white; border-radius: 15px; border: 2px dashed #e2e8f0;">
-            <div style="font-size: 3rem; margin-bottom: 20px;">✍️</div>
-            <h3 style="color: #64748b;">Nenhuma avaliação ainda</h3>
-            <p style="color: #94a3b8;">Suas opiniões sobre as tecnologias recomendadas aparecerão aqui.</p>
+        <div class="empty-state">
+            <h2 class="empty-state__title">Nenhuma avaliacao registrada</h2>
+            <p class="empty-state__body">{% if search_query %}Nenhum feedback foi encontrado para essa busca.{% else %}Os feedbacks das tecnologias aparecerao aqui.{% endif %}</p>
         </div>
     {% endif %}
 </section>
