@@ -17,7 +17,7 @@ class GeneratedTechnology(models.Model):
     SOURCE_CHOICES = [
         (SOURCE_UNKNOWN, 'Origem nao identificada'),
         (SOURCE_JSON_REFERENCE, 'Base de referencia'),
-        (SOURCE_AI_SUGGESTED, 'Sugestao livre da IA'),
+        (SOURCE_AI_SUGGESTED, 'Sugestão livre da IA'),
     ]
 
     session = models.ForeignKey(RecommendationSession, on_delete=models.CASCADE, related_name='technologies')

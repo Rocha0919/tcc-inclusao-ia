@@ -4,12 +4,12 @@
     <aside class="app-sidebar">
         <div class="app-sidebar__section">
             <span class="app-sidebar__label">Painel do professor</span>
-            <h1 class="app-sidebar__title">Gestao de alunos</h1>
-            <p class="app-sidebar__copy">Cadastros, geracoes e feedbacks em uma unica visao.</p>
+            <h1 class="app-sidebar__title">Gestão de alunos</h1>
+            <p class="app-sidebar__copy">Cadastros, gerações e feedbacks em uma única visão.</p>
         </div>
 
         <div class="app-sidebar__section">
-            <span class="app-sidebar__label">Navegacao</span>
+            <span class="app-sidebar__label">Navegação</span>
             <nav class="app-sidebar__nav">
                 <a href="{% url 'teacher_dashboard' %}" class="app-sidebar__link app-sidebar__link--active">Dashboard</a>
                 <a href="{% url 'teacher_student_create' %}" class="app-sidebar__link">Novo aluno</a>
@@ -24,7 +24,7 @@
         </div>
 
         <div class="app-sidebar__section">
-            <span class="app-sidebar__label">Acoes</span>
+            <span class="app-sidebar__label">Ações</span>
             <div class="app-sidebar__actions">
                 <a href="{% url 'teacher_student_create' %}" class="btn btn-primary">Cadastrar aluno</a>
                 <a href="{% url 'feedback_history' %}" class="btn btn-outline">Ver feedbacks</a>
@@ -36,8 +36,8 @@
         <div class="page-header dashboard-banner">
             <div class="page-header__text">
                 <span class="eyebrow">Painel do professor</span>
-                <h1 class="page-title">Alunos e recomendacoes</h1>
-                <p class="page-subtitle">Acompanhe perfis, gere novos planos e abra o historico de cada aluno.</p>
+                <h1 class="page-title">Alunos e recomendações</h1>
+                <p class="page-subtitle">Acompanhe perfis, gere novos planos e abra o histórico de cada aluno.</p>
             </div>
             <div class="page-actions">
                 <a href="{% url 'feedback_history' %}" class="btn btn-outline">Feedbacks</a>
@@ -49,7 +49,7 @@
             <article class="summary-card">
                 <span class="summary-card__label">Alunos</span>
                 <span class="summary-card__value">{{ student_count }}</span>
-                <p class="summary-card__note">Perfis sob sua gestao.</p>
+                <p class="summary-card__note">Perfis sob sua gestão.</p>
             </article>
         </div>
 
@@ -79,7 +79,7 @@
                     <span class="section-headline__bar"></span>
                     <div>
                         <h2 class="section-title">Lista de alunos</h2>
-                        <p class="section-note">Acesso rapido ao perfil, geracao e edicao.</p>
+                        <p class="section-note">Acesso rápido ao perfil, geração e edição.</p>
                     </div>
                 </div>
 
@@ -90,8 +90,8 @@
                                 <th>Aluno</th>
                                 <th>Categoria</th>
                                 <th>Status</th>
-                                <th>Ultimo plano</th>
-                                <th>Acoes</th>
+                                <th>Último plano</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -122,7 +122,7 @@
                                         {% elif student.is_generating %}
                                             <span class="badge badge--info">Gerando plano</span>
                                         {% else %}
-                                            <span class="badge badge--success">Disponivel</span>
+                                            <span class="badge badge--success">Disponível</span>
                                         {% endif %}
                                     </td>
                                     <td>
@@ -169,9 +169,9 @@
                 <h2 class="empty-state__title">{% if search_query %}Nenhum aluno encontrado{% else %}Nenhum aluno cadastrado{% endif %}</h2>
                 <p class="empty-state__body">
                     {% if search_query %}
-                        Nao houve resultados para a busca informada.
+                        Não houve resultados para a busca informada.
                     {% else %}
-                        Crie o primeiro perfil para organizar recomendacoes e feedbacks por estudante.
+                        Crie o primeiro perfil para organizar recomendações e feedbacks por estudante.
                     {% endif %}
                 </p>
                 <div class="page-actions">

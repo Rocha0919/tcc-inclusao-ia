@@ -50,7 +50,7 @@ class RecommendationGenerationFlowTests(TestCase):
         response = self.client.get(reverse('plan_generation_loading'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Gerando recomendacao')
+        self.assertContains(response, 'Gerando recomendação')
         self.assertContains(response, reverse('generate_plan'))
         self.assertContains(response, reverse('cancel_plan_generation'))
         self.assertContains(response, 'id="status-hint"')
@@ -767,9 +767,9 @@ class RecommendationFeedbackFlowTests(TestCase):
         response = self.client.get(reverse('plan_detail', args=[session.id]))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Avaliacao salva')
+        self.assertContains(response, 'Avaliação salva')
         self.assertContains(response, 'Funcionou muito bem em sala.')
-        self.assertContains(response, 'Editar avaliacao')
+        self.assertContains(response, 'Editar avaliação')
 
     def test_teacher_feedback_history_can_be_filtered_by_student(self):
         teacher = self.create_teacher_user('professor_historico_feedback')
@@ -787,7 +787,7 @@ class RecommendationFeedbackFlowTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Historico de avaliacoes de Eduarda')
+        self.assertContains(response, 'Histórico de avaliações de Eduarda')
         self.assertContains(response, 'Leitor A')
         self.assertNotContains(response, 'Leitor B')
         self.assertContains(response, reverse('teacher_student_detail', args=[student_one.id]))

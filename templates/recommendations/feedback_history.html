@@ -3,7 +3,7 @@
 <section class="page-shell">
     <div class="page-header dashboard-banner">
         <div class="page-header__text">
-            <span class="eyebrow">Historico de feedbacks</span>
+            <span class="eyebrow">Histórico de feedbacks</span>
             <h1 class="page-title">{{ page_title }}</h1>
             <p class="page-subtitle">{{ page_subtitle }}</p>
         </div>
@@ -36,9 +36,9 @@
 
     <div class="summary-strip">
         <article class="summary-card">
-            <span class="summary-card__label">Avaliacoes</span>
+            <span class="summary-card__label">Avaliações</span>
             <span class="summary-card__value">{{ feedback_count }}</span>
-            <p class="summary-card__note">Registros disponiveis neste recorte.</p>
+            <p class="summary-card__note">Registros disponíveis neste recorte.</p>
         </article>
     </div>
 
@@ -75,7 +75,7 @@
                     </div>
 
                     <blockquote class="feedback-quote">
-                        "{{ fb.user_comment|default:"Sem comentario detalhado." }}"
+                        "{{ fb.user_comment|default:"Sem comentário detalhado." }}"
                     </blockquote>
 
                     <div class="feedback-actions">
@@ -85,7 +85,7 @@
                             action="{% url 'feedback_delete' fb.id %}{% if history_query %}?{{ history_query }}{% endif %}"
                             method="POST"
                             class="inline-confirm"
-                            onsubmit="return confirm('Excluir esta avaliacao permanentemente?');"
+                            onsubmit="return confirm('Excluir esta avaliação permanentemente?');"
                         >
                             {% csrf_token %}
                             {% if student_profile %}
@@ -102,8 +102,8 @@
         </div>
     {% else %}
         <div class="empty-state">
-            <h2 class="empty-state__title">Nenhuma avaliacao registrada</h2>
-            <p class="empty-state__body">{% if search_query %}Nenhum feedback foi encontrado para essa busca.{% else %}Os feedbacks das tecnologias aparecerao aqui.{% endif %}</p>
+            <h2 class="empty-state__title">Nenhuma avaliação registrada</h2>
+            <p class="empty-state__body">{% if search_query %}Nenhum feedback foi encontrado para essa busca.{% else %}Os feedbacks das tecnologias aparecerão aqui.{% endif %}</p>
         </div>
     {% endif %}
 </section>

@@ -3,12 +3,12 @@
 <section class="page-shell">
     <div class="report-header">
         <a href="{{ back_url|default:'#' }}" class="page-back-link">&larr; {{ back_label|default:'Voltar' }}</a>
-        <a href="{{ feedback_history_url }}" class="btn btn-outline">Historico de avaliacoes</a>
+        <a href="{{ feedback_history_url }}" class="btn btn-outline">Histórico de avaliações</a>
     </div>
 
     <div class="page-header dashboard-banner">
         <div class="page-header__text">
-            <span class="eyebrow">Plano de recomendacao</span>
+            <span class="eyebrow">Plano de recomendação</span>
             <h1 class="page-title">Plano de tecnologia assistiva</h1>
             <p class="page-subtitle">{{ profile_display_name }} · {{ session.created_at|date:"d/m/Y" }}</p>
         </div>
@@ -22,7 +22,7 @@
             <span class="section-headline__bar"></span>
             <div>
                 <h2 class="section-title">Resumo</h2>
-                <p class="section-note">Consolidacao do plano a partir do perfil informado.</p>
+                <p class="section-note">Consolidação do plano a partir do perfil informado.</p>
             </div>
         </div>
         <div class="report-summary__body">
@@ -35,7 +35,7 @@
             <span class="section-headline__bar"></span>
             <div>
                 <h2 class="section-title">Llama 3</h2>
-                <p class="section-note">Sugestoes e justificativas deste modelo.</p>
+                <p class="section-note">Sugestões e justificativas deste modelo.</p>
             </div>
         </div>
 
@@ -61,25 +61,25 @@
 
                     {% if tech.current_feedback %}
                         <div class="feedback-note feedback-note--warm">
-                            <span class="feedback-note__title">Feedback registrado</span>
+                            <span class="feedback-note__title">Avaliação salva</span>
                             <p class="feedback-note__body">
                                 Nota {{ tech.current_feedback.score }}/5.
-                                {{ tech.current_feedback.user_comment|default:"Sem comentario detalhado." }}
+                                {{ tech.current_feedback.user_comment|default:"Sem comentário detalhado." }}
                             </p>
                         </div>
                     {% endif %}
 
                     <div class="tech-card__footer action-row">
                         <a href="{% url 'feedback_create' session.id tech.id %}" class="btn btn-outline btn-sm">
-                            {% if tech.current_feedback %}Editar avaliacao{% else %}Avaliar{% endif %}
+                            {% if tech.current_feedback %}Editar avaliação{% else %}Avaliar{% endif %}
                         </a>
                         <a href="{% url 'technology_detail' tech.id %}" class="btn btn-primary btn-sm">Detalhes</a>
                     </div>
                 </article>
             {% empty %}
                 <div class="empty-state">
-                    <h3 class="empty-state__title">Sem tecnologias nesta selecao</h3>
-                    <p class="empty-state__body">Nao houve sugestoes validas nesta parte do plano.</p>
+                    <h3 class="empty-state__title">Sem tecnologias nesta seleção</h3>
+                    <p class="empty-state__body">Não houve sugestões válidas nesta parte do plano.</p>
                 </div>
             {% endfor %}
         </div>
@@ -90,7 +90,7 @@
             <span class="section-headline__bar"></span>
             <div>
                 <h2 class="section-title">Mistral</h2>
-                <p class="section-note">Sugestoes e justificativas deste modelo.</p>
+                <p class="section-note">Sugestões e justificativas deste modelo.</p>
             </div>
         </div>
 
@@ -116,25 +116,25 @@
 
                     {% if tech.current_feedback %}
                         <div class="feedback-note feedback-note--cool">
-                            <span class="feedback-note__title">Feedback registrado</span>
+                            <span class="feedback-note__title">Avaliação salva</span>
                             <p class="feedback-note__body">
                                 Nota {{ tech.current_feedback.score }}/5.
-                                {{ tech.current_feedback.user_comment|default:"Sem comentario detalhado." }}
+                                {{ tech.current_feedback.user_comment|default:"Sem comentário detalhado." }}
                             </p>
                         </div>
                     {% endif %}
 
                     <div class="tech-card__footer action-row">
                         <a href="{% url 'feedback_create' session.id tech.id %}" class="btn btn-outline btn-sm">
-                            {% if tech.current_feedback %}Editar avaliacao{% else %}Avaliar{% endif %}
+                            {% if tech.current_feedback %}Editar avaliação{% else %}Avaliar{% endif %}
                         </a>
                         <a href="{% url 'technology_detail' tech.id %}" class="btn btn-primary btn-sm">Detalhes</a>
                     </div>
                 </article>
             {% empty %}
                 <div class="empty-state">
-                    <h3 class="empty-state__title">Sem tecnologias nesta selecao</h3>
-                    <p class="empty-state__body">Nao houve sugestoes validas nesta parte do plano.</p>
+                    <h3 class="empty-state__title">Sem tecnologias nesta seleção</h3>
+                    <p class="empty-state__body">Não houve sugestões válidas nesta parte do plano.</p>
                 </div>
             {% endfor %}
         </div>

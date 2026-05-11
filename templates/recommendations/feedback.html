@@ -9,7 +9,7 @@
     <div class="page-header dashboard-banner">
         <div class="page-header__text">
             <span class="eyebrow">Feedback</span>
-            <h1 class="page-title">{% if existing_feedback %}Editar avaliacao{% else %}Avaliar tecnologia{% endif %}</h1>
+            <h1 class="page-title">{% if existing_feedback %}Editar avaliação{% else %}Avaliar tecnologia{% endif %}</h1>
             <p class="page-subtitle">{{ profile_display_name }}</p>
         </div>
     </div>
@@ -23,9 +23,9 @@
                     <div class="feedback-target__meta">
                         <span class="feedback-target__label">Tecnologia recomendada</span>
                         {% if existing_feedback %}
-                            <span class="badge badge--info">Avaliacao em edicao</span>
+                            <span class="badge badge--info">Avaliação em edição</span>
                         {% else %}
-                            <span class="badge badge--neutral">Nova avaliacao</span>
+                            <span class="badge badge--neutral">Nova avaliação</span>
                         {% endif %}
                     </div>
                     <h2 class="feedback-target__name">{{ item.name }}</h2>
@@ -61,20 +61,20 @@
                         </div>
 
                         <div class="score-scale">
-                            <span>1 Pouco util</span>
-                            <span>5 Muito util</span>
+                            <span>1 Pouco útil</span>
+                            <span>5 Muito útil</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="field-group">
-                    <label class="field-label" for="user_comment">Comentario</label>
-                    <textarea id="user_comment" name="user_comment" rows="5" class="feedback-textarea" placeholder="Conte o que funcionou bem, o que atrapalhou e em que contexto voce usou a tecnologia.">{{ initial_comment }}</textarea>
-                    <span class="field-help">Um comentario objetivo ajuda a tornar as proximas recomendacoes mais aderentes.</span>
+                    <label class="field-label" for="user_comment">Comentário</label>
+                    <textarea id="user_comment" name="user_comment" rows="5" class="feedback-textarea" placeholder="Conte o que funcionou bem, o que atrapalhou e em que contexto você usou a tecnologia.">{{ initial_comment }}</textarea>
+                    <span class="field-help">Um comentário objetivo ajuda a tornar as próximas recomendações mais aderentes.</span>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">{% if existing_feedback %}Salvar avaliacao{% else %}Enviar avaliacao{% endif %}</button>
+                    <button type="submit" class="btn btn-primary">{% if existing_feedback %}Salvar avaliação{% else %}Enviar avaliação{% endif %}</button>
                     <a href="{{ cancel_url }}" class="btn btn-soft">Cancelar</a>
                 </div>
             </form>
@@ -86,7 +86,7 @@
                     <span class="section-headline__bar"></span>
                     <div>
                         <h2 class="section-title">Resumo</h2>
-                        <p class="section-note">Contexto desta avaliacao.</p>
+                        <p class="section-note">Contexto desta avaliação.</p>
                     </div>
                 </div>
 
@@ -107,9 +107,9 @@
 
                 <div class="feedback-sidecard__note">
                     {% if existing_feedback %}
-                        Revise a nota e ajuste o comentario para manter o historico alinhado ao uso mais recente.
+                        Revise a nota e ajuste o comentário para manter o histórico alinhado ao uso mais recente.
                     {% else %}
-                        Registre uma impressao curta e direta para enriquecer o historico da tecnologia.
+                        Registre uma impressão curta e direta para enriquecer o histórico da tecnologia.
                     {% endif %}
                 </div>
             </section>

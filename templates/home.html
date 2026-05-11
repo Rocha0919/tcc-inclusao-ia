@@ -4,26 +4,26 @@
     <div class="surface-card surface-card--hero dashboard-banner hero-stage">
         <div class="hero-layout">
             <div class="hero-copy">
-                <span class="eyebrow">Plataforma de recomendacao assistiva</span>
+                <span class="eyebrow">Plataforma de recomendação assistiva</span>
                 <h1 class="hero-title">
                     Tecnologia assistiva
                     <span class="hero-title__accent">personalizada</span>
                     para cada contexto
                 </h1>
                 <p class="hero-body">
-                    Recomendacoes orientadas pelo perfil biopsicossocial, com leitura clara para usuarios, professores e equipes de apoio.
+                    Recomendações orientadas pelo perfil biopsicossocial, com leitura clara para usuários, professores e equipes de apoio.
                 </p>
 
                 <div class="hero-badges">
                     <span class="info-chip">Perfil personalizado</span>
                     <span class="info-chip">Plano comparativo</span>
-                    <span class="info-chip">Historico e feedbacks</span>
+                    <span class="info-chip">Histórico e feedbacks</span>
                 </div>
 
                 <div class="hero-actions">
                     {% if not user.is_authenticated %}
-                        <a href="{% url 'signup' %}" class="btn btn-primary">Criar conta e comecar</a>
-                        <a href="{% url 'login' %}" class="btn btn-outline">Ja tenho acesso</a>
+                        <a href="{% url 'signup' %}" class="btn btn-primary">Criar conta e começar</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline">Já tenho acesso</a>
                     {% elif user.is_teacher %}
                         <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">Abrir painel do professor</a>
                         <a href="{% url 'feedback_history' %}" class="btn btn-outline">Ver feedbacks</a>
@@ -40,15 +40,15 @@
                     <div class="hero-mini-grid">
                         <article class="hero-mini-card">
                             <strong class="hero-mini-card__title">1. Perfil</strong>
-                            <p class="hero-mini-card__body">Condicoes, objetivos e ambiente tecnologico em um unico lugar.</p>
+                            <p class="hero-mini-card__body">Condições, objetivos e ambiente tecnológico em um único lugar.</p>
                         </article>
                         <article class="hero-mini-card">
-                            <strong class="hero-mini-card__title">2. Recomendacao</strong>
-                            <p class="hero-mini-card__body">Sugestoes organizadas em cards, com leitura limpa e rapida.</p>
+                            <strong class="hero-mini-card__title">2. Recomendação</strong>
+                            <p class="hero-mini-card__body">Sugestões organizadas em cards, com leitura limpa e rápida.</p>
                         </article>
                         <article class="hero-mini-card">
                             <strong class="hero-mini-card__title">3. Acompanhamento</strong>
-                            <p class="hero-mini-card__body">Feedbacks e historico para acompanhar o que funciona melhor.</p>
+                            <p class="hero-mini-card__body">Feedbacks e histórico para acompanhar o que funciona melhor.</p>
                         </article>
                     </div>
                 </div>

@@ -2,14 +2,14 @@
 {% block content %}
 <section class="page-shell">
     <div class="report-header">
-        <a href="{{ cancel_url }}" class="page-back-link">&larr; Voltar ao historico</a>
+        <a href="{{ cancel_url }}" class="page-back-link">&larr; Voltar ao histórico</a>
         <span class="badge {% if feedback.resource.ai_model == 'mistral' %}badge--mistral{% else %}badge--info{% endif %}">{{ feedback.resource.ai_model|title }}</span>
     </div>
 
     <div class="page-header dashboard-banner">
         <div class="page-header__text">
             <span class="eyebrow">Feedback</span>
-            <h1 class="page-title">Editar avaliacao</h1>
+            <h1 class="page-title">Editar avaliação</h1>
             <p class="page-subtitle">{{ feedback.session.profile.display_name }}</p>
         </div>
     </div>
@@ -28,7 +28,7 @@
                 <div class="feedback-target">
                     <div class="feedback-target__meta">
                         <span class="feedback-target__label">Tecnologia recomendada</span>
-                        <span class="badge badge--info">Avaliacao registrada</span>
+                        <span class="badge badge--info">Avaliação registrada</span>
                     </div>
                     <h2 class="feedback-target__name">{{ feedback.resource.name }}</h2>
                 </div>
@@ -38,7 +38,7 @@
                         <span class="section-headline__bar"></span>
                         <div>
                             <h2 class="section-title">Sua nota</h2>
-                            <p class="section-note">Atualize a avaliacao de acordo com a experiencia mais recente.</p>
+                            <p class="section-note">Atualize a avaliação de acordo com a experiência mais recente.</p>
                         </div>
                     </div>
 
@@ -63,19 +63,19 @@
                         </div>
 
                         <div class="score-scale">
-                            <span>1 Pouco util</span>
-                            <span>5 Muito util</span>
+                            <span>1 Pouco útil</span>
+                            <span>5 Muito útil</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="field-group">
-                    <label class="field-label" for="user_comment">Comentario</label>
-                    <textarea id="user_comment" name="user_comment" rows="5" class="feedback-textarea" placeholder="Atualize sua observacao sobre o uso da tecnologia.">{{ feedback.user_comment|default_if_none:'' }}</textarea>
+                    <label class="field-label" for="user_comment">Comentário</label>
+                    <textarea id="user_comment" name="user_comment" rows="5" class="feedback-textarea" placeholder="Atualize sua observação sobre o uso da tecnologia.">{{ feedback.user_comment|default_if_none:'' }}</textarea>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Salvar alteracoes</button>
+                    <button type="submit" class="btn btn-primary">Salvar alterações</button>
                     <a href="{{ cancel_url }}" class="btn btn-soft">Cancelar</a>
                 </div>
             </form>
@@ -87,7 +87,7 @@
                     <span class="section-headline__bar"></span>
                     <div>
                         <h2 class="section-title">Resumo</h2>
-                        <p class="section-note">Dados da avaliacao atual.</p>
+                        <p class="section-note">Dados da avaliação atual.</p>
                     </div>
                 </div>
 
@@ -107,7 +107,7 @@
                 </div>
 
                 <div class="feedback-sidecard__note">
-                    Ajuste a nota e o comentario para manter o historico coerente com o uso real da tecnologia.
+                    Ajuste a nota e o comentário para manter o histórico coerente com o uso real da tecnologia.
                 </div>
             </section>
         </aside>

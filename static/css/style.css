@@ -891,7 +891,8 @@ button {
     font-size: clamp(2.6rem, 5.6vw, 4.2rem);
     line-height: 0.98;
     letter-spacing: -0.04em;
-    max-width: 10ch;
+    max-width: 20ch;
+    text-wrap: balance;
 }
 
 .hero-title__accent {
@@ -1911,6 +1912,10 @@ button {
     display: grid;
     gap: 1.4rem;
     min-width: 0;
+}
+
+.app-content--form {
+    justify-items: center;
 }
 
 .dashboard-banner {

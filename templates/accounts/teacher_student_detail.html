@@ -5,11 +5,11 @@
         <div class="app-sidebar__section">
             <span class="app-sidebar__label">Perfil do aluno</span>
             <h1 class="app-sidebar__title">{{ student_profile.display_name }}</h1>
-            <p class="app-sidebar__copy">Dados do perfil e acesso rapido ao historico deste aluno.</p>
+            <p class="app-sidebar__copy">Dados do perfil e acesso rápido ao histórico deste aluno.</p>
         </div>
 
         <div class="app-sidebar__section">
-            <span class="app-sidebar__label">Navegacao</span>
+            <span class="app-sidebar__label">Navegação</span>
             <nav class="app-sidebar__nav">
                 <a href="{% url 'teacher_dashboard' %}" class="app-sidebar__link">Dashboard</a>
                 <a href="{% url 'teacher_student_detail' student_profile.id %}" class="app-sidebar__link app-sidebar__link--active">Perfil</a>
@@ -20,16 +20,16 @@
 
         <div class="app-sidebar__section">
             <span class="app-sidebar__label">Resumo</span>
-            <span class="badge badge--info">{{ categoria_atual|default:"Nao informado" }}</span>
+            <span class="badge badge--info">{{ categoria_atual|default:"Não informado" }}</span>
             <p class="app-sidebar__hint">{{ sessoes|length }} plano{{ sessoes|length|pluralize }} registrado{{ sessoes|length|pluralize }}.</p>
         </div>
 
         <div class="app-sidebar__section">
-            <span class="app-sidebar__label">Acoes</span>
+            <span class="app-sidebar__label">Ações</span>
             <div class="app-sidebar__actions">
                 {% if student_profile.is_generating and student_profile.generation_cancel_requested %}
                     <div class="status-panel status-panel--canceling">
-                        <p class="status-panel__title">Cancelando geracao</p>
+                        <p class="status-panel__title">Cancelando geração</p>
                         <p class="status-panel__body">Aguarde antes de iniciar uma nova.</p>
                     </div>
                 {% elif student_profile.is_generating %}
@@ -46,7 +46,7 @@
                     >
                         <input type="hidden" name="start" value="1">
                         <input type="hidden" name="next" value="{{ request.path }}">
-                        <button id="student-generate-button" type="submit" class="btn btn-primary" data-loading-button>Gerar recomendacao</button>
+                        <button id="student-generate-button" type="submit" class="btn btn-primary" data-loading-button>Gerar recomendação</button>
                     </form>
                 {% endif %}
                 <a href="{% url 'teacher_student_edit' student_profile.id %}" class="btn btn-outline">Editar aluno</a>
@@ -61,10 +61,10 @@
             <div class="page-header__text">
                 <span class="eyebrow">Perfil do aluno</span>
                 <h1 class="page-title">{{ student_profile.display_name }}</h1>
-                <p class="page-subtitle">Perfil usado nas recomendacoes deste aluno.</p>
+                <p class="page-subtitle">Perfil usado nas recomendações deste aluno.</p>
             </div>
             <div class="page-actions">
-                <a href="{% url 'feedback_history' %}?student_id={{ student_profile.id }}" class="btn btn-soft">Historico</a>
+                <a href="{% url 'feedback_history' %}?student_id={{ student_profile.id }}" class="btn btn-soft">Histórico</a>
                 <a href="{% url 'teacher_student_edit' student_profile.id %}" class="btn btn-outline">Editar</a>
                 {% if student_profile.is_generating and student_profile.generation_cancel_requested %}
                     <span class="status-pill status-pill--warning">Cancelando</span>
@@ -101,13 +101,13 @@
         <div class="summary-strip">
             <article class="summary-card">
                 <span class="summary-card__label">Categoria</span>
-                <span class="summary-card__value">{{ categoria_atual|default:"Nao informado" }}</span>
+                <span class="summary-card__value">{{ categoria_atual|default:"Não informado" }}</span>
                 <p class="summary-card__note">Base do perfil atual.</p>
             </article>
             <article class="summary-card">
                 <span class="summary-card__label">Planos</span>
                 <span class="summary-card__value">{{ sessoes|length }}</span>
-                <p class="summary-card__note">Historico disponivel do aluno.</p>
+                <p class="summary-card__note">Histórico disponível do aluno.</p>
             </article>
         </div>
 
@@ -116,21 +116,21 @@
                 <div class="section-headline">
                     <span class="section-headline__bar"></span>
                     <div>
-                        <h2 class="section-title">Fisico e sensorial</h2>
+                        <h2 class="section-title">Físico e sensorial</h2>
                         <p class="section-note">Necessidades que impactam o uso.</p>
                     </div>
                 </div>
                 <div class="profile-panel">
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Categoria</span>
-                        <span class="profile-panel__value">{{ categoria_atual|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ categoria_atual|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Severidade</span>
-                        <span class="profile-panel__value">{{ biologico.grau_severidade|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ biologico.grau_severidade|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
-                        <span class="profile-panel__label">Limitacoes</span>
+                        <span class="profile-panel__label">Limitações</span>
                         <span class="profile-panel__value">{{ biologico.limitacoes_especificas|default:"Nenhuma declarada." }}</span>
                     </div>
                 </div>
@@ -141,13 +141,13 @@
                     <span class="section-headline__bar"></span>
                     <div>
                         <h2 class="section-title">Cognitivo</h2>
-                        <p class="section-note">Preferencias e barreiras de aprendizado.</p>
+                        <p class="section-note">Preferências e barreiras de aprendizado.</p>
                     </div>
                 </div>
                 <div class="profile-panel">
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Estilo</span>
-                        <span class="profile-panel__value">{{ psicologico.estilo_aprendizado|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ psicologico.estilo_aprendizado|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Barreiras</span>
@@ -161,21 +161,21 @@
                     <span class="section-headline__bar"></span>
                     <div>
                         <h2 class="section-title">Objetivos e rotina</h2>
-                        <p class="section-note">Contexto pratico para a recomendacao.</p>
+                        <p class="section-note">Contexto prático para a recomendação.</p>
                     </div>
                 </div>
                 <div class="profile-panel">
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Objetivo</span>
-                        <span class="profile-panel__value">{{ social.objetivo_principal|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ social.objetivo_principal|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
-                        <span class="profile-panel__label">Orcamento</span>
-                        <span class="profile-panel__value">{{ social.orcamento|default:"Nao informado" }}</span>
+                        <span class="profile-panel__label">Orçamento</span>
+                        <span class="profile-panel__value">{{ social.orcamento|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Barreiras</span>
-                        <span class="profile-panel__value">{{ social.barreiras_dia_a_dia|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ social.barreiras_dia_a_dia|default:"Não informado" }}</span>
                     </div>
                 </div>
             </section>
@@ -185,17 +185,17 @@
                     <span class="section-headline__bar"></span>
                     <div>
                         <h2 class="section-title">Tecnologia</h2>
-                        <p class="section-note">Dispositivos e recursos ja conhecidos.</p>
+                        <p class="section-note">Dispositivos e recursos já conhecidos.</p>
                     </div>
                 </div>
                 <div class="profile-panel">
                     <div class="profile-panel__row">
-                        <span class="profile-panel__label">Nivel</span>
-                        <span class="profile-panel__value">{{ tecnologico.nivel_tecnologico|default:"Nao informado" }}</span>
+                        <span class="profile-panel__label">Nível</span>
+                        <span class="profile-panel__value">{{ tecnologico.nivel_tecnologico|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Dispositivos</span>
-                        <span class="profile-panel__value">{{ tecnologico.dispositivos_disponiveis|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ tecnologico.dispositivos_disponiveis|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Ferramentas</span>
@@ -207,8 +207,8 @@
 
         {% if student_profile.is_generating and student_profile.generation_cancel_requested %}
             <div class="status-panel status-panel--canceling">
-                <p class="status-panel__title">Cancelando geracao</p>
-                <p class="status-panel__body">Uma nova recomendacao ficara disponivel quando o processo terminar.</p>
+                <p class="status-panel__title">Cancelando geração</p>
+                <p class="status-panel__body">Uma nova recomendação ficará disponível quando o processo terminar.</p>
             </div>
         {% endif %}
 
@@ -216,8 +216,8 @@
             <div class="section-headline">
                 <span class="section-headline__bar"></span>
                 <div>
-                    <h2 class="section-title">Historico de planos</h2>
-                    <p class="section-note">Relatorios gerados para este aluno.</p>
+                    <h2 class="section-title">Histórico de planos</h2>
+                    <p class="section-note">Relatórios gerados para este aluno.</p>
                 </div>
             </div>
 
@@ -237,7 +237,7 @@
             {% else %}
                 <div class="empty-state">
                     <h3 class="empty-state__title">Nenhum plano gerado</h3>
-                    <p class="empty-state__body">Quando uma recomendacao for criada, ela aparecera aqui.</p>
+                    <p class="empty-state__body">Quando uma recomendação for criada, ela aparecerá aqui.</p>
                 </div>
             {% endif %}
         </section>

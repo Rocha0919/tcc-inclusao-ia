@@ -158,52 +158,52 @@ def get_generation_cancel_url(profile):
 
 def get_generation_message(profile):
     if profile.teacher_id:
-        return f'Gerando recomendacoes personalizadas para {profile.display_name}. Isso pode levar alguns instantes...'
-    return 'Gerando recomendacoes personalizadas. Isso pode levar alguns instantes...'
+        return f'Gerando recomendações personalizadas para {profile.display_name}. Isso pode levar alguns instantes...'
+    return 'Gerando recomendações personalizadas. Isso pode levar alguns instantes...'
 
 
 def get_generation_error_message(profile):
     if profile.teacher_id:
-        return f'Nao foi possivel gerar as recomendacoes de {profile.display_name} agora. Tente novamente em alguns instantes.'
-    return 'Nao foi possivel gerar suas recomendacoes agora. Tente novamente em alguns instantes.'
+        return f'Não foi possível gerar as recomendações de {profile.display_name} agora. Tente novamente em alguns instantes.'
+    return 'Não foi possível gerar suas recomendações agora. Tente novamente em alguns instantes.'
 
 
 def get_generation_cancelled_message(profile, is_still_finishing=False):
     if is_still_finishing:
         if profile.teacher_id:
             return (
-                f'Geracao cancelada para {profile.display_name}. '
-                'A etapa atual sera encerrada assim que possivel.'
+                f'Geração cancelada para {profile.display_name}. '
+                'A etapa atual será encerrada assim que possível.'
             )
-        return 'Geracao cancelada. A etapa atual sera encerrada assim que possivel.'
+        return 'Geração cancelada. A etapa atual será encerrada assim que possível.'
 
     if profile.teacher_id:
-        return f'Geracao cancelada para {profile.display_name}.'
-    return 'Geracao cancelada.'
+        return f'Geração cancelada para {profile.display_name}.'
+    return 'Geração cancelada.'
 
 
 def get_generation_completed_message(profile):
     if profile.teacher_id:
-        return f'O plano de {profile.display_name} ja estava pronto e foi preservado.'
-    return 'Seu plano ja estava pronto e foi preservado.'
+        return f'O plano de {profile.display_name} já estava pronto e foi preservado.'
+    return 'Seu plano já estava pronto e foi preservado.'
 
 
 def get_generation_canceling_message(profile):
     if profile.teacher_id:
         return (
-            f'Cancelando a geracao de {profile.display_name}. '
+            f'Cancelando a geração de {profile.display_name}. '
             'Aguarde alguns instantes.'
         )
-    return 'Cancelando geracao... aguarde alguns instantes.'
+    return 'Cancelando geração... aguarde alguns instantes.'
 
 
 def get_cancellation_pending_retry_message(profile):
     if profile.teacher_id:
         return (
-            f'O cancelamento de {profile.display_name} ainda esta sendo finalizado. '
+            f'O cancelamento de {profile.display_name} ainda está sendo finalizado. '
             'Aguarde alguns instantes para tentar novamente.'
         )
-    return 'O cancelamento ainda esta sendo finalizado. Aguarde alguns instantes para tentar novamente.'
+    return 'O cancelamento ainda está sendo finalizado. Aguarde alguns instantes para tentar novamente.'
 
 
 def get_generation_status(profile):
@@ -590,7 +590,7 @@ def plan_generation_status(request, profile_id=None):
         return json_generation_response(
             'error',
             http_status=404,
-            message='O perfil solicitado nao foi encontrado.',
+            message='O perfil solicitado não foi encontrado.',
         )
 
     profile.refresh_from_db(fields=[
@@ -677,9 +677,9 @@ def plan_generation_status(request, profile_id=None):
         status='error',
     )
     return json_generation_response(
-        'error',
-        http_status=404,
-        message='Nenhuma geracao em andamento foi encontrada. Voce pode tentar novamente.',
+                'error',
+                http_status=404,
+                message='Nenhuma geração em andamento foi encontrada. Você pode tentar novamente.',
     )
 
 
@@ -696,7 +696,7 @@ def cancel_plan_generation(request, profile_id=None):
             return json_generation_response(
                 'error',
                 http_status=400,
-                message='Requisicao invalida para cancelamento.',
+                message='Requisição inválida para cancelamento.',
             )
         return redirect('teacher_dashboard' if request.user.is_teacher else 'profile_detail')
 
@@ -720,7 +720,7 @@ def cancel_plan_generation(request, profile_id=None):
                 return json_generation_response(
                     'error',
                     http_status=404,
-                    message='O perfil solicitado nao foi encontrado.',
+                    message='O perfil solicitado não foi encontrado.',
                 )
             return redirect('teacher_dashboard' if request.user.is_teacher else 'profile_detail')
 
@@ -838,7 +838,7 @@ def generate_plan(request, profile_id=None):
             return json_generation_response(
                 'error',
                 http_status=400,
-                message='Requisicao invalida para geracao da recomendacao.',
+                message='Requisição inválida para geração da recomendação.',
             )
         return redirect('teacher_dashboard' if request.user.is_teacher else 'profile_detail')
 
@@ -863,7 +863,7 @@ def generate_plan(request, profile_id=None):
                 return json_generation_response(
                     'error',
                     http_status=404,
-                    message='O perfil solicitado nao foi encontrado.',
+                    message='O perfil solicitado não foi encontrado.',
                 )
             return redirect('teacher_dashboard' if request.user.is_teacher else 'profile_detail')
 
@@ -1014,7 +1014,7 @@ def feedback_create(request, session_id, item_id):
                 request.POST.get('score'),
                 fallback=initial_score,
             )
-            messages.error(request, 'Informe uma nota valida entre 1 e 5.')
+            messages.error(request, 'Informe uma nota válida entre 1 e 5.')
             return render(request, 'recommendations/feedback.html', {
                 'session': session,
                 'item': item,
@@ -1104,14 +1104,14 @@ def feedback_history(request):
         'show_teacher_search': request.user.is_teacher and not student_profile,
         'clear_search_url': clear_search_url,
         'page_title': (
-            f'Historico de avaliacoes de {student_profile.display_name}'
+            f'Histórico de avaliações de {student_profile.display_name}'
             if student_profile
-            else 'Historico de Avaliacoes'
+            else 'Histórico de avaliações'
         ),
         'page_subtitle': (
-            'Veja as avaliacoes registradas para este aluno.'
+            'Veja as avaliações registradas para este aluno.'
             if student_profile
-            else 'Veja o que voce achou das tecnologias sugeridas.'
+            else 'Veja o que você achou das tecnologias sugeridas.'
         ),
         'back_url': (
             reverse('teacher_student_detail', args=[student_profile.id])
@@ -1126,7 +1126,7 @@ def feedback_delete(request, feedback_id):
     feedback = get_accessible_feedback_or_404(request, feedback_id)
     if request.method == 'POST':
         feedback.delete()
-        messages.success(request, 'Feedback excluido com sucesso.')
+        messages.success(request, 'Feedback excluído com sucesso.')
     return redirect(get_feedback_history_redirect_url(request, feedback.session.profile))
 
 
@@ -1146,7 +1146,7 @@ def feedback_edit(request, feedback_id):
     if request.method == 'POST':
         score = get_feedback_score_value(request.POST.get('score'))
         if score is None:
-            messages.error(request, 'Informe uma nota valida entre 1 e 5.')
+            messages.error(request, 'Informe uma nota válida entre 1 e 5.')
             return render(request, 'recommendations/feedback_edit.html', {
                 'feedback': feedback,
                 'student_id': student_id,

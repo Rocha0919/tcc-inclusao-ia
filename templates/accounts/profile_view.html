@@ -5,11 +5,11 @@
         <div class="app-sidebar__section">
             <span class="app-sidebar__label">Meu perfil</span>
             <h1 class="app-sidebar__title">Dados do mapeamento</h1>
-            <p class="app-sidebar__copy">Dados usados para montar suas recomendacoes.</p>
+            <p class="app-sidebar__copy">Dados usados para montar suas recomendações.</p>
         </div>
 
         <div class="app-sidebar__section">
-            <span class="app-sidebar__label">Navegacao</span>
+            <span class="app-sidebar__label">Navegação</span>
             <nav class="app-sidebar__nav">
                 <a href="{% url 'profile_detail' %}" class="app-sidebar__link">Meu painel</a>
                 <a href="{% url 'profile_view' %}" class="app-sidebar__link app-sidebar__link--active">Meu perfil</a>
@@ -19,12 +19,12 @@
 
         <div class="app-sidebar__section">
             <span class="app-sidebar__label">Resumo</span>
-            <span class="badge badge--info">{{ categoria_atual|default:"Nao informado" }}</span>
+            <span class="badge badge--info">{{ categoria_atual|default:"Não informado" }}</span>
             <p class="app-sidebar__hint">{{ usuario.username|title }}</p>
         </div>
 
         <div class="app-sidebar__section">
-            <span class="app-sidebar__label">Acoes</span>
+            <span class="app-sidebar__label">Ações</span>
             <div class="app-sidebar__actions">
                 <a href="{% url 'profile_edit' %}" class="btn btn-primary">Editar perfil</a>
                 <a href="{% url 'profile_detail' %}" class="btn btn-outline">Voltar ao painel</a>
@@ -37,7 +37,7 @@
             <div class="page-header__text">
                 <span class="eyebrow">Meu perfil assistivo</span>
                 <h1 class="page-title">Mapa do perfil</h1>
-                <p class="page-subtitle">Visao consolidada do perfil usado pelo sistema.</p>
+                <p class="page-subtitle">Visão consolidada do perfil usado pelo sistema.</p>
             </div>
             <div class="page-actions">
                 <a href="{% url 'profile_detail' %}" class="btn btn-outline">Meu painel</a>
@@ -45,44 +45,26 @@
             </div>
         </div>
 
-        <div class="summary-strip">
-            <article class="summary-card">
-                <span class="summary-card__label">Categoria</span>
-                <span class="summary-card__value">{{ categoria_atual|default:"Nao informado" }}</span>
-                <p class="summary-card__note">Base atual do perfil.</p>
-            </article>
-            <article class="summary-card">
-                <span class="summary-card__label">Objetivo</span>
-                <span class="summary-card__value">{{ social.objetivo_principal|default:"Nao informado" }}</span>
-                <p class="summary-card__note">Foco principal informado.</p>
-            </article>
-            <article class="summary-card">
-                <span class="summary-card__label">Nivel digital</span>
-                <span class="summary-card__value">{{ tecnologico.nivel_tecnologico|default:"Nao informado" }}</span>
-                <p class="summary-card__note">Apoia a selecao das tecnologias.</p>
-            </article>
-        </div>
-
         <div class="profile-section-grid">
             <section class="surface-card">
                 <div class="section-headline">
                     <span class="section-headline__bar"></span>
                     <div>
-                        <h2 class="section-title">Fisico e sensorial</h2>
+                        <h2 class="section-title">Físico e sensorial</h2>
                         <p class="section-note">Necessidades que impactam o uso.</p>
                     </div>
                 </div>
                 <div class="profile-panel">
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Categoria</span>
-                        <span class="profile-panel__value">{{ categoria_atual|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ categoria_atual|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Severidade</span>
-                        <span class="profile-panel__value">{{ biologico.grau_severidade|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ biologico.grau_severidade|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
-                        <span class="profile-panel__label">Limitacoes</span>
+                        <span class="profile-panel__label">Limitações</span>
                         <span class="profile-panel__value">{{ biologico.limitacoes_especificas|default:"Nenhuma declarada." }}</span>
                     </div>
                 </div>
@@ -93,13 +75,13 @@
                     <span class="section-headline__bar"></span>
                     <div>
                         <h2 class="section-title">Cognitivo</h2>
-                        <p class="section-note">Preferencias e barreiras de aprendizado.</p>
+                        <p class="section-note">Preferências e barreiras de aprendizado.</p>
                     </div>
                 </div>
                 <div class="profile-panel">
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Estilo</span>
-                        <span class="profile-panel__value">{{ psicologico.estilo_aprendizado|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ psicologico.estilo_aprendizado|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Barreiras</span>
@@ -113,21 +95,21 @@
                     <span class="section-headline__bar"></span>
                     <div>
                         <h2 class="section-title">Objetivos e rotina</h2>
-                        <p class="section-note">Contexto pratico para a recomendacao.</p>
+                        <p class="section-note">Contexto prático para a recomendação.</p>
                     </div>
                 </div>
                 <div class="profile-panel">
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Objetivo</span>
-                        <span class="profile-panel__value">{{ social.objetivo_principal|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ social.objetivo_principal|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
-                        <span class="profile-panel__label">Orcamento</span>
-                        <span class="profile-panel__value">{{ social.orcamento|default:"Nao informado" }}</span>
+                        <span class="profile-panel__label">Orçamento</span>
+                        <span class="profile-panel__value">{{ social.orcamento|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Barreiras</span>
-                        <span class="profile-panel__value">{{ social.barreiras_dia_a_dia|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ social.barreiras_dia_a_dia|default:"Não informado" }}</span>
                     </div>
                 </div>
             </section>
@@ -142,12 +124,12 @@
                 </div>
                 <div class="profile-panel">
                     <div class="profile-panel__row">
-                        <span class="profile-panel__label">Nivel</span>
-                        <span class="profile-panel__value">{{ tecnologico.nivel_tecnologico|default:"Nao informado" }}</span>
+                        <span class="profile-panel__label">Nível</span>
+                        <span class="profile-panel__value">{{ tecnologico.nivel_tecnologico|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Dispositivos</span>
-                        <span class="profile-panel__value">{{ tecnologico.dispositivos_disponiveis|default:"Nao informado" }}</span>
+                        <span class="profile-panel__value">{{ tecnologico.dispositivos_disponiveis|default:"Não informado" }}</span>
                     </div>
                     <div class="profile-panel__row">
                         <span class="profile-panel__label">Ferramentas</span>

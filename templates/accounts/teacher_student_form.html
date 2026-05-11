@@ -5,11 +5,11 @@
         <div class="app-sidebar__section">
             <span class="app-sidebar__label">Cadastro de aluno</span>
             <h1 class="app-sidebar__title">{% if is_editing %}Atualizar perfil{% else %}Novo perfil{% endif %}</h1>
-            <p class="app-sidebar__copy">Perfil e contexto para gerar recomendacoes com mais aderencia.</p>
+            <p class="app-sidebar__copy">Perfil e contexto para gerar recomendações com mais aderência.</p>
         </div>
 
         <div class="app-sidebar__section">
-            <span class="app-sidebar__label">Navegacao</span>
+            <span class="app-sidebar__label">Navegação</span>
             <nav class="app-sidebar__nav">
                 <a href="{% url 'teacher_dashboard' %}" class="app-sidebar__link">Dashboard</a>
                 {% if is_editing %}
@@ -22,32 +22,32 @@
         </div>
 
         <div class="app-sidebar__section">
-            <span class="app-sidebar__label">Orientacao</span>
-            <p class="app-sidebar__hint">Preencha os quatro blocos com informacoes objetivas.</p>
+            <span class="app-sidebar__label">Orientação</span>
+            <p class="app-sidebar__hint">Preencha os quatro blocos com informações objetivas.</p>
         </div>
 
         <div class="app-sidebar__section">
-            <span class="app-sidebar__label">Acoes</span>
+            <span class="app-sidebar__label">Ações</span>
             <div class="app-sidebar__actions">
                 <a href="{% if is_editing %}{% url 'teacher_student_detail' student_profile.id %}{% else %}{% url 'teacher_dashboard' %}{% endif %}" class="btn btn-outline">Voltar</a>
             </div>
         </div>
     </aside>
 
-    <div class="app-content">
+    <div class="app-content app-content--form">
         <div class="form-card">
             <div class="form-header">
                 <a href="{% if is_editing %}{% url 'teacher_student_detail' student_profile.id %}{% else %}{% url 'teacher_dashboard' %}{% endif %}" class="page-back-link">&larr; Voltar</a>
                 <span class="eyebrow">Perfil do aluno</span>
                 <h1 class="form-title">{{ page_title }}</h1>
-                <p class="form-intro">Dados essenciais para plano, historico e feedbacks do aluno.</p>
+                <p class="form-intro">Dados essenciais para plano, histórico e feedbacks do aluno.</p>
             </div>
 
             <form method="POST" class="form-stack">
                 {% csrf_token %}
 
                 <section class="form-section">
-                    <h2 class="form-section__title">Identificacao</h2>
+                    <h2 class="form-section__title">Identificação</h2>
                     <div class="field-grid">
                         <div class="field-group field-group--wide">
                             <label class="field-label" for="student_name">Nome do aluno</label>
@@ -57,7 +57,7 @@
                 </section>
 
                 <section class="form-section">
-                    <h2 class="form-section__title">1. Perfil fisico e sensorial</h2>
+                    <h2 class="form-section__title">1. Perfil físico e sensorial</h2>
                     <div class="field-grid">
                         <div class="field-group">
                             <label class="field-label" for="primary_disability_category">Categoria principal</label>
@@ -78,14 +78,14 @@
                             </select>
                         </div>
                         <div class="field-group field-group--wide">
-                            <label class="field-label" for="limitacoes_especificas">Limitacoes que impactam o uso</label>
+                            <label class="field-label" for="limitacoes_especificas">Limitações que impactam o uso</label>
                             <input id="limitacoes_especificas" type="text" name="limitacoes_especificas" value="{{ form_values.limitacoes_especificas }}">
                         </div>
                     </div>
                 </section>
 
                 <section class="form-section">
-                    <h2 class="form-section__title">2. Aprendizagem e atencao</h2>
+                    <h2 class="form-section__title">2. Aprendizagem e atenção</h2>
                     <div class="field-grid">
                         <div class="field-group">
                             <label class="field-label" for="estilo_aprendizado">Estilo de aprendizado</label>
@@ -93,7 +93,7 @@
                                 <option value="">Selecione...</option>
                                 <option value="visual" {% if form_values.estilo_aprendizado == 'visual' %}selected{% endif %}>Visual</option>
                                 <option value="auditivo" {% if form_values.estilo_aprendizado == 'auditivo' %}selected{% endif %}>Auditivo</option>
-                                <option value="cinestesico" {% if form_values.estilo_aprendizado == 'cinestesico' %}selected{% endif %}>Pratico</option>
+                                <option value="cinestesico" {% if form_values.estilo_aprendizado == 'cinestesico' %}selected{% endif %}>Prático</option>
                             </select>
                         </div>
                         <div class="field-group">
@@ -112,16 +112,16 @@
                                 <option value="">Selecione...</option>
                                 <option value="estudo" {% if form_values.objetivo_principal == 'estudo' %}selected{% endif %}>Estudo</option>
                                 <option value="trabalho" {% if form_values.objetivo_principal == 'trabalho' %}selected{% endif %}>Trabalho</option>
-                                <option value="vida_diaria" {% if form_values.objetivo_principal == 'vida_diaria' %}selected{% endif %}>Vida diaria</option>
-                                <option value="reabilitacao" {% if form_values.objetivo_principal == 'reabilitacao' %}selected{% endif %}>Reabilitacao</option>
+                                <option value="vida_diaria" {% if form_values.objetivo_principal == 'vida_diaria' %}selected{% endif %}>Vida diária</option>
+                                <option value="reabilitacao" {% if form_values.objetivo_principal == 'reabilitacao' %}selected{% endif %}>Reabilitação</option>
                             </select>
                         </div>
                         <div class="field-group">
-                            <label class="field-label" for="orcamento">Orcamento</label>
+                            <label class="field-label" for="orcamento">Orçamento</label>
                             <select id="orcamento" name="orcamento">
                                 <option value="gratuito" {% if form_values.orcamento == 'gratuito' %}selected{% endif %}>Priorizar gratuito</option>
                                 <option value="baixo_custo" {% if form_values.orcamento == 'baixo_custo' %}selected{% endif %}>Baixo custo</option>
-                                <option value="sem_restricao" {% if form_values.orcamento == 'sem_restricao' %}selected{% endif %}>Sem restricao</option>
+                                <option value="sem_restricao" {% if form_values.orcamento == 'sem_restricao' %}selected{% endif %}>Sem restrição</option>
                             </select>
                         </div>
                         <div class="field-group field-group--wide">
@@ -132,23 +132,23 @@
                 </section>
 
                 <section class="form-section">
-                    <h2 class="form-section__title">4. Ambiente tecnologico</h2>
+                    <h2 class="form-section__title">4. Ambiente tecnológico</h2>
                     <div class="field-grid">
                         <div class="field-group field-group--wide">
-                            <label class="field-label" for="dispositivos">Dispositivos disponiveis</label>
+                            <label class="field-label" for="dispositivos">Dispositivos disponíveis</label>
                             <input id="dispositivos" type="text" name="dispositivos" value="{{ form_values.dispositivos }}">
                         </div>
                         <div class="field-group">
-                            <label class="field-label" for="nivel_tecnologico">Nivel com tecnologia</label>
+                            <label class="field-label" for="nivel_tecnologico">Nível com tecnologia</label>
                             <select id="nivel_tecnologico" name="nivel_tecnologico" required>
                                 <option value="">Selecione...</option>
                                 <option value="iniciante" {% if form_values.nivel_tecnologico == 'iniciante' %}selected{% endif %}>Iniciante</option>
-                                <option value="intermediario" {% if form_values.nivel_tecnologico == 'intermediario' %}selected{% endif %}>Intermediario</option>
-                                <option value="avancado" {% if form_values.nivel_tecnologico == 'avancado' %}selected{% endif %}>Avancado</option>
+                                <option value="intermediario" {% if form_values.nivel_tecnologico == 'intermediario' %}selected{% endif %}>Intermediário</option>
+                                <option value="avancado" {% if form_values.nivel_tecnologico == 'avancado' %}selected{% endif %}>Avançado</option>
                             </select>
                         </div>
                         <div class="field-group">
-                            <label class="field-label" for="ferramentas_previas">Ferramentas ja utilizadas</label>
+                            <label class="field-label" for="ferramentas_previas">Ferramentas já utilizadas</label>
                             <input id="ferramentas_previas" type="text" name="ferramentas_previas" value="{{ form_values.ferramentas_previas }}">
                         </div>
                     </div>

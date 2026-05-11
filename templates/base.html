@@ -19,8 +19,8 @@
             <span class="brand__name">Tecno<span class="brand__accent">Acessivel</span></span>
         </a>
 
-        <nav class="site-nav" aria-label="Navegacao principal">
-            <a href="{% url 'home' %}" class="site-nav__link {% if current == 'home' %}site-nav__link--active{% endif %}">Inicio</a>
+        <nav class="site-nav" aria-label="Navegação principal">
+            <a href="{% url 'home' %}" class="site-nav__link {% if current == 'home' %}site-nav__link--active{% endif %}">Início</a>
 
             {% if user.is_authenticated %}
                 {% if user.is_teacher %}

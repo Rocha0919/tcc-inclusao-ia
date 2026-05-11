@@ -3,9 +3,9 @@
 <section class="app-shell">
     <aside class="app-sidebar">
         <div class="app-sidebar__section">
-            <span class="app-sidebar__label">Painel do usuario</span>
+            <span class="app-sidebar__label">Painel do usuário</span>
             <h1 class="app-sidebar__title">Meu painel</h1>
-            <p class="app-sidebar__copy">Perfil, planos e feedbacks em um unico fluxo.</p>
+            <p class="app-sidebar__copy">Perfil, planos e feedbacks em um único fluxo.</p>
         </div>
 
         {% if profile %}
@@ -16,7 +16,7 @@
             </div>
 
             <div class="app-sidebar__section">
-                <span class="app-sidebar__label">Navegacao</span>
+                <span class="app-sidebar__label">Navegação</span>
                 <nav class="app-sidebar__nav">
                     <a href="{% url 'profile_detail' %}" class="app-sidebar__link app-sidebar__link--active">Meu painel</a>
                     <a href="{% url 'profile_view' %}" class="app-sidebar__link">Meu perfil</a>
@@ -29,13 +29,13 @@
                 <div class="app-sidebar__actions">
                     {% if profile.is_generating and profile.generation_cancel_requested %}
                         <div class="status-panel status-panel--canceling">
-                            <p class="status-panel__title">Cancelando geracao</p>
+                            <p class="status-panel__title">Cancelando geração</p>
                             <p class="status-panel__body">Aguarde para iniciar uma nova tentativa.</p>
                         </div>
                     {% elif profile.is_generating %}
                         <div class="status-panel status-panel--generating">
                             <p class="status-panel__title"><span class="spinner" aria-hidden="true"></span> Gerando plano</p>
-                            <p class="status-panel__body">Seu relatorio esta em preparo.</p>
+                            <p class="status-panel__body">Seu relatório está em preparo.</p>
                         </div>
                         <a href="{% url 'plan_generation_loading' %}?next={{ request.path|urlencode }}" class="btn btn-primary">Acompanhar</a>
                     {% else %}
@@ -68,7 +68,7 @@
             {% endif %}
         {% else %}
             <div class="app-sidebar__section">
-                <span class="app-sidebar__label">Proximo passo</span>
+                <span class="app-sidebar__label">Próximo passo</span>
                 <a href="{% url 'profile_create' %}" class="btn btn-primary">Configurar perfil</a>
             </div>
         {% endif %}
@@ -77,9 +77,9 @@
     <div class="app-content">
         <div class="page-header dashboard-banner">
             <div class="page-header__text">
-                <span class="eyebrow">Painel do usuario</span>
+                <span class="eyebrow">Painel do usuário</span>
                 <h1 class="page-title">Planos de acessibilidade</h1>
-                <p class="page-subtitle">Acompanhe o historico e abra rapidamente os relatorios gerados.</p>
+                <p class="page-subtitle">Acompanhe o histórico e abra rapidamente os relatórios gerados.</p>
             </div>
             <div class="page-actions">
                 {% if profile %}
@@ -113,40 +113,22 @@
 
         {% if profile.is_generating and profile.generation_cancel_requested %}
             <div class="status-panel status-panel--canceling">
-                <p class="status-panel__title">Cancelando geracao</p>
+                <p class="status-panel__title">Cancelando geração</p>
                 <p class="status-panel__body">Aguarde para iniciar uma nova tentativa.</p>
             </div>
         {% elif profile.is_generating %}
             <div class="status-panel status-panel--generating">
                 <p class="status-panel__title"><span class="spinner" aria-hidden="true"></span> Gerando plano</p>
-                <p class="status-panel__body">Seu relatorio esta em preparo.</p>
+                <p class="status-panel__body">Seu relatório está em preparo.</p>
             </div>
         {% endif %}
-
-        <div class="summary-strip">
-            <article class="summary-card">
-                <span class="summary-card__label">Categoria</span>
-                <span class="summary-card__value">{{ profile.primary_disability_category }}</span>
-                <p class="summary-card__note">Base do perfil atual.</p>
-            </article>
-            <article class="summary-card">
-                <span class="summary-card__label">Planos</span>
-                <span class="summary-card__value">{{ sessoes|length }}</span>
-                <p class="summary-card__note">Historico disponivel.</p>
-            </article>
-            <article class="summary-card">
-                <span class="summary-card__label">Status</span>
-                <span class="summary-card__value">{% if profile.is_generating %}Em preparo{% else %}Disponivel{% endif %}</span>
-                <p class="summary-card__note">Acompanhe a geracao pelos atalhos do topo.</p>
-            </article>
-        </div>
 
         <section class="surface-card">
             <div class="section-headline">
                 <span class="section-headline__bar"></span>
                 <div>
-                    <h2 class="section-title">Historico de planos</h2>
-                    <p class="section-note">Relatorios gerados para este perfil.</p>
+                    <h2 class="section-title">Histórico de planos</h2>
+                    <p class="section-note">Relatórios gerados para este perfil.</p>
                 </div>
             </div>
 
@@ -166,7 +148,7 @@
             {% else %}
                 <div class="empty-state">
                     <h2 class="empty-state__title">Nenhum plano gerado</h2>
-                    <p class="empty-state__body">Quando a primeira geracao for concluida, o relatorio aparecera aqui.</p>
+                    <p class="empty-state__body">Quando a primeira geração for concluída, o relatório aparecerá aqui.</p>
                 </div>
             {% endif %}
         </section>

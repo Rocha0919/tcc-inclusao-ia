@@ -4,15 +4,15 @@
 
     <div class="loading-card">
         <div class="loading-card__intro">
-            <span class="eyebrow">Geracao em andamento</span>
+            <span class="eyebrow">Geração em andamento</span>
             <p class="loading-card__subtitle">Estamos preparando o plano com base no perfil informado.</p>
         </div>
 
         <div id="loading-state" class="loading-panel">
             <div aria-hidden="true" class="loading-spinner"></div>
-            <h1 id="status-title" class="loading-title">Gerando recomendacao</h1>
+            <h1 id="status-title" class="loading-title">Gerando recomendação</h1>
             <p id="status-message" class="loading-copy">{{ loading_message }}</p>
-            <p id="status-hint" class="loading-hint">A tela sera atualizada automaticamente quando o plano estiver pronto.</p>
+            <p id="status-hint" class="loading-hint">A tela será atualizada automaticamente quando o plano estiver pronto.</p>
             <div class="loading-actions">
                 <button id="cancel-button" type="button" class="btn btn-soft">Cancelar</button>
                 <a href="{{ back_url }}" class="btn btn-outline">Voltar</a>
@@ -21,8 +21,8 @@
 
         <div id="result-state" class="loading-panel loading-panel--error is-hidden">
             <div id="result-icon" class="result-icon">!</div>
-            <h2 id="result-title" class="loading-title loading-result-title">Nao foi possivel concluir a geracao</h2>
-            <p id="result-message" class="loading-copy loading-result-copy">Ocorreu um erro inesperado ao gerar as recomendacoes.</p>
+            <h2 id="result-title" class="loading-title loading-result-title">Não foi possível concluir a geração</h2>
+            <p id="result-message" class="loading-copy loading-result-copy">Ocorreu um erro inesperado ao gerar as recomendações.</p>
             <div class="loading-actions">
                 <button id="retry-button" type="button" class="btn btn-primary">Tentar novamente</button>
                 <a id="open-plan-link" href="#" class="btn btn-soft is-hidden">Abrir plano pronto</a>
@@ -60,9 +60,9 @@
         const retryButton = document.getElementById('retry-button');
         const cancelButton = document.getElementById('cancel-button');
         const openPlanLink = document.getElementById('open-plan-link');
-        const cancelingMessage = 'Cancelando geracao... aguarde alguns instantes.';
-        const defaultHint = 'A tela sera atualizada automaticamente quando o plano estiver pronto.';
-        const cancelingHint = 'O cancelamento esta em andamento. Aguarde alguns instantes.';
+        const cancelingMessage = 'Cancelando geração... aguarde alguns instantes.';
+        const defaultHint = 'A tela será atualizada automaticamente quando o plano estiver pronto.';
+        const cancelingHint = 'O cancelamento está em andamento. Aguarde alguns instantes.';
 
         let pollingTimer = null;
         let requestInFlight = false;
@@ -147,7 +147,7 @@
             showElement(loadingState);
             hideElement(resultState);
             hideElement(openPlanLink);
-            setElementText(statusTitle, 'Gerando recomendacao');
+            setElementText(statusTitle, 'Gerando recomendação');
             setElementText(statusMessage, message || defaultMessage);
             setElementText(statusHint, defaultHint);
             setButtonState(cancelButton, false, 'Cancelar');
@@ -157,7 +157,7 @@
             showElement(loadingState);
             hideElement(resultState);
             hideElement(openPlanLink);
-            setElementText(statusTitle, 'Cancelando geracao');
+            setElementText(statusTitle, 'Cancelando geração');
             setElementText(statusMessage, message || cancelingMessage);
             setElementText(statusHint, cancelingHint);
             setButtonState(cancelButton, true, 'Cancelando...');
@@ -248,14 +248,14 @@
                 });
 
                 if (!response.ok || !data.status) {
-                    const message = data.message || 'Nao foi possivel acompanhar o andamento da geracao. Tente novamente.';
+                    const message = data.message || 'Não foi possível acompanhar o andamento da geração. Tente novamente.';
                     logError('status_response_invalid', new Error(message), {
                         httpStatus: response.status,
                         responseData: data,
                     });
                     showResult({
                         tone: 'error',
-                        title: 'Nao foi possivel acompanhar a geracao',
+                        title: 'Não foi possível acompanhar a geração',
                         message: message,
                     });
                     return;
@@ -281,8 +281,8 @@
                 if (data.status === 'error') {
                     showResult({
                         tone: 'error',
-                        title: 'Nao foi possivel concluir a geracao',
-                        message: data.message || 'Ocorreu um erro inesperado ao gerar as recomendacoes.',
+                        title: 'Não foi possível concluir a geração',
+                        message: data.message || 'Ocorreu um erro inesperado ao gerar as recomendações.',
                     });
                     return;
                 }
@@ -298,8 +298,8 @@
                 logError('status_request_failed', error);
                 showResult({
                     tone: 'error',
-                    title: 'Nao foi possivel acompanhar a geracao',
-                    message: 'Nao foi possivel acompanhar o andamento da geracao. Tente novamente.',
+                    title: 'Não foi possível acompanhar a geração',
+                    message: 'Não foi possível acompanhar o andamento da geração. Tente novamente.',
                 });
             }
         }
@@ -352,7 +352,7 @@
                 });
 
                 if (!response.ok || !data.status) {
-                    const message = data.message || 'Ocorreu um problema ao iniciar a geracao.';
+                    const message = data.message || 'Ocorreu um problema ao iniciar a geração.';
                     logError('generate_response_invalid', new Error(message), {
                         forceRetry,
                         httpStatus: response.status,
@@ -360,7 +360,7 @@
                     });
                     showResult({
                         tone: 'error',
-                        title: 'Nao foi possivel iniciar a geracao',
+                        title: 'Não foi possível iniciar a geração',
                         message: message,
                     });
                     return;
@@ -386,8 +386,8 @@
                 if (data.status === 'error') {
                     showResult({
                         tone: 'error',
-                        title: 'Nao foi possivel iniciar a geracao',
-                        message: data.message || 'Ocorreu um problema ao iniciar a geracao.',
+                        title: 'Não foi possível iniciar a geração',
+                        message: data.message || 'Ocorreu um problema ao iniciar a geração.',
                     });
                     return;
                 }
@@ -407,8 +407,8 @@
                 logError('generate_request_failed', error, { forceRetry });
                 showResult({
                     tone: 'error',
-                    title: 'Nao foi possivel iniciar a geracao',
-                    message: 'Ocorreu um problema ao iniciar a geracao. Tente novamente.',
+                    title: 'Não foi possível iniciar a geração',
+                    message: 'Ocorreu um problema ao iniciar a geração. Tente novamente.',
                 });
             }
         }
@@ -446,14 +446,14 @@
                 });
 
                 if (!response.ok || !data.status) {
-                    const message = data.message || 'O servidor nao conseguiu confirmar o cancelamento agora. Aguarde alguns instantes.';
+                    const message = data.message || 'O servidor não conseguiu confirmar o cancelamento agora. Aguarde alguns instantes.';
                     logError('cancel_response_invalid', new Error(message), {
                         httpStatus: response.status,
                         responseData: data,
                     });
                     showResult({
                         tone: 'error',
-                        title: 'Nao foi possivel confirmar o cancelamento',
+                        title: 'Não foi possível confirmar o cancelamento',
                         message: message,
                     });
                     return;
@@ -473,8 +473,8 @@
 
                 showResult({
                     tone: 'error',
-                    title: 'Nao foi possivel confirmar o cancelamento',
-                    message: data.message || 'O servidor nao conseguiu confirmar o cancelamento agora. Aguarde alguns instantes.',
+                    title: 'Não foi possível confirmar o cancelamento',
+                    message: data.message || 'O servidor não conseguiu confirmar o cancelamento agora. Aguarde alguns instantes.',
                 });
             } catch (error) {
                 if (error.name === 'AbortError') {
@@ -484,8 +484,8 @@
                 logError('cancel_request_failed', error);
                 showResult({
                     tone: 'error',
-                    title: 'Nao foi possivel confirmar o cancelamento',
-                    message: 'O redirecionamento foi interrompido nesta tela, mas o servidor nao confirmou o cancelamento. Aguarde alguns instantes e tente novamente.',
+                    title: 'Não foi possível confirmar o cancelamento',
+                    message: 'O redirecionamento foi interrompido nesta tela, mas o servidor não confirmou o cancelamento. Aguarde alguns instantes e tente novamente.',
                 });
             }
         }
@@ -519,14 +519,14 @@
                 });
 
                 if (!response.ok && response.status !== 404) {
-                    const message = data.message || 'Ocorreu um erro inesperado ao consultar a geracao.';
+                    const message = data.message || 'Ocorreu um erro inesperado ao consultar a geração.';
                     logError('initial_status_invalid_http', new Error(message), {
                         httpStatus: response.status,
                         responseData: data,
                     });
                     showResult({
                         tone: 'error',
-                        title: 'Nao foi possivel concluir a geracao',
+                        title: 'Não foi possível concluir a geração',
                         message: message,
                     });
                     return;
@@ -565,8 +565,8 @@
                     });
                     showResult({
                         tone: 'error',
-                        title: 'Nao foi possivel concluir a geracao',
-                        message: data.message || 'Ocorreu um erro inesperado ao gerar as recomendacoes.',
+                        title: 'Não foi possível concluir a geração',
+                        message: data.message || 'Ocorreu um erro inesperado ao gerar as recomendações.',
                     });
                     return;
                 }
@@ -578,8 +578,8 @@
                     });
                     showResult({
                         tone: 'error',
-                        title: 'Nao foi possivel concluir a geracao',
-                        message: 'Ocorreu um erro inesperado ao consultar o status da geracao.',
+                        title: 'Não foi possível concluir a geração',
+                        message: 'Ocorreu um erro inesperado ao consultar o status da geração.',
                     });
                     return;
                 }

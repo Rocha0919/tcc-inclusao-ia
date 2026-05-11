@@ -6,26 +6,26 @@
             <a href="{% url 'profile_view' %}" class="page-back-link">&larr; Voltar ao perfil</a>
             <span class="eyebrow">Meu perfil</span>
             <h1 class="form-title">Revisar mapeamento</h1>
-            <p class="form-intro">Ajuste apenas o que mudou para manter as recomendacoes alinhadas ao seu contexto.</p>
+            <p class="form-intro">Ajuste apenas o que mudou para manter as recomendações alinhadas ao seu contexto.</p>
         </div>
 
         <form method="POST" class="form-stack">
             {% csrf_token %}
 
             <section class="form-section">
-                <h2 class="form-section__title">1. Perfil fisico e sensorial</h2>
+                <h2 class="form-section__title">1. Perfil físico e sensorial</h2>
                 <div class="field-grid">
                     <div class="field-group">
                         <label class="field-label" for="categoria_deficiencia">Categoria principal</label>
                         <select id="categoria_deficiencia" name="categoria_deficiencia" required>
-                            <option value="Física" {% if categoria_atual == 'Física' %}selected{% endif %}>Fisica / Motora</option>
+                            <option value="Física" {% if categoria_atual == 'Física' %}selected{% endif %}>Física / Motora</option>
                             <option value="Visual" {% if categoria_atual == 'Visual' %}selected{% endif %}>Visual</option>
                             <option value="Auditiva" {% if categoria_atual == 'Auditiva' %}selected{% endif %}>Auditiva</option>
                             <option value="Intelectual" {% if categoria_atual == 'Intelectual' %}selected{% endif %}>Intelectual</option>
                             <option value="TEA" {% if categoria_atual == 'TEA' %}selected{% endif %}>TEA</option>
                             <option value="TDAH" {% if categoria_atual == 'TDAH' %}selected{% endif %}>TDAH</option>
                             <option value="Altas Habilidades" {% if categoria_atual == 'Altas Habilidades' %}selected{% endif %}>Altas Habilidades</option>
-                            <option value="Múltipla" {% if categoria_atual == 'Múltipla' %}selected{% endif %}>Multipla</option>
+                            <option value="Múltipla" {% if categoria_atual == 'Múltipla' %}selected{% endif %}>Múltipla</option>
                         </select>
                     </div>
                     <div class="field-group">
@@ -37,21 +37,21 @@
                         </select>
                     </div>
                     <div class="field-group field-group--wide">
-                        <label class="field-label" for="limitacoes_especificas">Limitacoes que impactam o uso</label>
+                        <label class="field-label" for="limitacoes_especificas">Limitações que impactam o uso</label>
                         <textarea id="limitacoes_especificas" name="limitacoes_especificas" rows="3">{{ biologico.limitacoes_especificas }}</textarea>
                     </div>
                 </div>
             </section>
 
             <section class="form-section">
-                <h2 class="form-section__title">2. Aprendizagem e atencao</h2>
+                <h2 class="form-section__title">2. Aprendizagem e atenção</h2>
                 <div class="field-grid">
                     <div class="field-group">
                         <label class="field-label" for="estilo_aprendizado">Estilo de aprendizado</label>
                         <select id="estilo_aprendizado" name="estilo_aprendizado">
                             <option value="visual" {% if psicologico.estilo_aprendizado == 'visual' %}selected{% endif %}>Visual</option>
                             <option value="auditivo" {% if psicologico.estilo_aprendizado == 'auditivo' %}selected{% endif %}>Auditivo</option>
-                            <option value="cinestesico" {% if psicologico.estilo_aprendizado == 'cinestesico' %}selected{% endif %}>Pratico</option>
+                            <option value="cinestesico" {% if psicologico.estilo_aprendizado == 'cinestesico' %}selected{% endif %}>Prático</option>
                         </select>
                     </div>
                     <div class="field-group">
@@ -69,16 +69,16 @@
                         <select id="objetivo_principal" name="objetivo_principal" required>
                             <option value="estudo" {% if social.objetivo_principal == 'estudo' %}selected{% endif %}>Estudo</option>
                             <option value="trabalho" {% if social.objetivo_principal == 'trabalho' %}selected{% endif %}>Trabalho</option>
-                            <option value="vida_diaria" {% if social.objetivo_principal == 'vida_diaria' %}selected{% endif %}>Vida diaria</option>
-                            <option value="reabilitacao" {% if social.objetivo_principal == 'reabilitacao' %}selected{% endif %}>Reabilitacao</option>
+                            <option value="vida_diaria" {% if social.objetivo_principal == 'vida_diaria' %}selected{% endif %}>Vida diária</option>
+                            <option value="reabilitacao" {% if social.objetivo_principal == 'reabilitacao' %}selected{% endif %}>Reabilitação</option>
                         </select>
                     </div>
                     <div class="field-group">
-                        <label class="field-label" for="orcamento">Orcamento</label>
+                        <label class="field-label" for="orcamento">Orçamento</label>
                         <select id="orcamento" name="orcamento">
                             <option value="gratuito" {% if social.orcamento == 'gratuito' %}selected{% endif %}>Priorizar gratuito</option>
                             <option value="baixo_custo" {% if social.orcamento == 'baixo_custo' %}selected{% endif %}>Baixo custo</option>
-                            <option value="sem_restricao" {% if social.orcamento == 'sem_restricao' %}selected{% endif %}>Sem restricao</option>
+                            <option value="sem_restricao" {% if social.orcamento == 'sem_restricao' %}selected{% endif %}>Sem restrição</option>
                         </select>
                     </div>
                     <div class="field-group field-group--wide">
@@ -89,29 +89,29 @@
             </section>
 
             <section class="form-section">
-                <h2 class="form-section__title">4. Ambiente tecnologico</h2>
+                <h2 class="form-section__title">4. Ambiente tecnológico</h2>
                 <div class="field-grid">
                     <div class="field-group">
-                        <label class="field-label" for="nivel_tecnologico">Nivel com tecnologia</label>
+                        <label class="field-label" for="nivel_tecnologico">Nível com tecnologia</label>
                         <select id="nivel_tecnologico" name="nivel_tecnologico">
                             <option value="iniciante" {% if tecnologico.nivel_tecnologico == 'iniciante' %}selected{% endif %}>Iniciante</option>
-                            <option value="intermediario" {% if tecnologico.nivel_tecnologico == 'intermediario' %}selected{% endif %}>Intermediario</option>
-                            <option value="avancado" {% if tecnologico.nivel_tecnologico == 'avancado' %}selected{% endif %}>Avancado</option>
+                            <option value="intermediario" {% if tecnologico.nivel_tecnologico == 'intermediario' %}selected{% endif %}>Intermediário</option>
+                            <option value="avancado" {% if tecnologico.nivel_tecnologico == 'avancado' %}selected{% endif %}>Avançado</option>
                         </select>
                     </div>
                     <div class="field-group">
-                        <label class="field-label" for="dispositivos">Dispositivos disponiveis</label>
+                        <label class="field-label" for="dispositivos">Dispositivos disponíveis</label>
                         <input id="dispositivos" type="text" name="dispositivos" value="{{ tecnologico.dispositivos_disponiveis|default:'' }}">
                     </div>
                     <div class="field-group field-group--wide">
-                        <label class="field-label" for="ferramentas_previas">Ferramentas ja utilizadas</label>
+                        <label class="field-label" for="ferramentas_previas">Ferramentas já utilizadas</label>
                         <input id="ferramentas_previas" type="text" name="ferramentas_previas" value="{{ tecnologico.ferramentas_previas|default:'' }}">
                     </div>
                 </div>
             </section>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Salvar alteracoes</button>
+                <button type="submit" class="btn btn-primary">Salvar alterações</button>
                 <a href="{% url 'profile_view' %}" class="btn btn-soft">Cancelar</a>
             </div>
         </form>
